@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProblemSolvingPlatform.DAL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0e678de07ded2b6871653f05126675c665f0326a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0694868a345d4261f4d858538d745910f68787b0")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProblemSolvingPlatform.DAL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProblemSolvingPlatform.DAL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
