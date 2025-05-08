@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ProblemSolvingPlatform.BLL/1.0.0": {
+        "dependencies": {
+          "ProblemSolvingPlatform.API": "1.0.0",
+          "ProblemSolvingPlatform.DAL": "1.0.0"
+        },
+        "runtime": {
+          "ProblemSolvingPlatform.BLL.dll": {}
+        }
+      },
+      "ProblemSolvingPlatform.API/1.0.0": {
+        "runtime": {
+          "ProblemSolvingPlatform.API.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ProblemSolvingPlatform.DAL/1.0.0": {
+        "runtime": {
+          "ProblemSolvingPlatform.DAL.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ProblemSolvingPlatform.BLL/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ProblemSolvingPlatform.API/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ProblemSolvingPlatform.DAL/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

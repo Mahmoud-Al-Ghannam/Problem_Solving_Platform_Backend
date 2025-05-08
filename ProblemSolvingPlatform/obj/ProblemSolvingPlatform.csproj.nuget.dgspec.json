@@ -1,0 +1,272 @@
+{
+  "format": 1,
+  "restore": {
+    "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj": {}
+  },
+  "projects": {
+    "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj",
+        "projectName": "ProblemSolvingPlatform.API",
+        "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj",
+        "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+        "outputPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj",
+        "projectName": "ProblemSolvingPlatform.BLL",
+        "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj",
+        "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+        "outputPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj": {
+                "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj"
+              },
+              "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj": {
+                "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj",
+        "projectName": "ProblemSolvingPlatform.DAL",
+        "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj",
+        "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+        "outputPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj",
+        "projectName": "ProblemSolvingPlatform",
+        "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj",
+        "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
+        "outputPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj": {
+                "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

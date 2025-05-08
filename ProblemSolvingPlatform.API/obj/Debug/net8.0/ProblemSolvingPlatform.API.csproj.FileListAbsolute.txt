@@ -1,0 +1,12 @@
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\bin\Debug\net8.0\ProblemSolvingPlatform.API.deps.json
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\bin\Debug\net8.0\ProblemSolvingPlatform.API.dll
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\bin\Debug\net8.0\ProblemSolvingPlatform.API.pdb
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.GeneratedMSBuildEditorConfig.editorconfig
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.AssemblyInfoInputs.cache
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.AssemblyInfo.cs
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.csproj.CoreCompileInputs.cache
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.sourcelink.json
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.dll
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\refint\ProblemSolvingPlatform.API.dll
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ProblemSolvingPlatform.API.pdb
+F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Debug\net8.0\ref\ProblemSolvingPlatform.API.dll
