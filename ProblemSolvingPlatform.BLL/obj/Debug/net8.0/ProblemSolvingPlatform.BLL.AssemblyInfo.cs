@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProblemSolvingPlatform.BLL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0e678de07ded2b6871653f05126675c665f0326a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9948a825aaaea5888d3548855287e914aec299c0")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProblemSolvingPlatform.BLL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProblemSolvingPlatform.BLL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
