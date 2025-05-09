@@ -1,0 +1,12 @@
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\bin\Release\net8.0\ProblemSolvingPlatform.API.deps.json
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\bin\Release\net8.0\ProblemSolvingPlatform.API.dll
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\bin\Release\net8.0\ProblemSolvingPlatform.API.pdb
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.AssemblyInfoInputs.cache
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.AssemblyInfo.cs
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.csproj.CoreCompileInputs.cache
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.sourcelink.json
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.dll
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\refint\ProblemSolvingPlatform.API.dll
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ProblemSolvingPlatform.API.pdb
+D:\Project Problem Solving\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\obj\Release\net8.0\ref\ProblemSolvingPlatform.API.dll
