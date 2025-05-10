@@ -1822,19 +1822,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Dell\\.nuget\\packages\\": {}
+    "C:\\Users\\acer\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj",
+      "projectUniqueName": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj",
       "projectName": "ProblemSolvingPlatform.BLL",
-      "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj",
-      "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
-      "outputPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\obj\\",
+      "projectPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj",
+      "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
+      "outputPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1849,11 +1849,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj": {
-              "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj"
+            "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj": {
+              "projectPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.API\\ProblemSolvingPlatform.API.csproj"
             },
-            "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj": {
-              "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj"
+            "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj": {
+              "projectPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.DAL\\ProblemSolvingPlatform.DAL.csproj"
             }
           }
         }

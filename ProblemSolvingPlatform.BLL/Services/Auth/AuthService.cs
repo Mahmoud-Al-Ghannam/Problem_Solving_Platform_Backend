@@ -47,7 +47,7 @@ public class AuthService : IAuthService
 
     public async Task<RegisterResponse> RegisterAsync(RegisterDTO registerDTO)
     {
-        if (await _userRepo.IsUsernameExist(registerDTO.Username))
+        if (await _userRepo.DoesUserExistByUsername(registerDTO.Username))
             return new RegisterResponse() { IsSuccess = false, statusCode = 400, message = "Username is already exist" };
 
         User user = new()

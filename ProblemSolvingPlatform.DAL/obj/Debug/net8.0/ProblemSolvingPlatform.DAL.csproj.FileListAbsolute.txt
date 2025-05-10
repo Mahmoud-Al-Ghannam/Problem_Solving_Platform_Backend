@@ -11,3 +11,16 @@ F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Bac
 F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.pdb
 F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ref\ProblemSolvingPlatform.DAL.dll
 F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.csproj.AssemblyReference.cache
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\bin\Debug\net8.0\ProblemSolvingPlatform.DAL.deps.json
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\bin\Debug\net8.0\ProblemSolvingPlatform.DAL.dll
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\bin\Debug\net8.0\ProblemSolvingPlatform.DAL.pdb
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.csproj.AssemblyReference.cache
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.AssemblyInfoInputs.cache
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.AssemblyInfo.cs
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.csproj.CoreCompileInputs.cache
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.sourcelink.json
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.dll
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\refint\ProblemSolvingPlatform.DAL.dll
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ProblemSolvingPlatform.DAL.pdb
+D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.DAL\obj\Debug\net8.0\ref\ProblemSolvingPlatform.DAL.dll

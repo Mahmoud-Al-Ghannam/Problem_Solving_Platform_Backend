@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ProblemSolvingPlatform.API
-build_property.ProjectDir = F:\programming\C#\Projects\Problem Solving Platform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\
+build_property.ProjectDir = D:\ProblemSolvingPlatform\Problem_Solving_Platform_Backend\ProblemSolvingPlatform.API\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

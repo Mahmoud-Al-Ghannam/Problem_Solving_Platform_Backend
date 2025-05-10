@@ -59,7 +59,7 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<bool> IsUsernameExist(string Username)
+    public async Task<bool> DoesUserExistByUsername(string Username)
     {
         SqlConnection connection = _db.GetConnection();
 

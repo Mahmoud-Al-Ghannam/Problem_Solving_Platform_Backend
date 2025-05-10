@@ -2306,19 +2306,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Dell\\.nuget\\packages\\": {}
+    "C:\\Users\\acer\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj",
+      "projectUniqueName": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj",
       "projectName": "ProblemSolvingPlatform",
-      "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj",
-      "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
-      "outputPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\obj\\",
+      "projectPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\ProblemSolvingPlatform.csproj",
+      "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
+      "outputPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -2333,8 +2333,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj": {
-              "projectPath": "F:\\programming\\C#\\Projects\\Problem Solving Platform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj"
+            "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj": {
+              "projectPath": "D:\\ProblemSolvingPlatform\\Problem_Solving_Platform_Backend\\ProblemSolvingPlatform.BLL\\ProblemSolvingPlatform.BLL.csproj"
             }
           }
         }

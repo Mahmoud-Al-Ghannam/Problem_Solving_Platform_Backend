@@ -11,5 +11,5 @@ public interface IUserRepo
 {
     public Task<bool> AddUser(User user);
     public Task<User> GetUserByUsernameAndPassword(string Username, string Password);
-    public Task<bool> IsUsernameExist(string Username);
+    public Task<bool> DoesUserExistByUsername(string Username);
 }
