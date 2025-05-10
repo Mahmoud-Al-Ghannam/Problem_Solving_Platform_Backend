@@ -1,2 +1,4 @@
-ProblemSolvingPlatform/.vs/
-.vs/
+**/.vs/
+**/bin/
+**/obj/
+
