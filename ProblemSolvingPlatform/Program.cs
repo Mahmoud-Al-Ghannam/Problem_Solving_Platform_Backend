@@ -2,10 +2,10 @@
 using ProblemSolvingPlatform.BLL.Services.Auth;
 using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.DAL.Context;
-using ProblemSolvingPlatform.DAL.Interfaces;
-using ProblemSolvingPlatform.DAL.Repos;
+using ProblemSolvingPlatform.DAL.Repos.User;
 
-namespace ProblemSolvingPlatform {
+namespace ProblemSolvingPlatform
+{
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);

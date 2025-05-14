@@ -1,8 +1,8 @@
 ﻿using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.JWT;
-using ProblemSolvingPlatform.DAL.Interfaces;
 using ProblemSolvingPlatform.DAL.Models;
+using ProblemSolvingPlatform.DAL.Repos.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +22,12 @@ public class AuthService : IAuthService
     }
 
 
-    public async Task<LoginResult> LoginAsync(LoginDTO loginDTO)
+    public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginDTO)
     {
         var user = await _userRepo.GetUserByUsernameAndPassword(loginDTO.Username, loginDTO.Password);
         if (user == null)
         {
-            return new LoginResult()
+            return new LoginResponseDTO()
             {
                 Success = false,
                 StatusCode = 401,
@@ -36,7 +36,7 @@ public class AuthService : IAuthService
         }
 
         // make a token and return the response
-        return new LoginResult()
+        return new LoginResponseDTO()
         {
             Success = true,
             StatusCode = 200,
@@ -45,10 +45,10 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<RegisterResponse> RegisterAsync(RegisterDTO registerDTO)
+    public async Task<RegisterResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO)
     {
         if (await _userRepo.DoesUserExistByUsername(registerDTO.Username))
-            return new RegisterResponse() { IsSuccess = false, statusCode = 400, message = "Username is already exist" };
+            return new RegisterResponseDTO() { IsSuccess = false, statusCode = 400, message = "Username is already exist" };
 
         User user = new()
         {
@@ -58,14 +58,14 @@ public class AuthService : IAuthService
         };
         var res = await _userRepo.AddUser(user);
         if (!res)
-            return new RegisterResponse()
+            return new RegisterResponseDTO()
             {
                 IsSuccess = false,
                 statusCode = 500,
                 message = "Invalid, try again :)"
             };
 
-        return new RegisterResponse()
+        return new RegisterResponseDTO()
         {
             IsSuccess = true,
             statusCode = 200,

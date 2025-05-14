@@ -10,6 +10,6 @@ namespace ProblemSolvingPlatform.BLL.Services.Auth;
 
 public interface IAuthService
 {
-    public Task<RegisterResponse> RegisterAsync(RegisterDTO registerDTO);
-    public Task<LoginResult> LoginAsync(LoginDTO loginDTO);
+    public Task<RegisterResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO);
+    public Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginDTO);
 }

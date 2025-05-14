@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 
-public class RegisterDTO
+public class RegisterRequestDTO
 {
     [Required]
     public string Username { get; set; }

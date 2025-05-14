@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 
-public class RegisterResponse
+public class RegisterResponseDTO
 {
     [Required]
     public string message { get; set; }

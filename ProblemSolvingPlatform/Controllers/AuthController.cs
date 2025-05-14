@@ -15,7 +15,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginDTO loginDTO)
+    public async Task<IActionResult> LoginAsync([FromBody] LoginRequestDTO loginDTO)
     {
         var result = await _authService.LoginAsync(loginDTO);
         if (result.Success)
@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterDTO registerDTO)
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequestDTO registerDTO)
     {
         var result = await _authService.RegisterAsync(registerDTO);
         if (result.IsSuccess)
