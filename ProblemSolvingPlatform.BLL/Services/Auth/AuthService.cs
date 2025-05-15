@@ -1,7 +1,7 @@
 ﻿using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.JWT;
-using ProblemSolvingPlatform.DAL.Models;
+using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
 using ProblemSolvingPlatform.DAL.Repos.User;
 using System;
 using System.Collections.Generic;
@@ -50,14 +50,14 @@ public class AuthService : IAuthService
         if (await _userRepo.DoesUserExistByUsername(registerDTO.Username))
             return new RegisterResponseDTO() { IsSuccess = false, statusCode = 400, message = "Username is already exist" };
 
-        User user = new()
+        UserDTO user = new()
         {
             Username = registerDTO.Username,
             Password = registerDTO.Password,
             ImagePath = "KOKO"
         };
         var res = await _userRepo.AddUser(user);
-        if (!res)
+        if (!res.HasValue)
             return new RegisterResponseDTO()
             {
                 IsSuccess = false,

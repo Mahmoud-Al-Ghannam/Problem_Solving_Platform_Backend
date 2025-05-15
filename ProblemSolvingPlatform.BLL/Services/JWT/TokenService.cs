@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using ProblemSolvingPlatform.DAL.Models;
+using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,7 +20,7 @@ public class TokenService
         _config = config;
     }
 
-    public string GenerateToken(User user)
+    public string GenerateToken(UserDTO user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

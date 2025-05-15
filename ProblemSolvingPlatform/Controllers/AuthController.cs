@@ -5,7 +5,7 @@ using ProblemSolvingPlatform.BLL.Services.Auth;
 namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private IAuthService _authService { get; }

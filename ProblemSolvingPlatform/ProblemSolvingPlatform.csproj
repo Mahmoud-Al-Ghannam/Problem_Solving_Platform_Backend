@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProblemSolvingPlatform.API\ProblemSolvingPlatform.API.csproj" />
     <ProjectReference Include="..\ProblemSolvingPlatform.BLL\ProblemSolvingPlatform.BLL.csproj" />
   </ItemGroup>
 
