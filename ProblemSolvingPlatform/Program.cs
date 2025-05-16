@@ -1,8 +1,10 @@
 
+using Microsoft.IdentityModel.Tokens;
 using ProblemSolvingPlatform.BLL.Services.Auth;
 using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Repos.User;
+using System.Text;
 
 namespace ProblemSolvingPlatform
 {
@@ -22,6 +24,24 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<TokenService, TokenService>();
             builder.Services.AddScoped<DbContext, DbContext>();
 
+            builder.Services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                         ValidateIssuer = false, 
+                         ValidateAudience = false, 
+                         ValidateLifetime = true,
+                         ValidateIssuerSigningKey = true,
+                         IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+                         )
+                };
+            });
+
+            builder.Services.AddAuthorization();
+
+
             var app = builder.Build();
 
 
@@ -31,6 +51,7 @@ namespace ProblemSolvingPlatform
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

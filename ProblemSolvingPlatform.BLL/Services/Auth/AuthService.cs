@@ -1,6 +1,7 @@
 ﻿using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.JWT;
+using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
 using ProblemSolvingPlatform.DAL.Repos.User;
 using System;
@@ -73,4 +74,9 @@ public class AuthService : IAuthService
         };
 
     }
+
+    public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePasswordDTO)
+                               => await _userRepo.ChangePasswordAsync(userId, changePasswordDTO);
+    
+
 }

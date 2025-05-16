@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
+using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
 
 namespace ProblemSolvingPlatform.DAL.Repos.User;
 
@@ -61,6 +62,46 @@ public class UserRepo : IUserRepo
             }
         }
     }
+
+    public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePassword)
+    {
+        using (SqlConnection connection = _db.GetConnection())
+        {
+            using (SqlCommand command = new("SP_User_UpdateUserPassword", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@OldPassword", changePassword.OldPassword);
+                command.Parameters.AddWithValue("@NewPassword", changePassword.NewPassword);
+                command.Parameters.AddWithValue("@UserID", userId);
+
+                // output 
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(IsSuccess);
+
+                try
+                {
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+
+                    return (bool)IsSuccess.Value;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+                finally
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+    }
+
+
+
 
     public async Task<bool> DoesUserExistByUsername(string Username)
     {

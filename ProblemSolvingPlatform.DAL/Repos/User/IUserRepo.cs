@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
+﻿using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
+using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,4 +13,6 @@ public interface IUserRepo
     public Task<int?> AddUser(UserDTO user);
     public Task<UserDTO> GetUserByUsernameAndPassword(string Username, string Password);
     public Task<bool> DoesUserExistByUsername(string Username);
+
+    public Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePassword);
 }

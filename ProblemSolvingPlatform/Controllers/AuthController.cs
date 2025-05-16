@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.Services.Auth;
+using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
+using System.Security.Claims;
 
 namespace ProblemSolvingPlatform.Controllers;
 
@@ -33,4 +36,20 @@ public class AuthController : ControllerBase
         else
             return StatusCode(result.statusCode, new { result.message });
     }
+
+
+    [Authorize]
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
+    {
+        var ClaimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(ClaimUserId, out int userId))
+            return Unauthorized("Invalid Token");
+
+        var isChanged = await _authService.ChangePasswordAsync(userId, changePasswordDTO);
+        if (isChanged)
+            return Ok("Password updated successfully");
+        return BadRequest("Invalid :)");
+    }
+
 }
