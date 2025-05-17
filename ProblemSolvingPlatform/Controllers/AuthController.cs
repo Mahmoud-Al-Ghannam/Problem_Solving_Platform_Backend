@@ -28,13 +28,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequestDTO registerDTO)
+    public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequestDTO registerDTO)
     {
         var result = await _authService.RegisterAsync(registerDTO);
-        if (result.IsSuccess)
-            return StatusCode(result.statusCode, new { result.message });
+        if (result.Success)
+            return StatusCode(result.StatusCode, new { message = result.Message, token = result.Token });
         else
-            return StatusCode(result.statusCode, new { result.message });
+            return StatusCode(result.StatusCode, new { result.Message });
     }
 
 
@@ -48,8 +48,8 @@ public class AuthController : ControllerBase
 
         var isChanged = await _authService.ChangePasswordAsync(userId, changePasswordDTO);
         if (isChanged)
-            return Ok("Password updated successfully");
-        return BadRequest("Invalid :)");
+            return Ok(new { message = "Password updated successfully" });
+        return BadRequest(new { message = "Invalid current password or request .. Please try again :)" });
     }
 
 }

@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Auth\General\" />
-    <Folder Include="DTOs\UserProfile\General\" />
-    <Folder Include="DTOs\UserProfile\Response\" />
-    <Folder Include="DTOs\UserProfile\Request\" />
     <Folder Include="Images\" />
     <Folder Include="Images\" />
   </ItemGroup>

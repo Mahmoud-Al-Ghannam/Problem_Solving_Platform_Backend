@@ -1,7 +1,9 @@
 
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ProblemSolvingPlatform.BLL.Services.Auth;
 using ProblemSolvingPlatform.BLL.Services.JWT;
+using ProblemSolvingPlatform.BLL.Services.User;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Repos.User;
 using System.Text;
@@ -23,6 +25,9 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<IUserRepo, UserRepo>();
             builder.Services.AddScoped<TokenService, TokenService>();
             builder.Services.AddScoped<DbContext, DbContext>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
@@ -39,16 +44,57 @@ namespace ProblemSolvingPlatform
                 };
             });
 
+            #region authSwagger
+            builder.Services.AddSwaggerGen(options =>
+            {
+                // Add JWT Bearer token support in Swagger UI
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your valid token in the text input below.\n\nExample: `Bearer eyJhbGciOi...`"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                         Type = ReferenceType.SecurityScheme,
+                         Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                    }
+                });
+            });
+            #endregion
+
+            
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             builder.Services.AddAuthorization();
 
 
             var app = builder.Build();
 
-
+            app.UseCors("AllowAll");
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            
 
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

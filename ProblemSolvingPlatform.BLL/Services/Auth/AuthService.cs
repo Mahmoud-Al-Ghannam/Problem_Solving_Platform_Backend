@@ -2,13 +2,7 @@
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
-using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
 using ProblemSolvingPlatform.DAL.Repos.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.Services.Auth;
 
@@ -23,12 +17,13 @@ public class AuthService : IAuthService
     }
 
 
-    public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginDTO)
+
+    public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO loginDTO)
     {
         var user = await _userRepo.GetUserByUsernameAndPassword(loginDTO.Username, loginDTO.Password);
         if (user == null)
         {
-            return new LoginResponseDTO()
+            return new AuthResponseDTO()
             {
                 Success = false,
                 StatusCode = 401,
@@ -37,46 +32,47 @@ public class AuthService : IAuthService
         }
 
         // make a token and return the response
-        return new LoginResponseDTO()
+        return new AuthResponseDTO()
         {
             Success = true,
             StatusCode = 200,
-            Message = "Success",
+            Message = "Login successful :)",
             Token = _tokenService.GenerateToken(user)
         };
     }
 
-    public async Task<RegisterResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO)
+    public async Task<AuthResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO)
     {
         if (await _userRepo.DoesUserExistByUsername(registerDTO.Username))
-            return new RegisterResponseDTO() { IsSuccess = false, statusCode = 400, message = "Username is already exist" };
+            return new AuthResponseDTO() { Success = false, StatusCode = 400, Message = "Username is already exist" };
 
-        UserDTO user = new()
+        
+        string? imagePath = await FileService.SaveImageAndGetURL(registerDTO.ProfileImage);
+
+        ProblemSolvingPlatform.DAL.Models.User user = new()
         {
             Username = registerDTO.Username,
             Password = registerDTO.Password,
-            ImagePath = "KOKO"
+            ImagePath = imagePath
         };
-        var res = await _userRepo.AddUser(user);
-        if (!res.HasValue)
-            return new RegisterResponseDTO()
-            {
-                IsSuccess = false,
-                statusCode = 500,
-                message = "Invalid, try again :)"
-            };
+        var userId = await _userRepo.AddUser(user);
+        if (!userId.HasValue)
+            return new AuthResponseDTO() { Success = false, StatusCode = 500, Message = "Invalid, try again :)" };
 
-        return new RegisterResponseDTO()
+        
+        user.UserId = userId.Value;
+        return new AuthResponseDTO()
         {
-            IsSuccess = true,
-            statusCode = 200,
-            message = "User Registered Successfully"
+            Success = true,
+            StatusCode = 200,
+            Message = "User Registered Successfully",
+            Token = _tokenService.GenerateToken(user)
         };
 
     }
 
     public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePasswordDTO)
-                               => await _userRepo.ChangePasswordAsync(userId, changePasswordDTO);
+                               => await _userRepo.ChangePasswordAsync(userId, changePasswordDTO.OldPassword, changePasswordDTO.NewPassword);
     
 
 }

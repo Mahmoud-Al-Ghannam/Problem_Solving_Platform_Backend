@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.Services.JWT;
 
@@ -20,7 +15,7 @@ public class TokenService
         _config = config;
     }
 
-    public string GenerateToken(UserDTO user)
+    public string GenerateToken(ProblemSolvingPlatform.DAL.Models.User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

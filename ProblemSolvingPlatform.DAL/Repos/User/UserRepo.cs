@@ -1,13 +1,7 @@
 ﻿using ProblemSolvingPlatform.DAL.Context;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ProblemSolvingPlatform.DAL.DTOs.UserProfile;
-using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
+using ProblemSolvingPlatform.DAL.Models;
 
 namespace ProblemSolvingPlatform.DAL.Repos.User;
 
@@ -20,7 +14,7 @@ public class UserRepo : IUserRepo
         _db = dbContext;
     }
 
-    public async Task<int?> AddUser(UserDTO user)
+    public async Task<int?> AddUser(ProblemSolvingPlatform.DAL.Models.User user)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -29,7 +23,7 @@ public class UserRepo : IUserRepo
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@ImagePath", "C:/KOKO");
+                cmd.Parameters.AddWithValue("@ImagePath", string.IsNullOrWhiteSpace(user.ImagePath) ? (object)DBNull.Value : user.ImagePath);
                 cmd.Parameters.AddWithValue("@Username", user.Username);
                 cmd.Parameters.AddWithValue("@Password", user.Password);
 
@@ -45,7 +39,7 @@ public class UserRepo : IUserRepo
                 };
                 cmd.Parameters.Add(IsSuccess);
 
-
+                
                 try
                 {
                     await connection.OpenAsync();
@@ -63,15 +57,15 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePassword)
+    public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
             using (SqlCommand command = new("SP_User_UpdateUserPassword", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@OldPassword", changePassword.OldPassword);
-                command.Parameters.AddWithValue("@NewPassword", changePassword.NewPassword);
+                command.Parameters.AddWithValue("@OldPassword", oldPassword);
+                command.Parameters.AddWithValue("@NewPassword", newPassword);
                 command.Parameters.AddWithValue("@UserID", userId);
 
                 // output 
@@ -100,9 +94,6 @@ public class UserRepo : IUserRepo
         }
     }
 
-
-
-
     public async Task<bool> DoesUserExistByUsername(string Username)
     {
         using (SqlConnection connection = _db.GetConnection())
@@ -128,7 +119,90 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<UserDTO> GetUserByUsernameAndPassword(string Username, string Password)
+    public async Task<List<Models.User>> GetAllUsersByFiltersAsync(int page, int limit, string username)
+    {
+        var usersLST = new List<Models.User>(); 
+
+        using (SqlConnection connection = _db.GetConnection())
+        {
+            using (SqlCommand cmd = new("SP_User_GetAllUsers", connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@Page", page);
+                cmd.Parameters.AddWithValue("@Limit", limit);
+                cmd.Parameters.AddWithValue("@Username", string.IsNullOrWhiteSpace(username) ? (object)DBNull.Value : username);
+
+                try
+                {
+                    await connection.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            ProblemSolvingPlatform.DAL.Models.User userInfo = new()
+                            {
+                                UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
+                                Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
+                                ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
+                                Role = reader["Role"] != DBNull.Value ? Convert.ToByte(reader["Role"]) : (byte)0,
+                                CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
+                            };
+                            usersLST.Add(userInfo);
+                        }
+                    }
+                    return usersLST;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+
+    }
+
+    public async Task<ProblemSolvingPlatform.DAL.Models.User> GetUserByIdAsync(int userId)
+    {
+        using (SqlConnection connection = _db.GetConnection())
+        {
+            using (SqlCommand command = new("SP_User_GetUserByID", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@UserID", userId);
+
+                try
+                {
+                    await connection.OpenAsync();
+                    var reader = await command.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        ProblemSolvingPlatform.DAL.Models.User userInfo = new()
+                        {
+                            UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
+                            Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
+                            ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
+                            Role = reader["Role"] != DBNull.Value ? Convert.ToByte(reader["Role"]) : (byte)0,
+                            CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
+                        };
+
+                        return userInfo;
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+                finally
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+    }
+
+    public async Task<ProblemSolvingPlatform.DAL.Models.User> GetUserByUsernameAndPassword(string Username, string Password)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -146,13 +220,13 @@ public class UserRepo : IUserRepo
                     var reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        UserDTO user = new UserDTO()
+                        ProblemSolvingPlatform.DAL.Models.User user = new ProblemSolvingPlatform.DAL.Models.User()
                         {
-                            Username = (string)(reader["Username"] != DBNull.Value ? reader["Username"] : DBNull.Value),
-                            UserId = (int)(reader["UserID"] != DBNull.Value ? reader["UserID"] : DBNull.Value),
-                            ImagePath = "JOJO",
-                            role = (byte)(reader["Role"] != DBNull.Value ? reader["Role"] : DBNull.Value),
-                            CreatedAt = (DateTime)(reader["CreatedAt"] != DBNull.Value ? reader["CreatedAt"] : DBNull.Value)
+                            UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
+                            Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
+                            ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
+                            Role = reader["Role"] != DBNull.Value ? Convert.ToByte(reader["Role"]) : (byte)0,
+                            CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
                         };
                         return user;
                     }
@@ -166,5 +240,39 @@ public class UserRepo : IUserRepo
         }
     }
 
+    public async Task<bool> UpdateUserInfoByIdAsync(int userId, string ImagePath)
+    {
+        
+        using (SqlConnection connection = _db.GetConnection())
+        {
 
+            using (SqlCommand cmd = new("SP_User_UpdateUser", connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@UserID", userId);
+                cmd.Parameters.AddWithValue("@ImagePath", ImagePath);
+
+                // output 
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(IsSuccess);
+                try
+                {
+                    await connection.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    return (bool)IsSuccess.Value;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+
+    
 }

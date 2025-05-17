@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 
-public class LoginResponseDTO
+public class AuthResponseDTO
 {
     public bool Success { get; set; }
     public int StatusCode { get; set; }
