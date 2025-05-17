@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
         if (result.Success)
             return StatusCode(result.StatusCode, new { message = result.Message, token = result.Token });
         else
-            return StatusCode(result.StatusCode, new { result.Message });
+            return StatusCode(result.StatusCode, new { message = result.Message });
     }
 
 
