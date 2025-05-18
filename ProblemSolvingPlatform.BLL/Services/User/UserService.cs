@@ -31,6 +31,7 @@ public class UserService : IUserService
 
         return new UserInfo()
         {
+            UserId = user.UserId,
             Username = user.Username,
             CreatedAt = user.CreatedAt,
             role = user.Role,
@@ -72,6 +73,7 @@ public class UserService : IUserService
 
         var usersInfoLST = users.Select(x => new UserInfo()
         {
+            UserId = x.UserId,
             Username = x.Username,
             CreatedAt = x.CreatedAt,
             ImagePath = x.ImagePath != null ? $"{baseUrl}/Images/{x.ImagePath}" : null,
