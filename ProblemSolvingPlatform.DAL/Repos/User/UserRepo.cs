@@ -1,7 +1,6 @@
 ﻿using ProblemSolvingPlatform.DAL.Context;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using ProblemSolvingPlatform.DAL.Models;
 
 namespace ProblemSolvingPlatform.DAL.Repos.User;
 
@@ -14,7 +13,7 @@ public class UserRepo : IUserRepo
         _db = dbContext;
     }
 
-    public async Task<int?> AddUser(ProblemSolvingPlatform.DAL.Models.User user)
+    public async Task<int?> AddUser(Models.User.User user)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -119,9 +118,9 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<List<Models.User>> GetAllUsersByFiltersAsync(int page, int limit, string username)
+    public async Task<List<Models.User.User>> GetAllUsersByFiltersAsync(int page, int limit, string username)
     {
-        var usersLST = new List<Models.User>(); 
+        var usersLST = new List<Models.User.User>(); 
 
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -140,7 +139,7 @@ public class UserRepo : IUserRepo
                     {
                         while (await reader.ReadAsync())
                         {
-                            ProblemSolvingPlatform.DAL.Models.User userInfo = new()
+                            Models.User.User userInfo = new()
                             {
                                 UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
                                 Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
@@ -162,7 +161,7 @@ public class UserRepo : IUserRepo
 
     }
 
-    public async Task<ProblemSolvingPlatform.DAL.Models.User> GetUserByIdAsync(int userId)
+    public async Task<Models.User.User> GetUserByIdAsync(int userId)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -177,7 +176,7 @@ public class UserRepo : IUserRepo
                     var reader = await command.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        ProblemSolvingPlatform.DAL.Models.User userInfo = new()
+                        Models.User.User userInfo = new()
                         {
                             UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
                             Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
@@ -202,7 +201,7 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<ProblemSolvingPlatform.DAL.Models.User> GetUserByUsernameAndPassword(string Username, string Password)
+    public async Task<Models.User.User> GetUserByUsernameAndPassword(string Username, string Password)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -220,7 +219,7 @@ public class UserRepo : IUserRepo
                     var reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        ProblemSolvingPlatform.DAL.Models.User user = new ProblemSolvingPlatform.DAL.Models.User()
+                        Models.User.User user = new Models.User.User()
                         {
                             UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
                             Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
