@@ -6,7 +6,7 @@ using ProblemSolvingPlatform.BLL.Services.User;
 namespace ProblemSolvingPlatform.Controllers {
 
     [ApiController]
-    [Route("api/compiler")]
+    [Route("api/compilers")]
     public class CompilerController : Controller {
 
         private ICompilerService _compilerService { get; }
@@ -21,6 +21,16 @@ namespace ProblemSolvingPlatform.Controllers {
             }
             catch (Exception ex) { 
                 return StatusCode(StatusCodes.Status500InternalServerError,new {error=ex.Message});
+            }
+        }
+
+        [HttpGet("")]
+        public ActionResult<IEnumerable<CompilerDTO>> GetAllCompilers() {
+            try {
+                return _compilerService.GetAllCompilers();
+            }
+            catch (Exception ex) {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
             }
         }
     }

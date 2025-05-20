@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.API.Compiler.Services {
     public interface ICompilerApiService {
-        public Task<List<CompileResponseDTO>> CompileAsync (CompileRequestDTO request); 
+        public Task<List<CompileResponseDTO>> CompileAsync (CompileRequestDTO request);
+        public List<CompilerDTO> GetAllCompilers();
     }
 }

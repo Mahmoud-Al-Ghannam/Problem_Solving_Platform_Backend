@@ -8,16 +8,45 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.API.Compiler.Services {
-    public class CompilerApiService : BaseApiService,ICompilerApiService {
+    public class CompilerApiService : BaseApiService, ICompilerApiService {
 
         public static string BaseAddress = "https://godbolt.org";
-        
-        public CompilerApiService() : base(new HttpClient() { BaseAddress = new Uri(CompilerApiService.BaseAddress)}) {
-            
+
+        public CompilerApiService() : base(new HttpClient() { BaseAddress = new Uri(CompilerApiService.BaseAddress) }) {
+
         }
 
-        static readonly List<string> CompilerIDs = new List<string>() {
-            "clang900"
+        static readonly List<CompilerDTO> Compilers = new List<CompilerDTO>() {
+            new CompilerDTO() {
+                Language = "c++",
+                CompilerName = "clang1810",
+                Name = "x86-64 clang 18.1.0"
+            },
+            new CompilerDTO() {
+                Language = "c++",
+                CompilerName = "g132",
+                Name = "x86-64 gcc 13.2"
+            },
+            new CompilerDTO() {
+                Language = "c",
+                CompilerName = "cclang1810",
+                Name = "x86-64 clang 18.1.0"
+            },
+            new CompilerDTO() {
+                Language = "c",
+                CompilerName = "cg132",
+                Name = "x86-64 gcc 13.2"
+            },
+            new CompilerDTO() {
+                Language = "python",
+                CompilerName = "python312",
+                Name = "Python 3.12"
+            },
+             new CompilerDTO() {
+                Language = "java",
+                CompilerName = "java2102",
+                Name = "jdk 21.0.2"
+            },
         };
 
         public static class Endpoints {
@@ -58,7 +87,7 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                     int i2 = responseJson.IndexOf(s2);
                     compileResponse.standardError = i2 == -1 ? null : responseJson.Substring(i2 + s2.Length);
                 }
-                catch (Exception ex) { 
+                catch (Exception ex) {
                     compileResponse.standardOut = null;
                     compileResponse.standardError = ex.ToString();
                 }
@@ -68,6 +97,8 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
             return endResponses;
         }
 
-
-    }   
+        public List<CompilerDTO> GetAllCompilers() {
+            return Compilers;
+        }
+    }
 }

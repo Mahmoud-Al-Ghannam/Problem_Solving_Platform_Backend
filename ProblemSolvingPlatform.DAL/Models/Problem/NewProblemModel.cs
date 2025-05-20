@@ -8,7 +8,7 @@ using static ProblemSolvingPlatform.DAL.Models.Enums;
 
 namespace ProblemSolvingPlatform.DAL.Models.Problem {
     public class NewProblemModel {
-        public string CompilerID {  get; set; }
+        public string CompilerName {  get; set; }
         public int CreatedBy {  get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }

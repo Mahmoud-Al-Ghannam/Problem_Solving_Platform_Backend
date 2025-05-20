@@ -32,7 +32,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problem {
             CompileRequestDTO compileRequestDTO = new CompileRequestDTO() {
                 inputs = newProblem.TestCases.Select(tc =>  tc.Input).ToList(),
                 source = newProblem.SolutionCode,
-                compiler = newProblem.CompilerID
+                compiler = newProblem.CompilerName
             };
 
 
@@ -51,7 +51,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problem {
 
             // Convert NewProblemDTO to NewProblemModel
             NewProblemModel model = new NewProblemModel() {
-                CompilerID = newProblem.CompilerID,
+                CompilerName = newProblem.CompilerName,
                 CreatedBy = newProblem.CreatedBy,
                 Title = newProblem.Title,
                 GeneralDescription = newProblem.GeneralDescription,

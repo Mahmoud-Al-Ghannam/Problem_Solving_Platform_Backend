@@ -20,7 +20,7 @@ namespace ProblemSolvingPlatform.Controllers
         [HttpGet("test")]
         public async Task<ActionResult<int?>> TestAsync() {
             NewProblemModel problem = new NewProblemModel() {
-                CompilerID = "cc",
+                CompilerName = "cc",
                 CreatedBy = 1,
                 Title = "Test",
                 GeneralDescription = "gdTest",

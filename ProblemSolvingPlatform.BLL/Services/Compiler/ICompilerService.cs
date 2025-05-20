@@ -8,5 +8,6 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.BLL.Services.Compiler {
     public interface ICompilerService {
         public Task<List<CompileResponseDTO>> CompileAsync(CompileRequestDTO request);
+        public List<CompilerDTO> GetAllCompilers();
     }
 }

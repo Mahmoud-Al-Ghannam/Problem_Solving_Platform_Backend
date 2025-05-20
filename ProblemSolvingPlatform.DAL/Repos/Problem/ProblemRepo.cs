@@ -32,7 +32,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problem {
                 using (SqlCommand cmd = new("SP_Problem_AddNewProblem", connection, transaction)) {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@CompilerID", newProblem.CompilerID);
+                    cmd.Parameters.AddWithValue("@CompilerName", newProblem.CompilerName);
                     cmd.Parameters.AddWithValue("@CreatedBy", newProblem.CreatedBy);
                     cmd.Parameters.AddWithValue("@Title", newProblem.Title);
                     cmd.Parameters.AddWithValue("@GeneralDescription", newProblem.GeneralDescription);

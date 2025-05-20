@@ -12,7 +12,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problem {
     public class NewProblemDTO {
         [Required]
         [MinLengthAfterTrim(1)]
-        public string CompilerID { get; set; }
+        public string CompilerName { get; set; }
 
         [Required]
         [Range(1,int.MaxValue)]
