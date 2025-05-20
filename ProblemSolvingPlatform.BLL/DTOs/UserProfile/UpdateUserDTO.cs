@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
 
-public class UpdateUserInfo
-{
-    public IFormFile? profileImage {  get; set; }
+    public class UpdateUserDTO {
+        public IFormFile? profileImage { get; set; }
+    }
 }

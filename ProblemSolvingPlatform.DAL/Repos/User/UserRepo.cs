@@ -13,7 +13,7 @@ public class UserRepo : IUserRepo
         _db = dbContext;
     }
 
-    public async Task<int?> AddUser(Models.User.User user)
+    public async Task<int?> AddUserAsync(Models.User.User user)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -93,7 +93,7 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<bool> DoesUserExistByUsername(string Username)
+    public async Task<bool> DoesUserExistByUsernameAsync(string Username)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -201,7 +201,7 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<Models.User.User> GetUserByUsernameAndPassword(string Username, string Password)
+    public async Task<Models.User.User> GetUserByUsernameAndPasswordAsync(string Username, string Password)
     {
         using (SqlConnection connection = _db.GetConnection())
         {

@@ -20,7 +20,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO loginDTO)
     {
-        var user = await _userRepo.GetUserByUsernameAndPassword(loginDTO.Username, loginDTO.Password);
+        var user = await _userRepo.GetUserByUsernameAndPasswordAsync(loginDTO.Username, loginDTO.Password);
         if (user == null)
         {
             return new AuthResponseDTO()
@@ -43,19 +43,19 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO)
     {
-        if (await _userRepo.DoesUserExistByUsername(registerDTO.Username))
+        if (await _userRepo.DoesUserExistByUsernameAsync(registerDTO.Username))
             return new AuthResponseDTO() { Success = false, StatusCode = 400, Message = "Username is already exist" };
 
         
         string? imagePath = await FileService.SaveImageAndGetURL(registerDTO.ProfileImage);
 
-        ProblemSolvingPlatform.DAL.Models.User user = new()
+        DAL.Models.User.User user = new()
         {
             Username = registerDTO.Username,
             Password = registerDTO.Password,
             ImagePath = imagePath
         };
-        var userId = await _userRepo.AddUser(user);
+        var userId = await _userRepo.AddUserAsync(user);
         if (!userId.HasValue)
             return new AuthResponseDTO() { Success = false, StatusCode = 500, Message = "Invalid, try again :)" };
 

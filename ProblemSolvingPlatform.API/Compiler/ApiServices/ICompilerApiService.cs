@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.API.Compiler.Services {
-    public interface ICompilerService {
-        public Task<CompileResponseDTO> CompileAsync (CompileRequestDTO request); 
+    public interface ICompilerApiService {
+        public Task<List<CompileResponseDTO>> CompileAsync (CompileRequestDTO request); 
     }
 }

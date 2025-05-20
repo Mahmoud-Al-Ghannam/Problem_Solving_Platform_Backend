@@ -8,8 +8,8 @@ using static ProblemSolvingPlatform.API.Compiler.Services.CompilerApiService;
 namespace ProblemSolvingPlatform.API.Compiler.DTOs {
     public class CompileRequestDTO {
         public string source {  get; set; }
-        public string? input {  get; set; }
-        public enCompilers compiler { get; set; }
+        public List<string>? inputs {  get; set; }
+        public string compiler { get; set; }
         public CompileRequestDTO() { }
     }
 }

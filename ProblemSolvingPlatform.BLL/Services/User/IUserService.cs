@@ -10,8 +10,8 @@ namespace ProblemSolvingPlatform.BLL.Services.User;
 
 public interface IUserService
 {
-    public Task<UserInfo?> GetUserByIdAsync(int userId);
-    public Task<List<UserInfo>> GetAllUsersWithFiltersAsync(int page, int limit, string? username);
+    public Task<UserDTO?> GetUserByIdAsync(int userId);
+    public Task<List<UserDTO>> GetAllUsersWithFiltersAsync(int page, int limit, string? username);
 
-    public Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserInfo updateUser);
+    public Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser);
 }

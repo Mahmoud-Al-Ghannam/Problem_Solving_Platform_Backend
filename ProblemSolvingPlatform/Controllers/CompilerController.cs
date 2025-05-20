@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.API.Compiler.DTOs;
-using ProblemSolvingPlatform.API.Compiler.Services;
+using ProblemSolvingPlatform.BLL.Services.Compiler;
+using ProblemSolvingPlatform.BLL.Services.User;
 
 namespace ProblemSolvingPlatform.Controllers {
 
@@ -8,11 +9,15 @@ namespace ProblemSolvingPlatform.Controllers {
     [Route("api/compiler")]
     public class CompilerController : Controller {
 
+        private ICompilerService _compilerService { get; }
+        public CompilerController(ICompilerService compilerService) {
+            _compilerService = compilerService;
+        }
+
         [HttpPost("compile")]
-        public async Task<ActionResult<CompileResponseDTO>> CompileAsync(CompileRequestDTO request) {
+        public async Task<ActionResult<IEnumerable<CompileResponseDTO>>> CompileAsync(CompileRequestDTO request) {
             try {
-                var compiler = new CompilerApiService(new HttpClient() { BaseAddress = new Uri(CompilerApiService.BaseAddress) });
-                return await compiler.CompileAsync(request);
+                return await _compilerService.CompileAsync(request);
             }
             catch (Exception ex) { 
                 return StatusCode(StatusCodes.Status500InternalServerError,new {error=ex.Message});

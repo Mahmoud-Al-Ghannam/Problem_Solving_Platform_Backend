@@ -17,7 +17,7 @@ public class UserService : IUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<UserInfo?> GetUserByIdAsync(int userId)
+    public async Task<UserDTO?> GetUserByIdAsync(int userId)
     {
         var user = await _userRepo.GetUserByIdAsync(userId);
 
@@ -29,7 +29,7 @@ public class UserService : IUserService
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
 
 
-        return new UserInfo()
+        return new UserDTO()
         {
             Username = user.Username,
             CreatedAt = user.CreatedAt,
@@ -38,7 +38,7 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserInfo updateUser)
+    public async Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser)
     {
         if(updateUser == null) return false;
 
@@ -60,7 +60,7 @@ public class UserService : IUserService
         return await _userRepo.UpdateUserInfoByIdAsync(userId, newpath);
     }
 
-    public async Task<List<UserInfo>?> GetAllUsersWithFiltersAsync(int page, int limit, string? username)
+    public async Task<List<UserDTO>?> GetAllUsersWithFiltersAsync(int page, int limit, string? username)
     {
         var users = await _userRepo.GetAllUsersByFiltersAsync(page, limit, username);
         if (users == null)
@@ -70,7 +70,7 @@ public class UserService : IUserService
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
 
 
-        var usersInfoLST = users.Select(x => new UserInfo()
+        var usersInfoLST = users.Select(x => new UserDTO()
         {
             Username = x.Username,
             CreatedAt = x.CreatedAt,

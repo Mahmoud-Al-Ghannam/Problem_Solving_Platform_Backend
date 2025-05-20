@@ -29,7 +29,7 @@ public class ProfileController : ControllerBase
 
     [Authorize]
     [HttpPut("update-info")]
-    public async Task<IActionResult> UpdateUserInfo([FromForm] UpdateUserInfo updateUser)
+    public async Task<IActionResult> UpdateUserInfo([FromForm] UpdateUserDTO updateUser)
     {
         var ClaimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(ClaimUserId, out int userId))
