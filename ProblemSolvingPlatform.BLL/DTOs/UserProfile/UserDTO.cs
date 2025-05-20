@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
 
     public class UserDTO {
+        public int UserId { get; set; }
         public string Username { get; set; }
         public string? ImagePath { get; set; }
         public byte role { get; set; }
