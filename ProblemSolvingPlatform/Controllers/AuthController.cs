@@ -27,6 +27,8 @@ public class AuthController : ControllerBase
             return StatusCode(result.StatusCode, new { result.Message });
     }
 
+
+
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequestDTO registerDTO)
     {
@@ -36,6 +38,7 @@ public class AuthController : ControllerBase
         else
             return StatusCode(result.StatusCode, new { message = result.Message });
     }
+
 
 
     [Authorize]

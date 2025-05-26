@@ -8,5 +8,7 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.DAL.Repos.Problem {
     public interface IProblemRepo {
         public Task<int?> AddProblemAsync(NewProblemModel newProblem);
+
+        public Task<bool> ProblemExists(int problemId);
     }
 }

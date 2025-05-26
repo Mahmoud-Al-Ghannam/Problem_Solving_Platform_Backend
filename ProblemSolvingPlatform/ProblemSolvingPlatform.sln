@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProblemSolvingPlatform.DAL"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProblemSolvingPlatform.API", "..\ProblemSolvingPlatform.API\ProblemSolvingPlatform.API.csproj", "{584180BD-0056-4D48-B30A-B14A8563FE6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingConsoleApplication", "..\TestingConsoleApplication\TestingConsoleApplication.csproj", "{FB5DB506-A502-44E7-A9FB-4FB3DB3B1CE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestingConsoleApplication", "..\TestingConsoleApplication\TestingConsoleApplication.csproj", "{FB5DB506-A502-44E7-A9FB-4FB3DB3B1CE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

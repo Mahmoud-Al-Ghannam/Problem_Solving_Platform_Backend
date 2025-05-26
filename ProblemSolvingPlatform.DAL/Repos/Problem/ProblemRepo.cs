@@ -3,13 +3,7 @@ using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problem;
 using ProblemSolvingPlatform.DAL.Models.TestCase;
 using ProblemSolvingPlatform.DAL.Models.User;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Problem {
     public class ProblemRepo : IProblemRepo {
@@ -141,5 +135,39 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problem {
             await connection.CloseAsync();
             return ProblemID;
         }
+
+
+        public async Task<bool> ProblemExists(int problemId)
+        {
+            // run the code 
+            using (SqlConnection connection = _db.GetConnection())
+            {
+
+                using (SqlCommand cmd = new("SP_Problem_DoesProblemExistByID", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@ProblemID", problemId);
+
+
+
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        var res = await cmd.ExecuteScalarAsync();
+                        if(res == null || Convert.ToInt32(res) == 0) return false;
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    
+    
+    
     }
 }

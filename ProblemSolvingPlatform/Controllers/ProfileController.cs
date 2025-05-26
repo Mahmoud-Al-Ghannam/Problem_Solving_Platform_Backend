@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AuthHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client.Extensibility;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
@@ -31,11 +32,11 @@ public class ProfileController : ControllerBase
     [HttpPut("update-info")]
     public async Task<IActionResult> UpdateUserInfo([FromForm] UpdateUserDTO updateUser)
     {
-        var ClaimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(ClaimUserId, out int userId))
+        var userId = AuthUtils.GetUserId(User);
+        if(userId == null)
             return Unauthorized("Invalid Token");
 
-        var isUpdated = await _userService.UpdateUserInfoByIdAsync(userId, updateUser);
+        var isUpdated = await _userService.UpdateUserInfoByIdAsync(userId.Value, updateUser);
         if (isUpdated)
             return Ok(new { message = "user info updated successfully" } );
         else return BadRequest( new { message = "Failed to update user info :)" } );

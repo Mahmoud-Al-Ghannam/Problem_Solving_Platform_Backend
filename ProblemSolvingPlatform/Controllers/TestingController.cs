@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.Services.Auth;
+using ProblemSolvingPlatform.BLL.Services.Submissions.Handling_Submission;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problem;
 using ProblemSolvingPlatform.DAL.Models.TestCase;
@@ -13,9 +14,19 @@ namespace ProblemSolvingPlatform.Controllers
     public class TestingController : Controller
     {
         private readonly DbContext _db;
-        public TestingController(DbContext dbContext) {
+        private SubmissionHandler _submissionHandler { get; set; }
+        public TestingController(DbContext dbContext, SubmissionHandler submissionHandler) {
             _db = dbContext;
+            _submissionHandler = submissionHandler;
         }
+
+        [HttpGet("compiletest")]
+        public async Task<ActionResult> Compile()
+        {
+            var res = await _submissionHandler.ExecuteSubmission(1, "");
+            return Ok(res);
+        }
+
 
         [HttpGet("test")]
         public async Task<ActionResult<int?>> TestAsync() {

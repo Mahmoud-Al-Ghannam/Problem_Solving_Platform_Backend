@@ -1,11 +1,18 @@
-﻿using ProblemSolvingPlatform.API.Base;
+﻿using Newtonsoft.Json;
+using ProblemSolvingPlatform.API.Base;
 using ProblemSolvingPlatform.API.Compiler.DTOs;
+using ProblemSolvingPlatform.API.Compiler.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ProblemSolvingPlatform.API.Compiler.Services {
     public class CompilerApiService : BaseApiService, ICompilerApiService {
@@ -16,38 +23,6 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
 
         }
 
-        static readonly List<CompilerDTO> Compilers = new List<CompilerDTO>() {
-            new CompilerDTO() {
-                Language = "c++",
-                CompilerName = "clang1810",
-                Name = "x86-64 clang 18.1.0"
-            },
-            new CompilerDTO() {
-                Language = "c++",
-                CompilerName = "g132",
-                Name = "x86-64 gcc 13.2"
-            },
-            new CompilerDTO() {
-                Language = "c",
-                CompilerName = "cclang1810",
-                Name = "x86-64 clang 18.1.0"
-            },
-            new CompilerDTO() {
-                Language = "c",
-                CompilerName = "cg132",
-                Name = "x86-64 gcc 13.2"
-            },
-            new CompilerDTO() {
-                Language = "python",
-                CompilerName = "python312",
-                Name = "Python 3.12"
-            },
-             new CompilerDTO() {
-                Language = "java",
-                CompilerName = "java2102",
-                Name = "jdk 21.0.2"
-            },
-        };
 
         public static class Endpoints {
             public static string compile(string compilerID) {
@@ -98,7 +73,102 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
         }
 
         public List<CompilerDTO> GetAllCompilers() {
-            return Compilers;
+            return CompilerUtils.GetAllCompilers();
         }
+
+
+        public async Task<ExecuteResponseDTO> ExecuteCodeAsync(ExecuteRequestDTO request)
+        {
+            var baseUri = new Uri(BaseAddress);                                 
+            var endpoint = Endpoints.compile(request.Compiler); 
+            var fullUri = new Uri(baseUri, endpoint);
+
+            // body :)
+            var content = new
+            {
+                source = request.Source,
+                compiler = request.Compiler,
+                options = new
+                {
+                    userArguments = "-O3",
+                    executeParameters = new
+                    {
+                        args = new[] { "arg1", "arg2" },
+                        stdin = request.input,
+                        runtimeTools = new[] {
+                        new {
+                        name    = "env",
+                        options = new[] {
+                            new { name = "MYENV", value = "123" }
+                        }
+                    }
+                }
+                    },
+                    compilerOptions = new { executorRequest = true },
+                    filters = new { execute = true },
+                    tools = Array.Empty<object>(),
+                    libraries = new[] {
+                new { id = "openssl", version = "111c" }
+            }
+                },
+                lang = "c++",
+                allowStoreCodeDebug = true
+            };
+
+
+            try
+            {
+                // serialize 
+                var contentJSON = JsonSerializer.Serialize(content);
+                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, fullUri)
+                {
+                    Content = new StringContent(contentJSON, Encoding.UTF8, "application/json")
+                };
+                httpRequest.Headers.Accept.Clear();
+                httpRequest.Headers.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // sending 
+                using var httpClient = new HttpClient();
+                var httpResponse = await httpClient.SendAsync(httpRequest);
+                httpResponse.EnsureSuccessStatusCode();
+
+                var responseJson = await httpResponse.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(responseJson);
+                var root = doc.RootElement;
+
+                
+                var stdout = root.GetProperty("stdout")
+                                 .EnumerateArray()
+                                 .Select(e => e.GetProperty("text").GetString())
+                                 .Where(s => s != null);
+                var stderr = root.GetProperty("stderr")
+                                 .EnumerateArray()
+                                 .Select(e => e.GetProperty("text").GetString())
+                                 .Where(s => s != null);
+                var executionTimeInMS = root.GetProperty("execTime").GetDouble();
+
+                return new ExecuteResponseDTO
+                {
+                    StandardOut = string.Join('\n', stdout),
+                    StandardError = string.Join('\n', stderr),
+                    ExecutionTimeMs = executionTimeInMS,
+                    MemoryKB = 0,                           
+                    ExitCode = root.GetProperty("code").GetInt32()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ExecuteResponseDTO
+                {
+                    StandardOut = null,
+                    StandardError = $"Exception: {ex.Message}",
+                    ExecutionTimeMs = 0,
+                    MemoryKB = 0,
+                    ExitCode = -1
+                };
+            }
+        }
+    
     }
 }

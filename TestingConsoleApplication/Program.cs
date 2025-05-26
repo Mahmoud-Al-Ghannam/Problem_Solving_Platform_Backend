@@ -6,17 +6,22 @@ using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problem;
 using ProblemSolvingPlatform.DAL.Models.TestCase;
 using ProblemSolvingPlatform.DAL.Repos.Problem;
+using static ProblemSolvingPlatform.API.Compiler.Services.CompilerApiService;
 
 namespace TestingConsoleApplication {
     public class Program {
 
         private DbContext dbContext;
-        Program (DbContext dbContext) {
+        Program (DbContext dbContext)
+        {
             this.dbContext = dbContext;
         }
 
-        static void Main(string[] args) {
+        static void Main(string[] args)
+        {
 
+            return;
+        
             ///*
             //public string CompilerID {  get; set; }
             //public int CreatedBy {  get; set; }
@@ -55,6 +60,8 @@ namespace TestingConsoleApplication {
             //ProblemRepo repo = new ProblemRepo(dbContext);
             //int? id = repo.AddProblemAsync(problem).Result;
             //Console.WriteLine(id);
+
+          
         }
     }
 }
