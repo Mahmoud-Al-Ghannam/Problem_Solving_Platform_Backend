@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using ProblemSolvingPlatform.API.Base;
 using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.API.Compiler.Services;
@@ -19,6 +20,56 @@ namespace TestingConsoleApplication {
 
         static void Main(string[] args)
         {
+            dynamic stuff = JsonConvert.DeserializeObject("{ 'Name': ['Jon Smith'], 'Address': { 'City': 'New York', 'State': 'NY' }, 'Age': 42 }");
+
+
+            var name = stuff.Name;
+            string address = stuff.Address.City;
+
+            //CompilerApiService api = new CompilerApiService();
+            //var res = api.CompileAsync(new CompileRequestDTO() {
+            //    Source = @"
+            //#include<iostream>
+            //using namespace std;
+            //int main() {
+
+            //    int x;
+            //    cin >> x;
+            //    cout << x * x << endl;
+            //    return 0;
+            //}
+            //",
+            //    Compiler = "clang1810",
+            //    Inputs = ["10"]
+            //}).Result;
+
+
+            //Console.WriteLine(res[0].standardOut);
+            //Console.WriteLine(res[0].standardError);
+
+
+            //var res = api.ExecuteCodeAsync(new ExecuteRequestDTO() {
+            //    Source = @"
+            //#include<iostream>
+            //using namespace std;
+            //int main() {
+
+            //    int x;
+            //    cin >> x;
+            //    cout << x * x << endl;
+            //    return 0;
+            //}
+            //",
+            //    Compiler = "clang1810",
+            //    input = "10"
+            //}).Result;
+
+
+            //Console.WriteLine(res.StandardOut);
+            //Console.WriteLine(res.StandardError);
+            //Console.WriteLine(res.MemoryKB);
+            //Console.WriteLine(res.ExecutionTimeMs);
+            //Console.WriteLine(res.ExitCode);
 
             return;
         

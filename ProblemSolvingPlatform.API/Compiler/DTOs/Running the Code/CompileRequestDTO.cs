@@ -7,9 +7,9 @@ using static ProblemSolvingPlatform.API.Compiler.Services.CompilerApiService;
 
 namespace ProblemSolvingPlatform.API.Compiler.DTOs {
     public class CompileRequestDTO {
-        public string source {  get; set; }
-        public List<string>? inputs {  get; set; }
-        public string compiler { get; set; }
-        public CompileRequestDTO() { }
+        public string Source {  get; set; }
+        public List<string>? Inputs {  get; set; }
+        public string Compiler { get; set; }
+        public double TimeoutMs { get; set; } = 20000;
     }
 }

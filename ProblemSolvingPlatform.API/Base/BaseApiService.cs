@@ -11,50 +11,50 @@ namespace ProblemSolvingPlatform.API.Base {
             _apiRequestHandler = apiRequestHandler;
         }
 
-        public BaseApiService(HttpClient httpClient) {
-            _apiRequestHandler = new ApiRequestHandler(httpClient);
+        public BaseApiService() {
+            _apiRequestHandler = new ApiRequestHandler();
         }
 
-        public async Task<T?> GetAsync<T>(string endpoint) {
-            var response = await GetAsync(endpoint);
+        public async Task<T?> GetAsync<T>(string url) {
+            var response = await GetAsync(url);
             return await ApiResponseHandler.ParseResponse<T>(response);
         }
 
-        public async Task<HttpResponseMessage> GetAsync(string endpoint) {
-            var response = await _apiRequestHandler.GetAsync(endpoint);
+        public async Task<HttpResponseMessage> GetAsync(string url) {
+            var response = await _apiRequestHandler.GetAsync(url);
             await ApiResponseHandler.HandleResponse(response);
             return response;
         }
 
-        public async Task<T?> PostAsync<T>(string endpoint, object content) {
-            var response = await PostAsync(endpoint, content);
+        public async Task<T?> PostAsync<T>(string url, object content) {
+            var response = await PostAsync(url, content);
             return await ApiResponseHandler.ParseResponse<T>(response);
         }
 
-        public async Task<HttpResponseMessage> PostAsync (string endpoint, object content) {
-            var response = await _apiRequestHandler.PostAsync(endpoint, content);
+        public async Task<HttpResponseMessage> PostAsync (string url, object content) {
+            var response = await _apiRequestHandler.PostAsync(url, content);
             await ApiResponseHandler.HandleResponse(response);
             return response;
         }
 
-        public async Task<T?> PutAsync<T>(string endpoint, object content) {
-            var response = await PutAsync(endpoint, content);
+        public async Task<T?> PutAsync<T>(string url, object content) {
+            var response = await PutAsync(url, content);
             return await ApiResponseHandler.ParseResponse<T>(response);
         }
 
-        public async Task<HttpResponseMessage> PutAsync(string endpoint, object content) {
-            var response = await _apiRequestHandler.PutAsync(endpoint, content);
+        public async Task<HttpResponseMessage> PutAsync(string url, object content) {
+            var response = await _apiRequestHandler.PutAsync(url, content);
             await ApiResponseHandler.HandleResponse(response);
             return response;
         }
 
-        public async Task<T?> DeleteAsync<T>(string endpoint) {
-            var response = await DeleteAsync(endpoint);
+        public async Task<T?> DeleteAsync<T>(string url) {
+            var response = await DeleteAsync(url);
             return await ApiResponseHandler.ParseResponse<T>(response);
         }
 
-        public async Task<HttpResponseMessage> DeleteAsync(string endpoint) {
-            var response = await _apiRequestHandler.DeleteAsync(endpoint);
+        public async Task<HttpResponseMessage> DeleteAsync(string url) {
+            var response = await _apiRequestHandler.DeleteAsync(url);
             await ApiResponseHandler.HandleResponse(response);
             return response;
         }

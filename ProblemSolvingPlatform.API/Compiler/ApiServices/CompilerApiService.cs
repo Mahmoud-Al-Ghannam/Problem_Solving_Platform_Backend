@@ -12,33 +12,28 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ProblemSolvingPlatform.API.Compiler.Services {
     public class CompilerApiService : BaseApiService, ICompilerApiService {
 
-        public static string BaseAddress = "https://godbolt.org";
-
-        public CompilerApiService() : base(new HttpClient() { BaseAddress = new Uri(CompilerApiService.BaseAddress) }) {
-
-        }
-
-
         public static class Endpoints {
+            private static string _BaseAddress => "https://godbolt.org";
             public static string compile(string compilerID) {
-                return $"/api/compiler/{compilerID}/compile";
+                return $"{_BaseAddress}/api/compiler/{compilerID}/compile";
             }
         }
 
         public async Task<List<CompileResponseDTO>> CompileAsync(CompileRequestDTO request) {
             List<CompileResponseDTO> endResponses = new List<CompileResponseDTO>();
-            string endpoint = Endpoints.compile(request.compiler);
+            string url = Endpoints.compile(request.Compiler);
 
-            foreach (string input in request.inputs) {
+            foreach (string input in request.Inputs ?? []) {
                 CompileResponseDTO compileResponse = new CompileResponseDTO();
 
                 object content = new {
-                    source = request.source,
+                    source = request.Source,
                     options = new {
                         compilerOptions = new {
                             executorRequest = true
@@ -49,25 +44,21 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                     }
                 };
 
-                try {
-                    var response = await PostAsync(endpoint, content);
-                    string responseJson = await response.Content.ReadAsStringAsync();
+                var response = await PostAsync(url, content);
+                string responseJson = await response.Content.ReadAsStringAsync();
+                dynamic responseObject = JsonConvert.DeserializeObject(responseJson) ?? "";
+                compileResponse.Output = ((IEnumerable<dynamic>)responseObject.stdout).Select(obj => (string?)obj.text).Where(obj => obj != null).FirstOrDefault("");
+                compileResponse.CompilationErrors = ((IEnumerable<dynamic>)responseObject.buildResult.stderr).Select(obj => (string?)obj.text).Where(obj => obj != null).ToList()!;
+                compileResponse.ExecutionErrors = ((IEnumerable<dynamic>)responseObject.stderr).Select(obj => (string?)obj.text).Where(obj => obj != null).ToList()!;
+                compileResponse.ExecutionTimeMs = responseObject.execTime;
+                compileResponse.Timeout = compileResponse.ExecutionTimeMs == null ? false : compileResponse.ExecutionTimeMs > request.TimeoutMs;
+                compileResponse.ExecutionCode = responseObject.code;
+                compileResponse.CompilationCode = responseObject.buildResult.code;
 
-
-                    string s1 = "Standard out:";
-                    int i1 = responseJson.IndexOf(s1);
-                    compileResponse.standardOut = i1 == -1 ? null : responseJson.Substring(i1 + s1.Length);
-
-                    string s2 = "Standard error:";
-                    int i2 = responseJson.IndexOf(s2);
-                    compileResponse.standardError = i2 == -1 ? null : responseJson.Substring(i2 + s2.Length);
-                }
-                catch (Exception ex) {
-                    compileResponse.standardOut = null;
-                    compileResponse.standardError = ex.ToString();
-                }
 
                 endResponses.Add(compileResponse);
+
+                if (!compileResponse.CompilationSuccess) break;
             }
             return endResponses;
         }
@@ -77,51 +68,43 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
         }
 
 
-        public async Task<ExecuteResponseDTO> ExecuteCodeAsync(ExecuteRequestDTO request)
-        {
-            var baseUri = new Uri(BaseAddress);                                 
-            var endpoint = Endpoints.compile(request.Compiler); 
-            var fullUri = new Uri(baseUri, endpoint);
+        public async Task<ExecuteResponseDTO> ExecuteCodeAsync(ExecuteRequestDTO request) {
+            var fullUri = Endpoints.compile(request.Compiler);
 
             // body :)
-            var content = new
-            {
+            var content = new {
                 source = request.Source,
                 compiler = request.Compiler,
-                options = new
-                {
+                options = new {
                     userArguments = "-O3",
-                    executeParameters = new
-                    {
+                    executeParameters = new {
                         args = new[] { "arg1", "arg2" },
                         stdin = request.input,
                         runtimeTools = new[] {
-                        new {
-                        name    = "env",
-                        options = new[] {
-                            new { name = "MYENV", value = "123" }
+                            new {
+                                name    = "env",
+                                options = new[] {
+                                    new { name = "MYENV", value = "123" }
+                                }
+                            }
                         }
-                    }
-                }
                     },
                     compilerOptions = new { executorRequest = true },
                     filters = new { execute = true },
                     tools = Array.Empty<object>(),
                     libraries = new[] {
-                new { id = "openssl", version = "111c" }
-            }
+                        new { id = "openssl", version = "111c" }
+                    }
                 },
                 lang = "c++",
                 allowStoreCodeDebug = true
             };
 
 
-            try
-            {
+            try {
                 // serialize 
                 var contentJSON = JsonSerializer.Serialize(content);
-                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, fullUri)
-                {
+                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, fullUri) {
                     Content = new StringContent(contentJSON, Encoding.UTF8, "application/json")
                 };
                 httpRequest.Headers.Accept.Clear();
@@ -137,7 +120,7 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                 using var doc = JsonDocument.Parse(responseJson);
                 var root = doc.RootElement;
 
-                
+
                 var stdout = root.GetProperty("stdout")
                                  .EnumerateArray()
                                  .Select(e => e.GetProperty("text").GetString())
@@ -148,19 +131,16 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                                  .Where(s => s != null);
                 var executionTimeInMS = root.GetProperty("execTime").GetDouble();
 
-                return new ExecuteResponseDTO
-                {
+                return new ExecuteResponseDTO {
                     StandardOut = string.Join('\n', stdout),
                     StandardError = string.Join('\n', stderr),
                     ExecutionTimeMs = executionTimeInMS,
-                    MemoryKB = 0,                           
+                    MemoryKB = 0,
                     ExitCode = root.GetProperty("code").GetInt32()
                 };
             }
-            catch (Exception ex)
-            {
-                return new ExecuteResponseDTO
-                {
+            catch (Exception ex) {
+                return new ExecuteResponseDTO {
                     StandardOut = null,
                     StandardError = $"Exception: {ex.Message}",
                     ExecutionTimeMs = 0,
@@ -169,6 +149,6 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                 };
             }
         }
-    
+
     }
 }

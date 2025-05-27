@@ -18,8 +18,8 @@ namespace ProblemSolvingPlatform.BLL.Services.Compiler {
 
         public async Task<List<CompileResponseDTO>> CompileAsync(CompileRequestDTO request) {
             var compilers = GetAllCompilers();
-            if (!compilers.Any(c => c.CompilerName == request.compiler))
-                throw new CustomValidationException("compiler",[$"The compiler with name = {request.compiler} was not found."]);
+            if (!compilers.Any(c => c.CompilerName == request.Compiler))
+                throw new CustomValidationException("compiler",[$"The compiler with name = {request.Compiler} was not found."]);
 
             return await _compilerApiService.CompileAsync(request);
         }

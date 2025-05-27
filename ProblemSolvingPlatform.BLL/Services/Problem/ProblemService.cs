@@ -30,19 +30,30 @@ namespace ProblemSolvingPlatform.BLL.Services.Problem {
 
 
             CompileRequestDTO compileRequestDTO = new CompileRequestDTO() {
-                inputs = newProblem.TestCases.Select(tc =>  tc.Input).ToList(),
-                source = newProblem.SolutionCode,
-                compiler = newProblem.CompilerName
+                Inputs = newProblem.TestCases.Select(tc =>  tc.Input).ToList(),
+                Source = newProblem.SolutionCode,
+                Compiler = newProblem.CompilerName,
+                TimeoutMs = newProblem.TimeLimitMilliseconds
             };
 
 
             List<CompileResponseDTO> compileReponsesDTO = await _compilerService.CompileAsync(compileRequestDTO);
 
-            if (compileReponsesDTO.Any(res => res.standardError != null)) {
+            if (compileReponsesDTO.Any(res => !res.CompilationSuccess || 
+                                    !res.ExecutionSuccess || 
+                                    res.Timeout || 
+                                    string.IsNullOrEmpty(res.Output))
+                ) {
                 errors = new Dictionary<string, List<string>>();
                 for(int i=0;i<compileReponsesDTO.Count;i++) {
-                    if(compileReponsesDTO[i].standardError != null) {
-                        errors[$"TestCases[{i}]"] = [compileReponsesDTO[i].standardError];
+                    if(!compileReponsesDTO[i].CompilationSuccess) {
+                        errors[$"TestCases[{i}]"] = [string.Join("\n",compileReponsesDTO[i].CompilationErrors??[])];
+                    } else if (!compileReponsesDTO[i].ExecutionSuccess) {
+                        errors[$"TestCases[{i}]"] = [string.Join("\n", compileReponsesDTO[i].ExecutionErrors ?? [])];
+                    } else if (compileReponsesDTO[i].Timeout) {
+                        errors[$"TestCases[{i}]"] = [$"Timeout: The time limit of problem is {newProblem.TimeLimitMilliseconds} but this test case took {compileReponsesDTO[i].ExecutionTimeMs}ms"];
+                    } else if (string.IsNullOrEmpty(compileReponsesDTO[i].Output)) {
+                        errors[$"TestCases[{i}]"] = [$"The output of this test case is null or empty."];
                     }
                 }
 
@@ -64,7 +75,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problem {
                 TimeLimitMilliseconds = newProblem.TimeLimitMilliseconds,
                 TestCases = newProblem.TestCases.Select((t,i) => new DAL.Models.TestCase.NewTestCaseModel() {
                     Input = t.Input,
-                    Output = compileReponsesDTO[i].standardOut, 
+                    Output = compileReponsesDTO[i].Output??"", 
                     IsPublic = t.IsPublic,
                     IsSample = t.IsSample
                 }).ToList(),
