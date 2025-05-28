@@ -1,11 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
-using ProblemSolvingPlatform.DAL.Models.Problem;
-using ProblemSolvingPlatform.DAL.Models.TestCase;
-using ProblemSolvingPlatform.DAL.Models.User;
+using ProblemSolvingPlatform.DAL.Models.Problems;
+using ProblemSolvingPlatform.DAL.Models.TestCases;
+using ProblemSolvingPlatform.DAL.Models.Users;
 using System.Data;
 
-namespace ProblemSolvingPlatform.DAL.Repos.Problem {
+namespace ProblemSolvingPlatform.DAL.Repos.Problems {
     public class ProblemRepo : IProblemRepo {
 
         private readonly DbContext _db;
@@ -127,6 +127,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problem {
             }
             catch (Exception ex) {
                 ok = false;
+                ProblemID = null;
             }
 
             if (ok) transaction.Commit();
@@ -137,7 +138,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problem {
         }
 
 
-        public async Task<bool> ProblemExists(int problemId)
+        public async Task<bool> ProblemExistsAsync(int problemId)
         {
             // run the code 
             using (SqlConnection connection = _db.GetConnection())
@@ -148,9 +149,6 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problem {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@ProblemID", problemId);
-
-
-
 
                     try
                     {
@@ -166,8 +164,5 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problem {
                 }
             }
         }
-    
-    
-    
     }
 }

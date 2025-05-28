@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.DAL.Models.TestCase {
+namespace ProblemSolvingPlatform.DAL.Models.TestCases {
     public class NewTestCaseModel {
 		public string Input { get; set; }
 		public string Output { get; set; }

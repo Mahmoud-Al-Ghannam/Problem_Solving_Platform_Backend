@@ -2,7 +2,7 @@
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
-using ProblemSolvingPlatform.DAL.Repos.User;
+using ProblemSolvingPlatform.DAL.Repos.Users;
 
 namespace ProblemSolvingPlatform.BLL.Services.Auth;
 
@@ -49,7 +49,7 @@ public class AuthService : IAuthService
         
         string? imagePath = await FileService.SaveImageAndGetURL(registerDTO.ProfileImage);
 
-        DAL.Models.User.User user = new()
+        DAL.Models.Users.User user = new()
         {
             Username = registerDTO.Username,
             Password = registerDTO.Password,

@@ -1,4 +1,4 @@
-﻿using ProblemSolvingPlatform.BLL.DTOs.TestCase;
+﻿using ProblemSolvingPlatform.BLL.DTOs.TestCases;
 using ProblemSolvingPlatform.BLL.Validation.ValidationAttributes;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
-namespace ProblemSolvingPlatform.BLL.DTOs.Problem {
+namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
     public class NewProblemDTO {
         [Required]
         [MinLengthAfterTrim(1)]

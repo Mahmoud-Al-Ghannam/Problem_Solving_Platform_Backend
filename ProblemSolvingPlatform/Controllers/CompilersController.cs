@@ -7,10 +7,10 @@ namespace ProblemSolvingPlatform.Controllers {
 
     [ApiController]
     [Route("api/compilers")]
-    public class CompilerController : Controller {
+    public class CompilersController : Controller {
 
         private ICompilerService _compilerService { get; }
-        public CompilerController(ICompilerService compilerService) {
+        public CompilersController(ICompilerService compilerService) {
             _compilerService = compilerService;
         }
 

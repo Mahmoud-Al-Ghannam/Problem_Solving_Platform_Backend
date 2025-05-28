@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.DAL.Models.User {
+namespace ProblemSolvingPlatform.DAL.Models.Users {
 
     public class User {
         public int UserId { get; set; }

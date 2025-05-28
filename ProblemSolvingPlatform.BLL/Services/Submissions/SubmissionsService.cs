@@ -4,7 +4,7 @@ using ProblemSolvingPlatform.BLL.DTOs.Submissions;
 using ProblemSolvingPlatform.BLL.DTOs.Submissions.VisionScope;
 using ProblemSolvingPlatform.BLL.Services.Submissions.Handling_Submission;
 using ProblemSolvingPlatform.DAL.Models.Submissions;
-using ProblemSolvingPlatform.DAL.Repos.Problem;
+using ProblemSolvingPlatform.DAL.Repos.Problems;
 using ProblemSolvingPlatform.DAL.Repos.Submissions;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
@@ -12,10 +12,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Submissions;
 
 public class SubmissionsService : ISubmissionsService
 {
-    private ISubmissionsRepo _submissionsRepo { get; }
+    private ISubmissionRepo _submissionsRepo { get; }
     private IProblemRepo _problemRepo { get; }
     private SubmissionHandler _submissionHandler { get; }
-    public SubmissionsService(ISubmissionsRepo submissionsRepo, IProblemRepo problemRepo, SubmissionHandler submissionHandler)
+    public SubmissionsService(ISubmissionRepo submissionsRepo, IProblemRepo problemRepo, SubmissionHandler submissionHandler)
     {
         _submissionsRepo = submissionsRepo;
         _problemRepo = problemRepo;
@@ -26,7 +26,7 @@ public class SubmissionsService : ISubmissionsService
     public async Task<SubmitResponseDTO> Submit(SubmitDTO submitDTO, int userId)
     {
         // if prolem not exist => return bad request, problem not exist 
-        if (!await _problemRepo.ProblemExists(submitDTO.ProblemId))
+        if (!await _problemRepo.ProblemExistsAsync(submitDTO.ProblemId))
             return new SubmitResponseDTO()
             {
                 isSuccess = false,

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
-using ProblemSolvingPlatform.DAL.Repos.User;
+using ProblemSolvingPlatform.DAL.Repos.Users;
 using System.Collections.Immutable;
 using static System.Net.Mime.MediaTypeNames;
 

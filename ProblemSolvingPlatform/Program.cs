@@ -8,11 +8,14 @@ using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.BLL.Services.Problem;
 using ProblemSolvingPlatform.BLL.Services.Submissions;
 using ProblemSolvingPlatform.BLL.Services.Submissions.Handling_Submission;
+using ProblemSolvingPlatform.BLL.Services.Tag;
 using ProblemSolvingPlatform.BLL.Services.User;
 using ProblemSolvingPlatform.DAL.Context;
-using ProblemSolvingPlatform.DAL.Repos.Problem;
+using ProblemSolvingPlatform.DAL.Repos.Problems;
 using ProblemSolvingPlatform.DAL.Repos.Submissions;
-using ProblemSolvingPlatform.DAL.Repos.User;
+using ProblemSolvingPlatform.DAL.Repos.Tags;
+using ProblemSolvingPlatform.DAL.Repos.Users;
+using ProblemSolvingPlatform.Middlewares;
 using System.Text;
 
 namespace ProblemSolvingPlatform
@@ -31,6 +34,8 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserRepo, UserRepo>();
             builder.Services.AddScoped<IProblemRepo, ProblemRepo>();
+            builder.Services.AddScoped<ITagRepo, TagRepo>();
+            builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<IProblemService, ProblemService>();
             builder.Services.AddScoped<TokenService, TokenService>();
             builder.Services.AddScoped<DbContext, DbContext>();
@@ -38,7 +43,7 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<ICompilerApiService,CompilerApiService>();
             builder.Services.AddScoped<ICompilerService,CompilerService>();
             builder.Services.AddScoped<ISubmissionsService, SubmissionsService>();
-            builder.Services.AddScoped<ISubmissionsRepo, SubmissionRepo>();
+            builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
             builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>(); 
 
 
@@ -109,14 +114,15 @@ namespace ProblemSolvingPlatform
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
+            app.UseMiddleware<ExceptionMiddleware>();
+
             app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
+
 
             app.Run();
         }

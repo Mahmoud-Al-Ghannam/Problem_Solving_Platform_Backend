@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
-public interface ISubmissionsRepo
+public interface ISubmissionRepo
 {
-     public Task<int?> AddGeneralProblemSubmission(int problemId, Submission submission);
+     public Task<int?> AddGeneralProblemSubmission(int problemId, Models.Submissions.Submission submission);
     // AddSubmission(groupId, submission, problemGroupId)
 
     public Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId);

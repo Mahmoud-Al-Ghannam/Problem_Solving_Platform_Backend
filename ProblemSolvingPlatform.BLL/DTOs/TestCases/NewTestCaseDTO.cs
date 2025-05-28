@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.DTOs.TestCase {
+namespace ProblemSolvingPlatform.BLL.DTOs.TestCases {
     public class NewTestCaseDTO {
 
         [Required]

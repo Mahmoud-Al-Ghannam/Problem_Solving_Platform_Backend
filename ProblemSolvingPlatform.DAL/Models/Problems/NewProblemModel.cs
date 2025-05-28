@@ -1,4 +1,4 @@
-﻿using ProblemSolvingPlatform.DAL.Models.TestCase;
+﻿using ProblemSolvingPlatform.DAL.Models.TestCases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static ProblemSolvingPlatform.DAL.Models.Enums;
 
-namespace ProblemSolvingPlatform.DAL.Models.Problem {
+namespace ProblemSolvingPlatform.DAL.Models.Problems {
     public class NewProblemModel {
         public string CompilerName {  get; set; }
         public int CreatedBy {  get; set; }

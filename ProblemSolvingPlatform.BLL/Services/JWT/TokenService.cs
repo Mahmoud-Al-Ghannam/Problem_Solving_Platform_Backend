@@ -15,7 +15,7 @@ public class TokenService
         _config = config;
     }
 
-    public string GenerateToken(DAL.Models.User.User user)
+    public string GenerateToken(DAL.Models.Users.User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

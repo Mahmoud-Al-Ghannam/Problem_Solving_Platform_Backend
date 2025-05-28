@@ -1,4 +1,4 @@
-﻿using ProblemSolvingPlatform.BLL.DTOs.Problem;
+﻿using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using System;
 using System.Collections.Generic;
 using System.Linq;

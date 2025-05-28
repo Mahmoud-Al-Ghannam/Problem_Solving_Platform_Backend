@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Submissions;
-using ProblemSolvingPlatform.DAL.Models.User;
+using ProblemSolvingPlatform.DAL.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
-public class SubmissionRepo : ISubmissionsRepo
+public class SubmissionRepo : ISubmissionRepo
 {
     private DbContext _db { get; }
     public SubmissionRepo(DbContext dbContext)
@@ -22,7 +22,7 @@ public class SubmissionRepo : ISubmissionsRepo
     }
 
 
-    public async Task<int?> AddGeneralProblemSubmission(int problemId, Submission submission)
+    public async Task<int?> AddGeneralProblemSubmission(int problemId, Models.Submissions.Submission submission)
     {
         using (SqlConnection connection = _db.GetConnection())
         {

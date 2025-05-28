@@ -1,11 +1,11 @@
 ﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs;
-using ProblemSolvingPlatform.BLL.DTOs.Problem;
+using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Compiler;
 using ProblemSolvingPlatform.BLL.Validation;
-using ProblemSolvingPlatform.DAL.Models.Problem;
-using ProblemSolvingPlatform.DAL.Repos.Problem;
+using ProblemSolvingPlatform.DAL.Models.Problems;
+using ProblemSolvingPlatform.DAL.Repos.Problems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +73,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problem {
                 Difficulty = (DAL.Models.Enums.Difficulty)(int)newProblem.Difficulty,
                 SolutionCode = newProblem.SolutionCode,
                 TimeLimitMilliseconds = newProblem.TimeLimitMilliseconds,
-                TestCases = newProblem.TestCases.Select((t,i) => new DAL.Models.TestCase.NewTestCaseModel() {
+                TestCases = newProblem.TestCases.Select((t,i) => new DAL.Models.TestCases.NewTestCaseModel() {
                     Input = t.Input,
                     Output = compileReponsesDTO[i].Output??"", 
                     IsPublic = t.IsPublic,
