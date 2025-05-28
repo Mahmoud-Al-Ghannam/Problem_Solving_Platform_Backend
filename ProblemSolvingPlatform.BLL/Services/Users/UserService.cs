@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 using static System.Net.Mime.MediaTypeNames;
 
 
-namespace ProblemSolvingPlatform.BLL.Services.User;
+namespace ProblemSolvingPlatform.BLL.Services.Users;
 
 public class UserService : IUserService
 {

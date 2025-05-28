@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
-using ProblemSolvingPlatform.BLL.Services.Tag;
+using ProblemSolvingPlatform.BLL.Services.Tags;
 
 namespace ProblemSolvingPlatform.Controllers {
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.BLL.Services.Compiler;
-using ProblemSolvingPlatform.BLL.Services.User;
+using ProblemSolvingPlatform.BLL.Services.Users;
 
 namespace ProblemSolvingPlatform.Controllers {
 

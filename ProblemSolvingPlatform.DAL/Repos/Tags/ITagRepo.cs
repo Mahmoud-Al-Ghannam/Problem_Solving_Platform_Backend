@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Tags {
     public interface ITagRepo {
-        public Task<IEnumerable<TagModel>> GetAllTagsAsync ();
+        public Task<IEnumerable<TagModel>?> GetAllTagsAsync ();
     }
 }

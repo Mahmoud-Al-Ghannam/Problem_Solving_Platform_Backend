@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.Exceptions;
-using ProblemSolvingPlatform.BLL.Services.Problem;
+using ProblemSolvingPlatform.BLL.Services.Problems;
 
 namespace ProblemSolvingPlatform.Controllers {
 
@@ -21,16 +21,9 @@ namespace ProblemSolvingPlatform.Controllers {
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<int?>> AddProblem([FromBody] NewProblemDTO newProblemDTO) {
             int? id = null;
-            try {
-                id = await _problemService.AddProblemAsync(newProblemDTO);
-                if (id == null) StatusCode(StatusCodes.Status500InternalServerError);
-            }
-            catch (CustomValidationException ex) {
-                return BadRequest(ex.errors);
-            }
-            catch (Exception ex) {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
-            }
+
+            id = await _problemService.AddProblemAsync(newProblemDTO);
+            if (id == null) StatusCode(StatusCodes.Status500InternalServerError);
             return Ok(id);
         }
     }

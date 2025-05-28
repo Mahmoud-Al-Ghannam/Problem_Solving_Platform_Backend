@@ -1,6 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Abstractions;
 using ProblemSolvingPlatform.DAL.Context;
+using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
+using ProblemSolvingPlatform.DAL.Models.Tags;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
 using ProblemSolvingPlatform.DAL.Models.Users;
 using System.Data;
@@ -32,8 +35,8 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                     cmd.Parameters.AddWithValue("@GeneralDescription", newProblem.GeneralDescription);
                     cmd.Parameters.AddWithValue("@InputDescription", newProblem.InputDescription);
                     cmd.Parameters.AddWithValue("@OutputDescription", newProblem.OutputDescription);
-                    cmd.Parameters.AddWithValue("@Note", newProblem.Note);
-                    cmd.Parameters.AddWithValue("@Tutorial", newProblem.Tutorial);
+                    cmd.Parameters.AddWithValue("@Note", newProblem.Note == null ? DBNull.Value : newProblem.Note);
+                    cmd.Parameters.AddWithValue("@Tutorial", newProblem.Tutorial == null ? DBNull.Value : newProblem.Tutorial);
                     cmd.Parameters.AddWithValue("@Difficulty", (byte)newProblem.Difficulty);
                     cmd.Parameters.AddWithValue("@SolutionCode", newProblem.SolutionCode);
                     cmd.Parameters.AddWithValue("@TimeLimitMilliseconds", newProblem.TimeLimitMilliseconds);
@@ -137,31 +140,70 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             return ProblemID;
         }
 
+        public async Task<ProblemModel?> GetProblemByIDAsync(int problemID) {
+            return null;
+            ProblemModel problemModel = new ProblemModel();
 
-        public async Task<bool> ProblemExistsAsync(int problemId)
-        {
-            // run the code 
-            using (SqlConnection connection = _db.GetConnection())
-            {
-
-                using (SqlCommand cmd = new("SP_Problem_DoesProblemExistByID", connection))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@ProblemID", problemId);
-
-                    try
-                    {
-                        await connection.OpenAsync();
-                        var res = await cmd.ExecuteScalarAsync();
-                        if(res == null || Convert.ToInt32(res) == 0) return false;
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        return false;
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    /*ProblemID,CreatedBy,CreatedAt,DeletedBy,DeletedAt,
+	Title,GeneralDescription,InputDescription,OutputDescription,Note,Tutorial,Difficulty,
+	SolutionCode,CompilerName,TimeLimitMilliseconds
+                     */
+                    await connection.OpenAsync();
+                    using (SqlCommand cmd = new("SP_Problem_GetProblemByID", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ProblemID", problemID);
+                        using (var reader = await cmd.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                problemModel.ProblemID = Convert.ToInt32(reader["ProblemID"].ToString());
+                                problemModel.CreatedBy = Convert.ToInt32(reader["CreatedBy"].ToString());
+                                problemModel.CreatedAt = (DateTime) reader["CreatedAt"];
+                                problemModel.DeletedBy = reader["DeletedBy"] == DBNull.Value ? null: (int)reader["DeletedBy"];
+                                problemModel.DeletedAt = reader["DeletedAt"] == DBNull.Value ? null: (DateTime)reader["DeletedBy"];
+                                problemModel.Title = (string) reader["Title"];
+                                problemModel.GeneralDescription = (string) reader["GeneralDescription"];
+                                problemModel.InputDescription = (string) reader["InputDescription"];
+                                problemModel.OutputDescription = (string) reader["OutputDescription"];
+                                problemModel.Note = reader["Note"] == DBNull.Value ? null: (string)reader["Note"];
+                                problemModel.Tutorial = reader["Tutorial"] == DBNull.Value ? null: (string)reader["Tutorial"];
+                                problemModel.Difficulty = (Enums.Difficulty) (int) reader["Difficulty"];
+                                problemModel.SolutionCode = (string) reader["SolutionCode"];
+                                problemModel.CompilerName = (string) reader["CompilerName"];
+                                problemModel.TimeLimitMilliseconds = (int) reader["TimeLimitMilliseconds"];
+                            }
+                            else return null;
+                        }
                     }
                 }
+            }
+            catch (Exception ex) {
+                return null;
+            }
+        }
+
+        public async Task<bool> ProblemExistsAsync(int problemId) {
+            // run the code 
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+
+                    await connection.OpenAsync();
+
+                    using (SqlCommand cmd = new("SP_Problem_DoesProblemExistByID", connection)) {
+
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ProblemID", problemId);
+
+
+                        var res = await cmd.ExecuteScalarAsync();
+                        if (res == null || Convert.ToInt32(res.ToString()) == 0) return false;
+                        return true;
+                    }
+
+                }
+            }
+            catch (Exception ex) {
+                return false;
             }
         }
     }

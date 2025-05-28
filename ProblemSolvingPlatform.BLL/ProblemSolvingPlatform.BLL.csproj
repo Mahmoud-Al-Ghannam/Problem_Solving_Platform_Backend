@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\**" />
+    <Compile Remove="Services\TestCase\**" />
     <EmbeddedResource Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Services\TestCase\**" />
     <None Remove="Interfaces\**" />
+    <None Remove="Services\TestCase\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,10 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ProblemSolvingPlatform.API\ProblemSolvingPlatform.API.csproj" />
     <ProjectReference Include="..\ProblemSolvingPlatform.DAL\ProblemSolvingPlatform.DAL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\TestCase\" />
   </ItemGroup>
 
 </Project>

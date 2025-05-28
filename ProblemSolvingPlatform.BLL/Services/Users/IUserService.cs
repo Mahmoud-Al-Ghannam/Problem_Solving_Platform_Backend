@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.Services.User;
+namespace ProblemSolvingPlatform.BLL.Services.Users;
 
 public interface IUserService
 {

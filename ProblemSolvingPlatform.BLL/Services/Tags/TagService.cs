@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.Services.Tag {
+namespace ProblemSolvingPlatform.BLL.Services.Tags {
     public class TagService : ITagService {
 
         private readonly ITagRepo _tagRepo;
@@ -14,10 +14,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Tag {
             _tagRepo = tagRepo;
         }
 
-        public async Task<IEnumerable<TagDTO>> GetAllTagsAsync() {
+        public async Task<IEnumerable<TagDTO>?> GetAllTagsAsync() {
             var tagsModel = await _tagRepo.GetAllTagsAsync();
 
-            var tagsDTO = tagsModel.Select(tm => new  TagDTO () {
+            var tagsDTO = tagsModel?.Select(tm => new  TagDTO () {
                 TagID = tm.TagID,
                 Name = tm.Name
             }).ToList();

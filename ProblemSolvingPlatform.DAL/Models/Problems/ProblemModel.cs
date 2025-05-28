@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.DAL.Models.TestCases;
+﻿using ProblemSolvingPlatform.DAL.Models.Tags;
+using ProblemSolvingPlatform.DAL.Models.TestCases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,13 @@ using System.Threading.Tasks;
 using static ProblemSolvingPlatform.DAL.Models.Enums;
 
 namespace ProblemSolvingPlatform.DAL.Models.Problems {
-    public class NewProblemModel {
-        public string CompilerName {  get; set; }
-        public int CreatedBy {  get; set; }
+    public class ProblemModel {
+        public int ProblemID { get; set; }
+        public string CompilerName { get; set; }
+        public int CreatedBy { get; set; }
+        public int? DeletedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }
         public string InputDescription { get; set; }
@@ -19,7 +24,8 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems {
         public Difficulty Difficulty { get; set; }
         public string SolutionCode { get; set; }
         public int TimeLimitMilliseconds { get; set; }
-        public List<NewTestCaseModel> TestCases { get; set; }
-        public List<int> TagIDs { get; set; }
+        public IEnumerable<TestCaseModel> TestCases { get; set; }
+
+        public IEnumerable<TagModel> TagIDs { get; set; }
     }
 }

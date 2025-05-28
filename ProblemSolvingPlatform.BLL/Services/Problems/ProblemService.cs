@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.Services.Problem {
+namespace ProblemSolvingPlatform.BLL.Services.Problems {
     public class ProblemService : IProblemService {
 
         private readonly IProblemRepo _problemRepo;
@@ -79,7 +79,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problem {
                     IsPublic = t.IsPublic,
                     IsSample = t.IsSample
                 }).ToList(),
-                TagIDs = newProblem.TagIDs
+                TagIDs = newProblem.TagIDs.ToList(),
             };
             return await _problemRepo.AddProblemAsync(model);
         }

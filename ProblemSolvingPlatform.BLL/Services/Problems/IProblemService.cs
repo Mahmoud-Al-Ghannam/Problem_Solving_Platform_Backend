@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.Services.Problem {
+namespace ProblemSolvingPlatform.BLL.Services.Problems {
     public interface IProblemService {
         public Task<int?> AddProblemAsync(NewProblemDTO newProblem);
     }

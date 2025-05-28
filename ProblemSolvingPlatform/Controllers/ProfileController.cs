@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client.Extensibility;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
-using ProblemSolvingPlatform.BLL.Services.User;
+using ProblemSolvingPlatform.BLL.Services.Users;
 using System.Security.Claims;
 
 namespace ProblemSolvingPlatform.Controllers;

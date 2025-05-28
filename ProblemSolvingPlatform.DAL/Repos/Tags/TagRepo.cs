@@ -16,16 +16,16 @@ namespace ProblemSolvingPlatform.DAL.Repos.Tags {
             _db = dbContext;
         }
 
-        public async Task<IEnumerable<TagModel>> GetAllTagsAsync() {
+        public async Task<IEnumerable<TagModel>?> GetAllTagsAsync() {
             List<TagModel> tags = new List<TagModel>();
 
-            using (SqlConnection connection = _db.GetConnection()) {
-                using (SqlCommand cmd = new("SP_Tag_GetAllTags", connection)) {
-                    cmd.CommandType = CommandType.StoredProcedure;
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    await connection.OpenAsync();
 
+                    using (SqlCommand cmd = new("SP_Tag_GetAllTags", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                    try {
-                        await connection.OpenAsync();
                         using (var reader = await cmd.ExecuteReaderAsync()) {
                             while (await reader.ReadAsync()) {
                                 TagModel tag = new TagModel() {
@@ -36,14 +36,12 @@ namespace ProblemSolvingPlatform.DAL.Repos.Tags {
                             }
                         }
                     }
-                    catch (Exception ex) {
-                        return null;
-                    }
-
-                    return tags;
                 }
             }
-
+            catch (Exception ex) {
+                return null;
+            }
+            return tags;
         }
     }
 }
