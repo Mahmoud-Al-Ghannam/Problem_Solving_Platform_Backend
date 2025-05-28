@@ -26,5 +26,15 @@ namespace ProblemSolvingPlatform.Controllers {
             if (id == null) StatusCode(StatusCodes.Status500InternalServerError);
             return Ok(id);
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ProblemDTO?>> GetProblemByID([FromRoute(Name = "id")] int problemID) {
+            var problemDTO = await _problemService.GetProblemByIDAsync(problemID);
+            if (problemDTO == null) StatusCode(StatusCodes.Status500InternalServerError);
+            return Ok(problemDTO);
+        }
     }
 }

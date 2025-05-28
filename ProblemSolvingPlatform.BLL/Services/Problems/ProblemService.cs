@@ -1,6 +1,8 @@
 ﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
+using ProblemSolvingPlatform.BLL.DTOs.Tags;
+using ProblemSolvingPlatform.BLL.DTOs.TestCases;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Compiler;
 using ProblemSolvingPlatform.BLL.Validation;
@@ -82,6 +84,46 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 TagIDs = newProblem.TagIDs.ToList(),
             };
             return await _problemRepo.AddProblemAsync(model);
+        }
+
+        public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID) {
+            var problemModel = await _problemRepo.GetProblemByIDAsync(problemID);
+            if (problemModel == null) return null;
+
+            var problemDTO = new ProblemDTO() {
+                ProblemID = problemModel.ProblemID,
+                CompilerName = problemModel.CompilerName,
+                CreatedBy = problemModel.CreatedBy,
+                CreatedAt = problemModel.CreatedAt,
+                DeletedBy = problemModel.DeletedBy,
+                DeletedAt = problemModel.DeletedAt,
+                Title = problemModel.Title,
+                GeneralDescription = problemModel.GeneralDescription,
+                InputDescription = problemModel.InputDescription,
+                OutputDescription = problemModel.OutputDescription,
+                Note = problemModel.Note,
+                Tutorial = problemModel.Tutorial,
+                Difficulty = (Enums.Difficulty)(int)problemModel.Difficulty,
+                SolutionCode = problemModel.SolutionCode,
+                TimeLimitMilliseconds = problemModel.TimeLimitMilliseconds,
+                
+                SampleTestCases = problemModel.SampleTestCases.Select(obj => new TestCaseDTO() {
+                    TestCaseID = obj.TestCaseID,
+                    ProblemID = obj.ProblemID,
+                    Input = obj.Input,
+                    Output = obj.Output,
+                    IsPublic = obj.IsPublic,
+                    IsSample = obj.IsSample
+                }).ToList(),
+
+                Tags = problemModel.Tags.Select (obj => new TagDTO() { 
+                    TagID = obj.TagID,
+                    Name = obj.Name
+                }).ToList()
+            };
+
+
+            return problemDTO;
         }
     }
 }

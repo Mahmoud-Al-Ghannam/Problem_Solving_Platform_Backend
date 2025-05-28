@@ -1,19 +1,20 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.IdentityModel.Abstractions;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Tags;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
-using ProblemSolvingPlatform.DAL.Models.Users;
+using ProblemSolvingPlatform.DAL.Repos.Tags;
 using System.Data;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Problems {
     public class ProblemRepo : IProblemRepo {
 
         private readonly DbContext _db;
-        public ProblemRepo(DbContext dbContext) {
+        private readonly ITestCaseRepo _testCaseRepo;
+        public ProblemRepo(DbContext dbContext, ITestCaseRepo testCaseRepo) {
             _db = dbContext;
+            _testCaseRepo = testCaseRepo;
         }
 
         public async Task<int?> AddProblemAsync(NewProblemModel newProblem) {
@@ -141,15 +142,11 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
         }
 
         public async Task<ProblemModel?> GetProblemByIDAsync(int problemID) {
-            return null;
             ProblemModel problemModel = new ProblemModel();
 
             try {
                 using (SqlConnection connection = _db.GetConnection()) {
-                    /*ProblemID,CreatedBy,CreatedAt,DeletedBy,DeletedAt,
-	Title,GeneralDescription,InputDescription,OutputDescription,Note,Tutorial,Difficulty,
-	SolutionCode,CompilerName,TimeLimitMilliseconds
-                     */
+
                     await connection.OpenAsync();
                     using (SqlCommand cmd = new("SP_Problem_GetProblemByID", connection)) {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -167,7 +164,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                 problemModel.OutputDescription = (string) reader["OutputDescription"];
                                 problemModel.Note = reader["Note"] == DBNull.Value ? null: (string)reader["Note"];
                                 problemModel.Tutorial = reader["Tutorial"] == DBNull.Value ? null: (string)reader["Tutorial"];
-                                problemModel.Difficulty = (Enums.Difficulty) (int) reader["Difficulty"];
+                                problemModel.Difficulty = (Enums.Difficulty) (byte) reader["Difficulty"];
                                 problemModel.SolutionCode = (string) reader["SolutionCode"];
                                 problemModel.CompilerName = (string) reader["CompilerName"];
                                 problemModel.TimeLimitMilliseconds = (int) reader["TimeLimitMilliseconds"];
@@ -175,11 +172,16 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                             else return null;
                         }
                     }
+
+                    problemModel.SampleTestCases = await _testCaseRepo.GetAllTestCasesAsync(1,100,problemID,IsSample:true)??[];
+                    problemModel.Tags = await GetProblemTagsAsync(problemID)??[];
                 }
             }
             catch (Exception ex) {
                 return null;
             }
+
+            return problemModel;
         }
 
         public async Task<bool> ProblemExistsAsync(int problemId) {
@@ -205,6 +207,35 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             catch (Exception ex) {
                 return false;
             }
+        }
+
+        public async Task<IEnumerable<TagModel>?> GetProblemTagsAsync(int problemID) {
+            List<TagModel> tags = new List<TagModel>();
+
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    await connection.OpenAsync();
+
+                    using (SqlCommand cmd = new("SP_ProblemTag_GetAllProblemTags", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ProblemID", problemID);
+
+                        using (var reader = await cmd.ExecuteReaderAsync()) {
+                            while (await reader.ReadAsync()) {
+                                TagModel tag = new TagModel() {
+                                    TagID = Convert.ToInt32(reader["TagID"].ToString()),
+                                    Name = reader["Name"].ToString() ?? ""
+                                };
+                                tags.Add(tag);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+                return null;
+            }
+            return tags;
         }
     }
 }

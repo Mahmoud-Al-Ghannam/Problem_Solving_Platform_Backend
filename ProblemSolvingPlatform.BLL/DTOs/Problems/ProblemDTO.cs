@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.BLL.DTOs.TestCases;
+﻿using ProblemSolvingPlatform.BLL.DTOs.Tags;
+using ProblemSolvingPlatform.BLL.DTOs.TestCases;
 using ProblemSolvingPlatform.BLL.Validation.ValidationAttributes;
 using System;
 using System.Collections.Generic;
@@ -26,8 +27,8 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
         public Difficulty Difficulty { get; set; }
         public string SolutionCode { get; set; }
         public int TimeLimitMilliseconds { get; set; }
-        public IEnumerable<TestCaseDTO> TestCases { get; set; }
+        public IEnumerable<TestCaseDTO> SampleTestCases { get; set; }
 
-        public IEnumerable<int> TagIDs { get; set; }
+        public IEnumerable<TagDTO> Tags { get; set; }
     }
 }

@@ -24,8 +24,8 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems {
         public Difficulty Difficulty { get; set; }
         public string SolutionCode { get; set; }
         public int TimeLimitMilliseconds { get; set; }
-        public IEnumerable<TestCaseModel> TestCases { get; set; }
+        public IEnumerable<TestCaseModel> SampleTestCases { get; set; }
 
-        public IEnumerable<TagModel> TagIDs { get; set; }
+        public IEnumerable<TagModel> Tags { get; set; }
     }
 }
