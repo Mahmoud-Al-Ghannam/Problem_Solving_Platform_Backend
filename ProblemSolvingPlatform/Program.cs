@@ -18,10 +18,10 @@ using ProblemSolvingPlatform.DAL.Repos.Submissions;
 using ProblemSolvingPlatform.DAL.Repos.Tags;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using ProblemSolvingPlatform.Middlewares;
+using System.Reflection;
 using System.Text;
 
-namespace ProblemSolvingPlatform
-{
+namespace ProblemSolvingPlatform {
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +31,23 @@ namespace ProblemSolvingPlatform
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v1", new OpenApiInfo() {
+                    Title = "Problem Solving Platform APIs",
+                    Version = "V1",
+                    Description = "The backend team is king",
+                    Contact = new OpenApiContact() {
+                        Name = "Mahmoud Al-Ghannam & Abd Almalek Mokresh"
+                    }
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+                c.EnableAnnotations();
+
+            });
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<TokenService, TokenService>();
@@ -44,36 +60,32 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<ITestCaseRepo, TestCaseRepo>();
             builder.Services.AddScoped<ITestCaseService, TestCaseService>();
             builder.Services.AddScoped<DbContext, DbContext>();
-            builder.Services.AddScoped<ICompilerApiService,CompilerApiService>();
-            builder.Services.AddScoped<ICompilerService,CompilerService>();
+            builder.Services.AddScoped<ICompilerApiService, CompilerApiService>();
+            builder.Services.AddScoped<ICompilerService, CompilerService>();
             builder.Services.AddScoped<ISubmissionsService, SubmissionsService>();
             builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
-            builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>(); 
+            builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>();
 
 
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                         ValidateIssuer = false, 
-                         ValidateAudience = false, 
-                         ValidateLifetime = true,
-                         ValidateIssuerSigningKey = true,
-                         IssuerSigningKey = new SymmetricSecurityKey(
+            .AddJwtBearer("Bearer", options => {
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
                          )
                 };
             });
 
             #region authSwagger
-            builder.Services.AddSwaggerGen(options =>
-            {
+            builder.Services.AddSwaggerGen(options => {
                 // Add JWT Bearer token support in Swagger UI
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
@@ -98,11 +110,9 @@ namespace ProblemSolvingPlatform
             });
             #endregion
 
-            
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", builder =>
-                {
+
+            builder.Services.AddCors(options => {
+                options.AddPolicy("AllowAll", builder => {
                     builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .AllowAnyHeader();
@@ -115,8 +125,10 @@ namespace ProblemSolvingPlatform
             var app = builder.Build();
 
             app.UseCors("AllowAll");
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Problem Solving APIs V1");
+            });
 
             app.UseMiddleware<ExceptionMiddleware>();
 

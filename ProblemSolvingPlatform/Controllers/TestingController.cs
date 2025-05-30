@@ -8,11 +8,14 @@ using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
+using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace ProblemSolvingPlatform.Controllers
 {
     [ApiController]
     [Route("api/testing")]
+    
     public class TestingController : Controller
     {
         private readonly DbContext _db;
@@ -22,25 +25,13 @@ namespace ProblemSolvingPlatform.Controllers
             _submissionHandler = submissionHandler;
         }
 
-        [HttpGet("compiletest")]
-        public async Task<ActionResult> Compile()
-        {
-            var res = await _submissionHandler.ExecuteSubmission(1, "");
-            return Ok(res);
-        }
 
-
-
-
-        [HttpGet("exception")]
+        [SwaggerResponse(200,"Returns sum of two numbers")]
+        [SwaggerOperation("This is summary","This is description",OperationId = "This is Operation ID")]
+        [HttpGet("add")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> exception(int x) {
-            if (x == 0) throw new Exception("Hello World!");
-            else if (x == 1) {
-                throw new CustomValidationException("Name", ["Was not found"]);
-            }
-
-            return Ok(x*x);
+        public async Task<ActionResult<int>> sum(int n1,int n2) {
+            return Ok(n1+n2);
         }
     }
 }
