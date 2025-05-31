@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.DAL.Repos.Problems {
     public interface IProblemRepo {
         public Task<int?> AddProblemAsync(NewProblemModel newProblem);
+        public Task<bool> UpdateProblemAsync(UpdateProblemModel newProblem);
+        public Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy);
 
         public Task<ProblemModel> GetProblemByIDAsync(int problemID);
         public Task<IEnumerable<TagModel>?> GetProblemTagsAsync(int problemID);

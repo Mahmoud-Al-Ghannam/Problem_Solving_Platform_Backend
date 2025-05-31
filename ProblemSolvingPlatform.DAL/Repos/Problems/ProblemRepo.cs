@@ -4,6 +4,7 @@ using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Tags;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
+using ProblemSolvingPlatform.DAL.Models.Users;
 using ProblemSolvingPlatform.DAL.Repos.Tags;
 using System.Data;
 
@@ -155,26 +156,26 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                             if (await reader.ReadAsync()) {
                                 problemModel.ProblemID = Convert.ToInt32(reader["ProblemID"].ToString());
                                 problemModel.CreatedBy = Convert.ToInt32(reader["CreatedBy"].ToString());
-                                problemModel.CreatedAt = (DateTime) reader["CreatedAt"];
-                                problemModel.DeletedBy = reader["DeletedBy"] == DBNull.Value ? null: (int)reader["DeletedBy"];
-                                problemModel.DeletedAt = reader["DeletedAt"] == DBNull.Value ? null: (DateTime)reader["DeletedBy"];
-                                problemModel.Title = (string) reader["Title"];
-                                problemModel.GeneralDescription = (string) reader["GeneralDescription"];
-                                problemModel.InputDescription = (string) reader["InputDescription"];
-                                problemModel.OutputDescription = (string) reader["OutputDescription"];
-                                problemModel.Note = reader["Note"] == DBNull.Value ? null: (string)reader["Note"];
-                                problemModel.Tutorial = reader["Tutorial"] == DBNull.Value ? null: (string)reader["Tutorial"];
-                                problemModel.Difficulty = (Enums.Difficulty) (byte) reader["Difficulty"];
-                                problemModel.SolutionCode = (string) reader["SolutionCode"];
-                                problemModel.CompilerName = (string) reader["CompilerName"];
-                                problemModel.TimeLimitMilliseconds = (int) reader["TimeLimitMilliseconds"];
+                                problemModel.CreatedAt = (DateTime)reader["CreatedAt"];
+                                problemModel.DeletedBy = reader["DeletedBy"] == DBNull.Value ? null : (int)reader["DeletedBy"];
+                                problemModel.DeletedAt = reader["DeletedAt"] == DBNull.Value ? null : (DateTime)reader["DeletedBy"];
+                                problemModel.Title = (string)reader["Title"];
+                                problemModel.GeneralDescription = (string)reader["GeneralDescription"];
+                                problemModel.InputDescription = (string)reader["InputDescription"];
+                                problemModel.OutputDescription = (string)reader["OutputDescription"];
+                                problemModel.Note = reader["Note"] == DBNull.Value ? null : (string)reader["Note"];
+                                problemModel.Tutorial = reader["Tutorial"] == DBNull.Value ? null : (string)reader["Tutorial"];
+                                problemModel.Difficulty = (Enums.Difficulty)(byte)reader["Difficulty"];
+                                problemModel.SolutionCode = (string)reader["SolutionCode"];
+                                problemModel.CompilerName = (string)reader["CompilerName"];
+                                problemModel.TimeLimitMilliseconds = (int)reader["TimeLimitMilliseconds"];
                             }
                             else return null;
                         }
                     }
 
-                    problemModel.SampleTestCases = await _testCaseRepo.GetAllTestCasesAsync(1,100,problemID,IsSample:true)??[];
-                    problemModel.Tags = await GetProblemTagsAsync(problemID)??[];
+                    problemModel.SampleTestCases = await _testCaseRepo.GetAllTestCasesAsync(1, 100, problemID, IsSample: true) ?? [];
+                    problemModel.Tags = await GetProblemTagsAsync(problemID) ?? [];
                 }
             }
             catch (Exception ex) {
@@ -236,6 +237,65 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                 return null;
             }
             return tags;
+        }
+
+        public async Task<bool> UpdateProblemAsync(UpdateProblemModel updateProblem) {
+
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    await connection.OpenAsync();
+
+                    using (SqlCommand cmd = new("SP_Problem_UpdateProblem", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@ProblemID", updateProblem.ProblemID);
+                        cmd.Parameters.AddWithValue("@Title", updateProblem.Title);
+                        cmd.Parameters.AddWithValue("@GeneralDescription", updateProblem.GeneralDescription);
+                        cmd.Parameters.AddWithValue("@InputDescription", updateProblem.InputDescription);
+                        cmd.Parameters.AddWithValue("@OutputDescription", updateProblem.OutputDescription);
+                        cmd.Parameters.AddWithValue("@Note", updateProblem.Note);
+                        cmd.Parameters.AddWithValue("@Tutorial", updateProblem.Tutorial);
+                        cmd.Parameters.AddWithValue("@Difficulty", (byte)updateProblem.Difficulty);
+
+                        // output 
+                        var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(IsSuccess);
+                        await cmd.ExecuteNonQueryAsync();
+                        return (bool)IsSuccess.Value;
+                    }
+                }
+            }
+            catch (Exception ex) {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy) {
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    await connection.OpenAsync();
+
+                    using (SqlCommand cmd = new("SP_Problem_DeleteProblem", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@ProblemID", problemID);
+                        cmd.Parameters.AddWithValue("@DeletedBy", deletedBy);
+
+                        // output 
+                        var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
+                            Direction = ParameterDirection.Output
+                        };
+                        cmd.Parameters.Add(IsSuccess);
+                        await cmd.ExecuteNonQueryAsync();
+                        return (bool)IsSuccess.Value;
+                    }
+                }
+            }
+            catch (Exception ex) {
+                return false;
+            }
         }
     }
 }

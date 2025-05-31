@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthHelper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Problems;
@@ -15,17 +17,45 @@ namespace ProblemSolvingPlatform.Controllers {
             _problemService = problemService;
         }
 
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<int?>> AddProblem([FromBody] NewProblemDTO newProblemDTO) {
             int? id = null;
-
-            id = await _problemService.AddProblemAsync(newProblemDTO);
+            int userID = AuthUtils.GetUserId(User)??-1;
+            id = await _problemService.AddProblemAsync(newProblemDTO,userID);
             if (id == null) StatusCode(StatusCodes.Status500InternalServerError);
             return Ok(id);
         }
+
+        [Authorize]
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateProblem([FromBody] UpdateProblemDTO updateProblemDTO) {
+            bool ok;
+            int userID = AuthUtils.GetUserId(User) ?? -1;
+            ok = await _problemService.UpdateProblemAsync(updateProblemDTO, userID);
+            if (!ok) StatusCode(StatusCodes.Status500InternalServerError);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteProblem([FromRoute(Name = "id")] int problemID) {
+            bool ok;
+            int userID = AuthUtils.GetUserId(User) ?? -1;
+            ok = await _problemService.DeleteProblemByIDAsync(problemID, userID);
+            if (!ok) StatusCode(StatusCodes.Status500InternalServerError);
+            return NoContent();
+        }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

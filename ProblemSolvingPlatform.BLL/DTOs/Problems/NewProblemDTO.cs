@@ -1,7 +1,9 @@
 ﻿using ProblemSolvingPlatform.BLL.DTOs.TestCases;
 using ProblemSolvingPlatform.BLL.Validation.ValidationAttributes;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -14,9 +16,6 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
         [MinLengthAfterTrim(1)]
         public string CompilerName { get; set; }
 
-        [Required]
-        [Range(1, int.MaxValue)]
-        public int CreatedBy { get; set; }
         [Required]
         [MinLengthAfterTrim(1)]
         public string Title { get; set; }

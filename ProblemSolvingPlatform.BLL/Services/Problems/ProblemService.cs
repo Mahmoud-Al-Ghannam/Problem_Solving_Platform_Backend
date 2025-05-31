@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
@@ -25,7 +26,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             _compilerService = compilerService;
         }
 
-        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem) {
+        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem,int createdBy) {
             var errors = ValidationHelper.ValidateToDictionary(newProblem, out bool isValid);
             if(!isValid) 
                 throw new CustomValidationException(errors);
@@ -65,7 +66,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             // Convert NewProblemDTO to NewProblemModel
             NewProblemModel model = new NewProblemModel() {
                 CompilerName = newProblem.CompilerName,
-                CreatedBy = newProblem.CreatedBy,
+                CreatedBy = createdBy,
                 Title = newProblem.Title,
                 GeneralDescription = newProblem.GeneralDescription,
                 InputDescription = newProblem.InputDescription,
@@ -84,6 +85,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 TagIDs = newProblem.TagIDs.ToList(),
             };
             return await _problemRepo.AddProblemAsync(model);
+        }
+
+        public async Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy) {
+            return await _problemRepo.DeleteProblemByIDAsync(problemID, deletedBy); 
         }
 
         public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID) {
@@ -124,6 +129,21 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
 
 
             return problemDTO;
+        }
+
+        public async Task<bool> UpdateProblemAsync(UpdateProblemDTO updateProblem, int userID) {
+            // Convert UpdateProblemDTO to UpdateProblemModel
+            UpdateProblemModel model = new UpdateProblemModel() {
+                ProblemID = updateProblem.ProblemID,
+                Title = updateProblem.Title,
+                GeneralDescription = updateProblem.GeneralDescription,
+                InputDescription = updateProblem.InputDescription,
+                OutputDescription = updateProblem.OutputDescription,
+                Note = updateProblem.Note,
+                Tutorial = updateProblem.Tutorial,
+                Difficulty = (DAL.Models.Enums.Difficulty)(byte)updateProblem.Difficulty,
+            };
+            return await _problemRepo.UpdateProblemAsync(model);
         }
     }
 }
