@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using ProblemSolvingPlatform.API.Base;
-using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.API.Compiler.Utils;
+using ProblemSolvingPlatform.API.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,89 +65,6 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
 
         public List<CompilerDTO> GetAllCompilers() {
             return CompilerUtils.GetAllCompilers();
-        }
-
-
-        public async Task<ExecuteResponseDTO> ExecuteCodeAsync(ExecuteRequestDTO request) {
-            var fullUri = Endpoints.compile(request.Compiler);
-
-            // body :)
-            var content = new {
-                source = request.Source,
-                compiler = request.Compiler,
-                options = new {
-                    userArguments = "-O3",
-                    executeParameters = new {
-                        args = new[] { "arg1", "arg2" },
-                        stdin = request.input,
-                        runtimeTools = new[] {
-                            new {
-                                name    = "env",
-                                options = new[] {
-                                    new { name = "MYENV", value = "123" }
-                                }
-                            }
-                        }
-                    },
-                    compilerOptions = new { executorRequest = true },
-                    filters = new { execute = true },
-                    tools = Array.Empty<object>(),
-                    libraries = new[] {
-                        new { id = "openssl", version = "111c" }
-                    }
-                },
-                lang = "c++",
-                allowStoreCodeDebug = true
-            };
-
-
-            try {
-                // serialize 
-                var contentJSON = JsonSerializer.Serialize(content);
-                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, fullUri) {
-                    Content = new StringContent(contentJSON, Encoding.UTF8, "application/json")
-                };
-                httpRequest.Headers.Accept.Clear();
-                httpRequest.Headers.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // sending 
-                using var httpClient = new HttpClient();
-                var httpResponse = await httpClient.SendAsync(httpRequest);
-                httpResponse.EnsureSuccessStatusCode();
-
-                var responseJson = await httpResponse.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(responseJson);
-                var root = doc.RootElement;
-
-
-                var stdout = root.GetProperty("stdout")
-                                 .EnumerateArray()
-                                 .Select(e => e.GetProperty("text").GetString())
-                                 .Where(s => s != null);
-                var stderr = root.GetProperty("stderr")
-                                 .EnumerateArray()
-                                 .Select(e => e.GetProperty("text").GetString())
-                                 .Where(s => s != null);
-                var executionTimeInMS = root.GetProperty("execTime").GetDouble();
-
-                return new ExecuteResponseDTO {
-                    StandardOut = string.Join('\n', stdout),
-                    StandardError = string.Join('\n', stderr),
-                    ExecutionTimeMs = executionTimeInMS,
-                    MemoryKB = 0,
-                    ExitCode = root.GetProperty("code").GetInt32()
-                };
-            }
-            catch (Exception ex) {
-                return new ExecuteResponseDTO {
-                    StandardOut = null,
-                    StandardError = $"Exception: {ex.Message}",
-                    ExecutionTimeMs = 0,
-                    MemoryKB = 0,
-                    ExitCode = -1
-                };
-            }
         }
 
     }

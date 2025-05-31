@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.API.Compiler.DTOs {
+namespace ProblemSolvingPlatform.API.DTOs {
     public class CompileResponseDTO {
         public string? Output { get; set; }
         public IEnumerable<string>? CompilationErrors { get; set; }

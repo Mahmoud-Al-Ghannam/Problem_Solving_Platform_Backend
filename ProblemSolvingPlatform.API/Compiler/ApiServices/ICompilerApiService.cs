@@ -1,4 +1,4 @@
-﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
+﻿using ProblemSolvingPlatform.API.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +11,6 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
         
         public Task<List<CompileResponseDTO>> CompileAsync(CompileRequestDTO request);
         public List<CompilerDTO> GetAllCompilers();
-
-
-
-        public Task<ExecuteResponseDTO> ExecuteCodeAsync(ExecuteRequestDTO request);
 
     }
 }

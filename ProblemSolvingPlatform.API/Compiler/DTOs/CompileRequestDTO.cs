@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static ProblemSolvingPlatform.API.Compiler.Services.CompilerApiService;
 
-namespace ProblemSolvingPlatform.API.Compiler.DTOs {
+namespace ProblemSolvingPlatform.API.DTOs {
     public class CompileRequestDTO {
         public string Source {  get; set; }
         public List<string>? Inputs {  get; set; }
