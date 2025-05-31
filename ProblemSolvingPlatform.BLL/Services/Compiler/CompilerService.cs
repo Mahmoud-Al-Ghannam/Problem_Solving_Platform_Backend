@@ -1,5 +1,5 @@
-﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
-using ProblemSolvingPlatform.API.Compiler.Services;
+﻿using ProblemSolvingPlatform.API.Compiler.Services;
+using ProblemSolvingPlatform.API.DTOs;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using System;
 using System.Collections.Generic;

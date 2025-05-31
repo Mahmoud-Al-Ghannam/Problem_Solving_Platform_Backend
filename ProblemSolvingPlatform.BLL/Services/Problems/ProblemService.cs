@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
-using ProblemSolvingPlatform.API.Compiler.DTOs;
+using ProblemSolvingPlatform.API.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;

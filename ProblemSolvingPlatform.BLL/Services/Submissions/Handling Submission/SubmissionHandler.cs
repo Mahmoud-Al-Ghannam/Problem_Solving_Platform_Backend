@@ -1,4 +1,4 @@
-﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
+﻿using ProblemSolvingPlatform.API.DTOs;
 using ProblemSolvingPlatform.API.Compiler.Services;
 using System;
 using System.Collections.Generic;

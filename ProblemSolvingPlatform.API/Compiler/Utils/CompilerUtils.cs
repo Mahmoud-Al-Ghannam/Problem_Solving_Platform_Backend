@@ -1,4 +1,4 @@
-﻿using ProblemSolvingPlatform.API.Compiler.DTOs;
+﻿using ProblemSolvingPlatform.API.DTOs;
 
 
 namespace ProblemSolvingPlatform.API.Compiler.Utils;
