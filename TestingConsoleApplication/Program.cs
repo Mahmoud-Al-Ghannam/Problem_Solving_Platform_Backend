@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ProblemSolvingPlatform.API.Base;
-using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.API.Compiler.Services;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problems;

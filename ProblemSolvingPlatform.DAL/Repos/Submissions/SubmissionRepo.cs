@@ -49,6 +49,7 @@ public class SubmissionRepo : ISubmissionRepo
                     await connection.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
 
+                    if (submissionID.Value == DBNull.Value) return null;
                     return (int?)submissionID?.Value;
                 }
                 catch (Exception ex)
@@ -85,5 +86,132 @@ public class SubmissionRepo : ISubmissionRepo
         }
     }
 
+    public async Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS)
+    {
+        using (var connection = _db.GetConnection())
+        using (var command = new SqlCommand("SP_Submission_UpdateSubmissionStatusAndExecutionTime", connection))
+        {
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@SubmissionID", submissionId);
+            command.Parameters.AddWithValue("@Status", status);
+            command.Parameters.AddWithValue("ExecTimeMS", execTimeMS);
+            try
+            {
+                await connection.OpenAsync();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected > 0)
+                    return true;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+    }
+
+    public async Task<string?> GetSubmissionCode(int submissionId)
+    {
+        using (SqlConnection connection = _db.GetConnection())
+        using (SqlCommand command = new("SP_Submission_GetCode", connection))
+        {
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@SubmissionId", submissionId);
+            try
+            {
+                await connection.OpenAsync();
+                var result = await command.ExecuteScalarAsync();
+                if (result != null && result != DBNull.Value) 
+                    return result.ToString();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
+        }
+    }
+
+    public async Task<(int userId, byte visionScope)?> GetSubmissionAccessInfo(int submissionId)
+    {
+        using SqlConnection connection = _db.GetConnection();
+        using SqlCommand command = new SqlCommand("SP_Submission_GetAccessInfo", connection) {
+            CommandType = CommandType.StoredProcedure
+        };
+        command.Parameters.AddWithValue("@SubmissionId", submissionId);
+
+        try
+        {
+            await connection.OpenAsync();
+            using SqlDataReader reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                int userId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0;
+                byte visionScope = reader["VisionScope"] != DBNull.Value ? Convert.ToByte(reader["VisionScope"]) : (byte)0;
+                return (userId, visionScope);
+            }
+            return null; 
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            await connection.CloseAsync();
+        }
+    }
+
+    public async Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int problemId, byte visionScope)
+    {
+        var results = new List<Submission>();
+
+        using (var conn = _db.GetConnection())
+        using (var cmd = new SqlCommand("SP_Submissions_GetSubmissions", conn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int) { Value = userId });
+            cmd.Parameters.Add(new SqlParameter("@Scope", SqlDbType.TinyInt) { Value = visionScope });
+            cmd.Parameters.Add(new SqlParameter("@ProblemId", SqlDbType.Int) { Value = problemId });
+            cmd.Parameters.Add(new SqlParameter("@Page", SqlDbType.Int) { Value = page });
+            cmd.Parameters.Add(new SqlParameter("@Limit", SqlDbType.Int) { Value = limit });
+
+            try
+            {
+                await conn.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var sub = new Submission
+                        {
+                            SubmissionId = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
+                            UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
+                            ProgrammingLanguage = reader.GetByte(reader.GetOrdinal("ProgrammingLanguage")),
+                            Status = reader.GetByte(reader.GetOrdinal("Status")),
+                            ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),
+                            VisionScope = reader.GetByte(reader.GetOrdinal("VisionScope")),
+                            SubmittedAt = reader.GetDateTime(reader.GetOrdinal("SubmittedAt"))
+                        };
+                        results.Add(sub);
+                    }
+                }
+            }
+            catch 
+            {
+                return null;
+            }
+        }
+
+        return results;
+    
+    }
 
 }

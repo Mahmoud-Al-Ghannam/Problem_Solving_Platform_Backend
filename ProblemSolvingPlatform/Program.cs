@@ -16,12 +16,15 @@ using ProblemSolvingPlatform.DAL.Repos;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
 using ProblemSolvingPlatform.DAL.Repos.Submissions;
 using ProblemSolvingPlatform.DAL.Repos.Tags;
+using ProblemSolvingPlatform.DAL.Repos.Tests;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using ProblemSolvingPlatform.Middlewares;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
-namespace ProblemSolvingPlatform {
+namespace ProblemSolvingPlatform
+{
     public class Program {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
@@ -62,9 +65,10 @@ namespace ProblemSolvingPlatform {
             builder.Services.AddScoped<DbContext, DbContext>();
             builder.Services.AddScoped<ICompilerApiService, CompilerApiService>();
             builder.Services.AddScoped<ICompilerService, CompilerService>();
-            builder.Services.AddScoped<ISubmissionsService, SubmissionsService>();
+            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
             builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>();
+            builder.Services.AddScoped<ISubmissionTestRepo, SubmissionTestRepo>();
 
 
             builder.Services.AddHttpContextAccessor();
@@ -81,6 +85,12 @@ namespace ProblemSolvingPlatform {
                          )
                 };
             });
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+               {
+                   options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+               });
+
 
             #region authSwagger
             builder.Services.AddSwaggerGen(options => {
@@ -107,6 +117,7 @@ namespace ProblemSolvingPlatform {
                     Array.Empty<string>()
                     }
                 });
+                options.UseInlineDefinitionsForEnums(); 
             });
             #endregion
 

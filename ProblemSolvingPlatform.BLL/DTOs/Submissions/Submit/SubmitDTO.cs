@@ -7,14 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.DTOs.Submissions;
+namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 
 public class SubmitDTO
 {
-    [Required]  
-    public int ProblemId {  get; set; }
     [Required]
-    public string compilerName { get; set; }
+    public int ProblemId { get; set; }
+    [Required]
+    public string CompilerName { get; set; }
     [Required]
     public required string Code { get; set; }
 

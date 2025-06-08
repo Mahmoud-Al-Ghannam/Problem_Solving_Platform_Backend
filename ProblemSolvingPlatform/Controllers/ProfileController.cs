@@ -46,6 +46,9 @@ public class ProfileController : ControllerBase
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers([FromQuery] int page = 1, [FromQuery] int limit = 2, [FromQuery] string? username = null)
     {
+        if (page <= 0 || limit <= 0 || limit > 100)
+            return BadRequest("Page must be ≥ 1 and limit between 1–100");
+
         var users = await _userService.GetAllUsersWithFiltersAsync(page, limit, username);
         if (users == null)
             return NotFound(new { message = "Users not found :| " });

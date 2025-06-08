@@ -6,9 +6,11 @@ using ProblemSolvingPlatform.DAL.Models.Tags;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
 using ProblemSolvingPlatform.DAL.Models.Users;
 using ProblemSolvingPlatform.DAL.Repos.Tags;
+using ProblemSolvingPlatform.DAL.Repos.Tests;
 using System.Data;
 
-namespace ProblemSolvingPlatform.DAL.Repos.Problems {
+namespace ProblemSolvingPlatform.DAL.Repos.Problems
+{
     public class ProblemRepo : IProblemRepo {
 
         private readonly DbContext _db;

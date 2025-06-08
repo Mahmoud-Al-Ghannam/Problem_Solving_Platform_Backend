@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using ProblemSolvingPlatform.BLL.DTOs;
-using ProblemSolvingPlatform.BLL.DTOs.Submissions;
+using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 using ProblemSolvingPlatform.BLL.Services.Submissions;
 using System.Security.Claims;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
@@ -15,8 +15,8 @@ namespace ProblemSolvingPlatform.Controllers;
 [Route("api/[controller]")]
 public class SubmissionsController : ControllerBase
 {
-    private ISubmissionsService _submissionService { get; }
-    public SubmissionsController(ISubmissionsService submissionsService)
+    private ISubmissionService _submissionService { get; }
+    public SubmissionsController(ISubmissionService submissionsService)
     {
         _submissionService = submissionsService;
     }
@@ -29,10 +29,10 @@ public class SubmissionsController : ControllerBase
         var userId = AuthUtils.GetUserId(User);
         if(userId == null)
             return Unauthorized("User ID not found");
-
+        
         var response = await _submissionService.Submit(submitDTO, userId.Value);
         if (response.isSuccess)
-            return Ok(new { submissionId = response.submissionId, message = response.msg }); 
+            return Ok(new { message = response.msg }); 
 
         return BadRequest(new {message =  response.msg});
     }
@@ -51,6 +51,7 @@ public class SubmissionsController : ControllerBase
         return BadRequest("Failed");
     }
 
+
     [HttpGet("visionScopes")]
     public IActionResult GetAllVisionScopes()
     {
@@ -67,6 +68,36 @@ public class SubmissionsController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+
+
+    [HttpGet("all-submissions")]
+    [Authorize]
+    public async Task<IActionResult> GetSubmissions(int problemId, int page = 1, int limit = 10,VisionScope scope = VisionScope.all) 
+    {
+        if (page <= 0 || limit <= 0 || limit > 100)   
+            return BadRequest("Page must be ≥ 1 and limit between 1–100");
+        var userId = AuthUtils.GetUserId(User);
+        if (userId == null)
+            return BadRequest("no user found");
+
+        var submissions = await _submissionService.GetAllSubmissions(userId.Value, page, limit, problemId, scope);
+        if (submissions == null)
+            return NotFound(new { message = "No submissions Exist" });
+        return Ok(submissions);
+    }
+    
+    
+    
+    [HttpGet("details")]
+    public async Task<IActionResult> GetSubmissionDetails(int submissionId)
+    {
+        var userId = AuthUtils.GetUserId(User);
+        var subDetails = await _submissionService.GetSubmissionDetails(submissionId, userId);
+        if (subDetails == null)
+            return BadRequest(new { message = "Failed to view submission :)" });
+        return Ok(subDetails);
     }
 
 

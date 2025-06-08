@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.DTOs.Submissions;
+namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 
 public class SubmitResponseDTO
 {
-    public bool isSuccess { get; set; }  
+    public bool isSuccess { get; set; }
 
     public string msg { get; set; }
-    public int submissionId {  get; set; }
-    public string Status { get; set; }
+    // public int submissionId {  get; set; }
+    //public string Status { get; set; }
 }

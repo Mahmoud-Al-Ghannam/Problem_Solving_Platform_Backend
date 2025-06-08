@@ -1,13 +1,14 @@
 ﻿using ProblemSolvingPlatform.BLL.DTOs.Tags;
 using ProblemSolvingPlatform.BLL.DTOs.TestCases;
-using ProblemSolvingPlatform.DAL.Repos;
+using ProblemSolvingPlatform.DAL.Repos.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.BLL.Services.TestCases {
+namespace ProblemSolvingPlatform.BLL.Services.TestCases
+{
     public class TestCaseService : ITestCaseService {
 
         private readonly ITestCaseRepo _testCaseRepo;
