@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.DTOs {
     public class Enums {
-        public enum Difficulty {eEasy = 0,eMedium = 1, eHard = 2 }
+        public enum Difficulty {Easy = 0,Medium = 1, Hard = 2 }
 
         public enum ProgLanguages { Cpp = 0, Csharp = 1, C = 2 , Unknown = 99}
 

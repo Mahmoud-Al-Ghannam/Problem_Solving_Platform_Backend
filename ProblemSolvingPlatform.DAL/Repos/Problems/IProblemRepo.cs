@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.DAL.Models.Problems;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Tags;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,10 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
         public Task<bool> UpdateProblemAsync(UpdateProblemModel newProblem);
         public Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy);
 
-        public Task<ProblemModel> GetProblemByIDAsync(int problemID);
+        public Task<ProblemModel?> GetProblemByIDAsync(int problemID);
         public Task<IEnumerable<TagModel>?> GetProblemTagsAsync(int problemID);
 
         public Task<bool> ProblemExistsAsync(int problemId);
+        public Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page,int limit,string? title = null,byte? difficulty = null,int? createdBy = null,DateTime? createdAt = null,IEnumerable<int>? tagIDs = null);
     }
 }

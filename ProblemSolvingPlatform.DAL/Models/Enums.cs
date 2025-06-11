@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Models {
     public class Enums {
-        public enum Difficulty { eEasy = 0, eMedium = 1, eHard = 2 }
+        public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
     }
 }

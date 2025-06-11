@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
@@ -8,9 +9,9 @@ using ProblemSolvingPlatform.DAL.Models.Users;
 using ProblemSolvingPlatform.DAL.Repos.Tags;
 using ProblemSolvingPlatform.DAL.Repos.Tests;
 using System.Data;
+using static ProblemSolvingPlatform.DAL.Models.Enums;
 
-namespace ProblemSolvingPlatform.DAL.Repos.Problems
-{
+namespace ProblemSolvingPlatform.DAL.Repos.Problems {
     public class ProblemRepo : IProblemRepo {
 
         private readonly DbContext _db;
@@ -274,7 +275,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems
             }
         }
 
-        public async Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy) {
+        public async Task<bool> DeleteProblemByIDAsync(int problemID, int deletedBy) {
             try {
                 using (SqlConnection connection = _db.GetConnection()) {
                     await connection.OpenAsync();
@@ -297,6 +298,55 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems
             }
             catch (Exception ex) {
                 return false;
+            }
+        }
+
+        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+            var problems = new List<ShortProblemModel>();
+
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    await connection.OpenAsync();
+                    using (SqlCommand command = new("SP_Problem_GetAllProblems", connection)) {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@Page", page);
+                        command.Parameters.AddWithValue("@Limit", limit);
+                        command.Parameters.AddWithValue("@Title", string.IsNullOrWhiteSpace(title) ? DBNull.Value : title);
+                        command.Parameters.AddWithValue("@Difficulty", difficulty == null ? DBNull.Value : difficulty);
+                        command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy);
+                        command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
+                        SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
+                        TagIDsParm.TypeName = "dbo.IntegersTableType";
+                        DataTable dtTagIDs = new DataTable();
+                        dtTagIDs.Columns.Add("val", typeof(int));
+                        foreach (int x in tagIDs ?? [])
+                            dtTagIDs.Rows.Add(x);
+                        TagIDsParm.Value = dtTagIDs;
+                        command.Parameters.Add(TagIDsParm);
+
+                        using (var reader = await command.ExecuteReaderAsync()) {
+                            while (await reader.ReadAsync()) {
+                                int problemID = Convert.ToInt32(reader["ProblemID"]);
+                                ShortProblemModel problem = new ShortProblemModel() {
+                                    ProblemID = problemID,
+                                    Title = reader["Title"].ToString() ?? "",
+                                    GeneralDescription = reader["GeneralDescription"].ToString() ?? "",
+                                    Difficulty = (Difficulty)Convert.ToInt32(reader["Difficulty"]),
+                                    SolutionsCount = Convert.ToInt32(reader["SolutionsCount"]),
+                                    AttemptsCount = Convert.ToInt32(reader["AttemptsCount"]),
+                                    Tags = await GetProblemTagsAsync(problemID) ?? []
+                                };
+                                problems.Add(problem);
+                            }
+                        }
+
+                        return problems;
+                    }
+                }
+            }
+            catch (Exception ex) {
+                return null;
             }
         }
     }

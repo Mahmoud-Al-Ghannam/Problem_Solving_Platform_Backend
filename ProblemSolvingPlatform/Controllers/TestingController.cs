@@ -30,8 +30,8 @@ namespace ProblemSolvingPlatform.Controllers
         [SwaggerOperation("This is summary","This is description",OperationId = "This is Operation ID")]
         [HttpGet("add")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<int>> sum(int n1,int n2) {
-            return Ok(n1+n2);
+        public async Task<ActionResult<int>> sum([FromBody] List<int> n1, [FromQuery] int x) {
+            return Ok(n1.Sum() * x);
         }
     }
 }

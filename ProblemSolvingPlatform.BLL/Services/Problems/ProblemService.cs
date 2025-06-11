@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
 namespace ProblemSolvingPlatform.BLL.Services.Problems {
     public class ProblemService : IProblemService {
@@ -89,6 +90,19 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
 
         public async Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy) {
             return await _problemRepo.DeleteProblemByIDAsync(problemID, deletedBy); 
+        }
+
+        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, createdAt, tagIDs))
+                .Select (model => new ShortProblemDTO() { 
+                    ProblemID = model.ProblemID,
+                    Difficulty = (Difficulty)(int) model.Difficulty,
+                    Title = model.Title,
+                    GeneralDescription = model.GeneralDescription,
+                    SolutionsCount = model.SolutionsCount,
+                    AttemptsCount = model.AttemptsCount,
+                    Tags = model.Tags.Select(t => new TagDTO () { Name = t.Name,TagID = t.TagID}),
+                });
         }
 
         public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID) {

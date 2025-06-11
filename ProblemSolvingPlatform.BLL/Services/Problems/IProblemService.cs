@@ -12,5 +12,6 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         public Task<bool> UpdateProblemAsync(UpdateProblemDTO updateProblem,int userID);
         public Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy);
         public Task<ProblemDTO?> GetProblemByIDAsync(int problemID);
+        public Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null);
     }
 }
