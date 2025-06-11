@@ -5,7 +5,7 @@ using ProblemSolvingPlatform.BLL.Services.TestCases;
 namespace ProblemSolvingPlatform.Controllers {
 
     [ApiController]
-    [Route("/api/testcases")]
+    [Route("/api/test-cases")]
     public class TestCasesController : Controller {
         
         private readonly ITestCaseService _testCaseService;

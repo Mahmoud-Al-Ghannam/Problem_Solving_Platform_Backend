@@ -9,18 +9,18 @@ using System.Security.Claims;
 namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
-[Route("api/profile")]
-public class ProfileController : ControllerBase
+[Route("api/profiles")]
+public class ProfilesController : ControllerBase
 {
     private IUserService _userService { get; }
-    public ProfileController(IUserService userService)
+    public ProfilesController(IUserService userService)
     {
         _userService = userService;
     }
 
 
-    [HttpGet("user-info")]
-    public async Task<IActionResult> GetUserInfo([FromQuery] int userId)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetUserInfo(int userId)
     {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null)
@@ -29,7 +29,7 @@ public class ProfileController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("update-info")]
+    [HttpPut("")]
     public async Task<IActionResult> UpdateUserInfo([FromForm] UpdateUserDTO updateUser)
     {
         var userId = AuthUtils.GetUserId(User);
@@ -43,7 +43,7 @@ public class ProfileController : ControllerBase
     }
 
     // get all users (without token)
-    [HttpGet("users")]
+    [HttpGet("")]
     public async Task<IActionResult> GetAllUsers([FromQuery] int page = 1, [FromQuery] int limit = 2, [FromQuery] string? username = null)
     {
         if (page <= 0 || limit <= 0 || limit > 100)

@@ -12,7 +12,7 @@ using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/submissions")]
 public class SubmissionsController : ControllerBase
 {
     private ISubmissionService _submissionService { get; }
@@ -22,7 +22,7 @@ public class SubmissionsController : ControllerBase
     }
 
 
-    [HttpPost("/submit")]
+    [HttpPost("submit")]
     [Authorize]
     public async Task<IActionResult> Submit(SubmitDTO submitDTO)
     {
@@ -37,7 +37,7 @@ public class SubmissionsController : ControllerBase
         return BadRequest(new {message =  response.msg});
     }
 
-    [HttpPut("change-visionScope")]
+    [HttpPut("change-vision-scope")]
     [Authorize]
     public async Task<IActionResult> ChangeVisionScope(int submissionId, int visionScopeId)
     {
@@ -52,7 +52,7 @@ public class SubmissionsController : ControllerBase
     }
 
 
-    [HttpGet("visionScopes")]
+    [HttpGet("vision-scopes")]
     public IActionResult GetAllVisionScopes()
     {
         var result = new List<object>();
@@ -72,7 +72,7 @@ public class SubmissionsController : ControllerBase
 
 
 
-    [HttpGet("all-submissions")]
+    [HttpGet("")]
     [Authorize]
     public async Task<IActionResult> GetSubmissions(int problemId, int page = 1, int limit = 10,VisionScope scope = VisionScope.all) 
     {
@@ -90,7 +90,7 @@ public class SubmissionsController : ControllerBase
     
     
     
-    [HttpGet("details")]
+    [HttpGet("{submissionId}")]
     public async Task<IActionResult> GetSubmissionDetails(int submissionId)
     {
         var userId = AuthUtils.GetUserId(User);
