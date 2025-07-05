@@ -1,4 +1,5 @@
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProblemSolvingPlatform.API.Compiler.Services;
@@ -19,13 +20,114 @@ using ProblemSolvingPlatform.DAL.Repos.Tags;
 using ProblemSolvingPlatform.DAL.Repos.Tests;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using ProblemSolvingPlatform.Middlewares;
+using ProblemSolvingPlatform.Options;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace ProblemSolvingPlatform
-{
+namespace ProblemSolvingPlatform {
     public class Program {
+
+        private static ConstraintsOption GetConstraintsFromConfiguration(ConfigurationManager config) {
+            ConstraintsOption constraints = new ConstraintsOption();
+
+            #region Problem 
+            constraints.Problem.TitleLength = new Range(
+                int.Parse(config["Constraints:Problem:Title:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:Title:MaxLength"] ?? "0")
+            );
+            constraints.Problem.GeneralDescriptionLength = new Range(
+                int.Parse(config["Constraints:Problem:GeneralDescription:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:GeneralDescription:MaxLength"] ?? "0")
+            );
+            constraints.Problem.InputDescriptionLength = new Range(
+                int.Parse(config["Constraints:Problem:InputDescription:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:InputDescription:MaxLength"] ?? "0")
+            );
+            constraints.Problem.OutputDescriptionLength = new Range(
+                int.Parse(config["Constraints:Problem:OutputDescription:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:OutputDescription:MaxLength"] ?? "0")
+            );
+            constraints.Problem.NoteLength = new Range(
+                int.Parse(config["Constraints:Problem:Note:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:Note:MaxLength"] ?? "0")
+            );
+            constraints.Problem.TutorialLength = new Range(
+                int.Parse(config["Constraints:Problem:Tutorial:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:Tutorial:MaxLength"] ?? "0")
+            );
+            constraints.Problem.SolutionCodeLength = new Range(
+                int.Parse(config["Constraints:Problem:SolutionCode:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Problem:SolutionCode:MaxLength"] ?? "0")
+            );
+            constraints.Problem.NoTotalTestCases = new Range(
+               int.Parse(config["Constraints:Problem:NoTotalTestCases:Min"] ?? "0"),
+               int.Parse(config["Constraints:Problem:NoTotalTestCases:Max"] ?? "0")
+            );
+            constraints.Problem.NoSampleTestCases = new Range(
+               int.Parse(config["Constraints:Problem:NoSampleTestCases:Min"] ?? "0"),
+               int.Parse(config["Constraints:Problem:NoSampleTestCases:Max"] ?? "0")
+            );
+            constraints.Problem.TimeLimitMS = new Range(
+               int.Parse(config["Constraints:Problem:TimeLimitMS:Min"] ?? "0"),
+               int.Parse(config["Constraints:Problem:TimeLimitMS:Max"] ?? "0")
+            );
+            #endregion
+
+            #region TestCase
+            constraints.TestCase.General.InputLength = new Range(
+                int.Parse(config["Constraints:TestCase:General:Input:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:TestCase:General:Input:MaxLength"] ?? "0")
+            );
+            constraints.TestCase.General.OutputLength = new Range(
+                int.Parse(config["Constraints:TestCase:General:Output:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:TestCase:General:Output:MaxLength"] ?? "0")
+            );
+            constraints.TestCase.Sample.InputLength = new Range(
+                int.Parse(config["Constraints:TestCase:Sample:Input:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:TestCase:Sample:Input:MaxLength"] ?? "0")
+            );
+            constraints.TestCase.Sample.OutputLength = new Range(
+                int.Parse(config["Constraints:TestCase:Sample:Output:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:TestCase:Sample:Output:MaxLength"] ?? "0")
+            );
+            constraints.TestCase.Sample.InputNoLines = new Range(
+                int.Parse(config["Constraints:TestCase:Sample:Input:MinNoLines"] ?? "0"),
+                int.Parse(config["Constraints:TestCase:Sample:Input:MaxNoLines"] ?? "0")
+            );
+            constraints.TestCase.Sample.OutputNoLines = new Range(
+                int.Parse(config["Constraints:TestCase:Sample:Output:MinNoLines"] ?? "0"),
+                int.Parse(config["Constraints:TestCase:Sample:Output:MaxNoLines"] ?? "0")
+            );
+            #endregion
+
+            #region Tag
+            constraints.Tag.NameLength = new Range(
+                int.Parse(config["Constraints:Tag:Name:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Tag:Name:MaxLength"] ?? "0")
+            );
+            #endregion
+
+            #region User
+            constraints.User.UsernameLength = new Range(
+                int.Parse(config["Constraints:User:Username:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:User:Username:MaxLength"] ?? "0")
+            );
+            constraints.User.PasswordLength = new Range(
+                int.Parse(config["Constraints:User:Password:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:User:Password:MaxLength"] ?? "0")
+            );
+            #endregion
+
+            #region Submission 
+            constraints.Submission.CodeLength = new Range(
+                int.Parse(config["Constraints:Submission:Code:MinLength"] ?? "0"),
+                int.Parse(config["Constraints:Submission:Code:MaxLength"] ?? "0")
+            );
+            #endregion
+
+            return constraints;
+        }
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +172,9 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>();
             builder.Services.AddScoped<ISubmissionTestRepo, SubmissionTestRepo>();
 
+            ConstraintsOption constraintsOption = GetConstraintsFromConfiguration(builder.Configuration);
+            builder.Services.AddSingleton(constraintsOption);
+             
 
             builder.Services.AddHttpContextAccessor();
 
@@ -86,10 +191,9 @@ namespace ProblemSolvingPlatform
                 };
             });
             builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-               {
-                   options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-               });
+            .AddJsonOptions(options => {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
 
             #region authSwagger
@@ -117,7 +221,7 @@ namespace ProblemSolvingPlatform
                     Array.Empty<string>()
                     }
                 });
-                options.UseInlineDefinitionsForEnums(); 
+                options.UseInlineDefinitionsForEnums();
             });
             #endregion
 
