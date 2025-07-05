@@ -188,7 +188,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             return problemModel;
         }
 
-        public async Task<bool> ProblemExistsAsync(int problemId) {
+        public async Task<bool> DoesProblemExistByIDAsync(int problemId) {
             // run the code 
             try {
                 using (SqlConnection connection = _db.GetConnection()) {
@@ -301,7 +301,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,byte? role = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
             var problems = new List<ShortProblemModel>();
 
             try {
@@ -315,6 +315,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         command.Parameters.AddWithValue("@Title", string.IsNullOrWhiteSpace(title) ? DBNull.Value : title);
                         command.Parameters.AddWithValue("@Difficulty", difficulty == null ? DBNull.Value : difficulty);
                         command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy);
+                        command.Parameters.AddWithValue("@Role", role);
                         command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
                         TagIDsParm.TypeName = "dbo.IntegersTableType";

@@ -20,12 +20,14 @@ using ProblemSolvingPlatform.DAL.Repos.Tags;
 using ProblemSolvingPlatform.DAL.Repos.Tests;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using ProblemSolvingPlatform.Middlewares;
-using ProblemSolvingPlatform.Options;
+using ProblemSolvingPlatform.BLL.Options.Constraint;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using ProblemSolvingPlatform.BLL.Validation.Problem;
 
-namespace ProblemSolvingPlatform {
+namespace ProblemSolvingPlatform
+{
     public class Program {
 
         private static ConstraintsOption GetConstraintsFromConfiguration(ConfigurationManager config) {
@@ -171,6 +173,7 @@ namespace ProblemSolvingPlatform {
             builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
             builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>();
             builder.Services.AddScoped<ISubmissionTestRepo, SubmissionTestRepo>();
+            builder.Services.AddScoped<ProblemValidation>();
 
             ConstraintsOption constraintsOption = GetConstraintsFromConfiguration(builder.Configuration);
             builder.Services.AddSingleton(constraintsOption);

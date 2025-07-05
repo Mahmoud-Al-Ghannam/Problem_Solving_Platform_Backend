@@ -118,6 +118,26 @@ public class UserRepo : IUserRepo
         }
     }
 
+    public async Task<bool> DoesUserExistByIDAsync(int UserID) {
+        using (SqlConnection connection = _db.GetConnection()) {
+
+            using (SqlCommand cmd = new("SP_User_DoesUserExistByID", connection)) {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@UserID", UserID);
+
+                try {
+                    await connection.OpenAsync();
+                    var res = await cmd.ExecuteScalarAsync();
+                    return (bool)res;
+                }
+                catch (Exception ex) {
+                    return false;
+                }
+            }
+        }
+    }
+
     public async Task<List<Models.Users.User>> GetAllUsersByFiltersAsync(int page, int limit, string username)
     {
         var usersLST = new List<Models.Users.User>(); 

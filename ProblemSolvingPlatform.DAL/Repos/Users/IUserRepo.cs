@@ -14,6 +14,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Users {
         public Task<Models.Users.User> GetUserByIdAsync(int userId);
 
         public Task<bool> DoesUserExistByUsernameAsync(string Username);
+        public Task<bool> DoesUserExistByIDAsync(int UserID);
 
         public Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
 

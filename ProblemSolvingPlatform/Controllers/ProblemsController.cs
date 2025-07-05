@@ -18,7 +18,7 @@ namespace ProblemSolvingPlatform.Controllers {
             _problemService = problemService;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,8 +72,8 @@ namespace ProblemSolvingPlatform.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page, [FromQuery] int limit, [FromQuery] string? title = null,[FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] DateTime? createdAt = null, [FromBody] IEnumerable<int>? tagIDs = null) {
-            var problems = await _problemService.GetAllProblemsAsync(page,limit,title,difficulty,createdBy,createdAt,tagIDs);
+        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery][Range(1,int.MaxValue)] int page=1, [FromQuery][Range(1, int.MaxValue)] int limit=20, [FromQuery] string? title = null,[FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] byte? role = null, [FromQuery] DateTime? createdAt = null, [FromBody] IEnumerable<int>? tagIDs = null) {
+            var problems = await _problemService.GetAllProblemsAsync(page,limit,title,difficulty,createdBy,role,createdAt,tagIDs);
             if(problems == null)
                 return StatusCode(StatusCodes.Status500InternalServerError);
             return Ok(problems);

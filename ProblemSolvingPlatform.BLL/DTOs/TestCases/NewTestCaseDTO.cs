@@ -8,13 +8,8 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.TestCases {
     public class NewTestCaseDTO {
-
-        [Required]
-        [MinLengthAfterTrim(1)]
         public string Input { get; set; }
-        [Required]
         public bool IsPublic { get; set; }
-        [Required]
         public bool IsSample { get; set; }
     }
 }

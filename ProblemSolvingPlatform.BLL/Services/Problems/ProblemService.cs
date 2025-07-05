@@ -4,13 +4,20 @@ using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
 using ProblemSolvingPlatform.BLL.DTOs.TestCases;
+using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
 using ProblemSolvingPlatform.BLL.Exceptions;
+using ProblemSolvingPlatform.BLL.Options.Constraint;
 using ProblemSolvingPlatform.BLL.Services.Compiler;
+using ProblemSolvingPlatform.BLL.Services.Users;
 using ProblemSolvingPlatform.BLL.Validation;
+using ProblemSolvingPlatform.BLL.Validation.Problem;
 using ProblemSolvingPlatform.DAL.Models.Problems;
+using ProblemSolvingPlatform.DAL.Models.Users;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
+using ProblemSolvingPlatform.DAL.Repos.Users;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,21 +27,29 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
     public class ProblemService : IProblemService {
 
         private readonly IProblemRepo _problemRepo;
+        private readonly IUserService _userService;
         private readonly ICompilerService _compilerService;
+        private readonly ProblemValidation _problemValidation;
 
-        public ProblemService(IProblemRepo problemRepo,ICompilerService compilerService) {
+        public ProblemService(IProblemRepo problemRepo, ICompilerService compilerService, ProblemValidation problemValidation, IUserService userService) {
             _problemRepo = problemRepo;
             _compilerService = compilerService;
+            _problemValidation = problemValidation;
+            _userService = userService;
         }
 
-        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem,int createdBy) {
-            var errors = ValidationHelper.ValidateToDictionary(newProblem, out bool isValid);
-            if(!isValid) 
-                throw new CustomValidationException(errors);
+        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy) {
+            Dictionary<string, List<string>> errors = _problemValidation.ValidateNewProblem(newProblem);
+            if (errors == null) errors = new();
 
+            if (!errors.Keys.Contains("UserID")) errors["UserID"] = [];
+
+            if (!await _userService.DoesUserExistByIDAsync(createdBy)) {
+                errors["UserID"].Add($"The user with id = {createdBy} was not found");
+            }
 
             CompileRequestDTO compileRequestDTO = new CompileRequestDTO() {
-                Inputs = newProblem.TestCases.Select(tc =>  tc.Input).ToList(),
+                Inputs = newProblem.TestCases.Select(tc => tc.Input).ToList(),
                 Source = newProblem.SolutionCode,
                 Compiler = newProblem.CompilerName,
                 TimeoutMs = newProblem.TimeLimitMilliseconds
@@ -43,26 +58,35 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
 
             List<CompileResponseDTO> compileReponsesDTO = await _compilerService.CompileAsync(compileRequestDTO);
 
-            if (compileReponsesDTO.Any(res => !res.CompilationSuccess || 
-                                    !res.ExecutionSuccess || 
-                                    res.Timeout || 
+            if (compileReponsesDTO.Any(res => !res.CompilationSuccess ||
+                                    !res.ExecutionSuccess ||
+                                    res.Timeout ||
                                     string.IsNullOrEmpty(res.Output))
                 ) {
-                errors = new Dictionary<string, List<string>>();
-                for(int i=0;i<compileReponsesDTO.Count;i++) {
-                    if(!compileReponsesDTO[i].CompilationSuccess) {
-                        errors[$"TestCases[{i}]"] = [string.Join("\n",compileReponsesDTO[i].CompilationErrors??[])];
-                    } else if (!compileReponsesDTO[i].ExecutionSuccess) {
-                        errors[$"TestCases[{i}]"] = [string.Join("\n", compileReponsesDTO[i].ExecutionErrors ?? [])];
-                    } else if (compileReponsesDTO[i].Timeout) {
-                        errors[$"TestCases[{i}]"] = [$"Timeout: The time limit of problem is {newProblem.TimeLimitMilliseconds} but this test case took {compileReponsesDTO[i].ExecutionTimeMs}ms"];
-                    } else if (string.IsNullOrEmpty(compileReponsesDTO[i].Output)) {
-                        errors[$"TestCases[{i}]"] = [$"The output of this test case is null or empty."];
+                for (int i = 0; i < compileReponsesDTO.Count; i++) {
+                    if (!errors.Keys.Contains($"TestCases[{i}]"))
+                        errors[$"TestCases[{i}]"] = [];
+                    if (!errors.Keys.Contains($"SolutionCode"))
+                        errors[$"SolutionCode"] = [];
+
+                    if (!compileReponsesDTO[i].CompilationSuccess) {
+                        errors[$"SolutionCode"].Add(string.Join("\n", compileReponsesDTO[i].CompilationErrors ?? []));
+                        break;
+                    }
+                    else if (!compileReponsesDTO[i].ExecutionSuccess) {
+                        errors[$"TestCases[{i}]"].Add(string.Join("\n", compileReponsesDTO[i].ExecutionErrors ?? []));
+                    }
+                    else if (compileReponsesDTO[i].Timeout) {
+                        errors[$"TestCases[{i}]"].Add($"Timeout: The time limit of problem is {newProblem.TimeLimitMilliseconds} but this test case took {compileReponsesDTO[i].ExecutionTimeMs}ms");
+                    }
+                    else if (string.IsNullOrEmpty(compileReponsesDTO[i].Output)) {
+                        errors[$"TestCases[{i}]"].Add($"The output of this test case is null or empty.");
                     }
                 }
+            }
 
-                throw new CustomValidationException(errors);
-            } 
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
 
             // Convert NewProblemDTO to NewProblemModel
             NewProblemModel model = new NewProblemModel() {
@@ -77,9 +101,9 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 Difficulty = (DAL.Models.Enums.Difficulty)(int)newProblem.Difficulty,
                 SolutionCode = newProblem.SolutionCode,
                 TimeLimitMilliseconds = newProblem.TimeLimitMilliseconds,
-                TestCases = newProblem.TestCases.Select((t,i) => new DAL.Models.TestCases.NewTestCaseModel() {
+                TestCases = newProblem.TestCases.Select((t, i) => new DAL.Models.TestCases.NewTestCaseModel() {
                     Input = t.Input,
-                    Output = compileReponsesDTO[i].Output??"", 
+                    Output = compileReponsesDTO[i].Output ?? "",
                     IsPublic = t.IsPublic,
                     IsSample = t.IsSample
                 }).ToList(),
@@ -88,24 +112,92 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             return await _problemRepo.AddProblemAsync(model);
         }
 
-        public async Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy) {
-            return await _problemRepo.DeleteProblemByIDAsync(problemID, deletedBy); 
+        public async Task<bool> DeleteProblemByIDAsync(int problemID, int deletedBy) {
+            Dictionary<string, List<string>> errors = new();
+
+            errors["ProblemID"] = [];
+            errors["UserID"] = [];
+
+            if (!await _userService.DoesUserExistByIDAsync(deletedBy))
+                errors["UserID"].Add($"The user with id = {deletedBy} was not found");
+
+            if (!await _problemRepo.DoesProblemExistByIDAsync(problemID))
+                errors["ProblemID"].Add($"The problem with id = {problemID} was not found");
+            else {
+
+                ProblemModel? existingProblem = await _problemRepo.GetProblemByIDAsync(problemID);
+                UserDTO? existingUser = await _userService.GetUserByIdAsync(deletedBy);
+                if (existingProblem == null) throw new Exception("Some errors occurred");
+                if (existingUser == null) throw new Exception("Some errors occurred");
+
+                if (existingUser.Role == Role.User && existingProblem.CreatedBy != deletedBy)
+                    errors["UserID"].Add($"The problem with id = {problemID} is not belong to user with id = {deletedBy}");
+            }
+
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
+
+            return await _problemRepo.DeleteProblemByIDAsync(problemID, deletedBy);
         }
 
-        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
-            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, createdAt, tagIDs))
-                .Select (model => new ShortProblemDTO() { 
+
+        public async Task<bool> UpdateProblemAsync(UpdateProblemDTO updateProblem, int userID) {
+            Dictionary<string, List<string>> errors = _problemValidation.ValidateUpdateProblem(updateProblem);
+            if (errors == null) errors = new();
+
+            if (!errors.Keys.Contains("ProblemID")) errors["ProblemID"] = [];
+            if (!errors.Keys.Contains("UserID")) errors["UserID"] = [];
+
+            if (!await _userService.DoesUserExistByIDAsync(userID))
+                errors["UserID"].Add($"The user with id = {userID} was not found");
+
+            if (!await _problemRepo.DoesProblemExistByIDAsync(updateProblem.ProblemID))
+                errors["ProblemID"].Add($"The problem with id = {updateProblem.ProblemID} was not found");
+            else {
+                ProblemModel? existingProblem = await _problemRepo.GetProblemByIDAsync(updateProblem.ProblemID);
+                UserDTO? existingUser = await _userService.GetUserByIdAsync(userID);
+                if (existingProblem == null) throw new Exception("Some errors occurred");
+                if (existingUser == null) throw new Exception("Some errors occurred");
+
+                if (existingUser.Role == Role.User && existingProblem.CreatedBy != userID) {
+                    errors["UserID"].Add($"The problem with id = {updateProblem.ProblemID} is not belong to user with id = {userID}");
+                }
+            }
+
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
+
+            // Convert UpdateProblemDTO to UpdateProblemModel
+            UpdateProblemModel model = new UpdateProblemModel() {
+                ProblemID = updateProblem.ProblemID,
+                Title = updateProblem.Title,
+                GeneralDescription = updateProblem.GeneralDescription,
+                InputDescription = updateProblem.InputDescription,
+                OutputDescription = updateProblem.OutputDescription,
+                Note = updateProblem.Note,
+                Tutorial = updateProblem.Tutorial,
+                Difficulty = (DAL.Models.Enums.Difficulty)(byte)updateProblem.Difficulty,
+            };
+            return await _problemRepo.UpdateProblemAsync(model);
+        }
+
+
+        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, byte? role = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy,role, createdAt, tagIDs))
+                ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
-                    Difficulty = (Difficulty)(int) model.Difficulty,
+                    Difficulty = (Difficulty)(int)model.Difficulty,
                     Title = model.Title,
                     GeneralDescription = model.GeneralDescription,
                     SolutionsCount = model.SolutionsCount,
                     AttemptsCount = model.AttemptsCount,
-                    Tags = model.Tags.Select(t => new TagDTO () { Name = t.Name,TagID = t.TagID}),
+                    Tags = model.Tags.Select(t => new TagDTO() { Name = t.Name, TagID = t.TagID }),
                 });
         }
 
         public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID) {
+            if (!await _problemRepo.DoesProblemExistByIDAsync(problemID)) throw new CustomValidationException("ProblemID", [$"The problem with id = {problemID} was not found"]);
+
             var problemModel = await _problemRepo.GetProblemByIDAsync(problemID);
             if (problemModel == null) return null;
 
@@ -125,7 +217,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 Difficulty = (Enums.Difficulty)(int)problemModel.Difficulty,
                 SolutionCode = problemModel.SolutionCode,
                 TimeLimitMilliseconds = problemModel.TimeLimitMilliseconds,
-                
+
                 SampleTestCases = problemModel.SampleTestCases.Select(obj => new TestCaseDTO() {
                     TestCaseID = obj.TestCaseID,
                     ProblemID = obj.ProblemID,
@@ -135,7 +227,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                     IsSample = obj.IsSample
                 }).ToList(),
 
-                Tags = problemModel.Tags.Select (obj => new TagDTO() { 
+                Tags = problemModel.Tags.Select(obj => new TagDTO() {
                     TagID = obj.TagID,
                     Name = obj.Name
                 }).ToList()
@@ -143,21 +235,6 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
 
 
             return problemDTO;
-        }
-
-        public async Task<bool> UpdateProblemAsync(UpdateProblemDTO updateProblem, int userID) {
-            // Convert UpdateProblemDTO to UpdateProblemModel
-            UpdateProblemModel model = new UpdateProblemModel() {
-                ProblemID = updateProblem.ProblemID,
-                Title = updateProblem.Title,
-                GeneralDescription = updateProblem.GeneralDescription,
-                InputDescription = updateProblem.InputDescription,
-                OutputDescription = updateProblem.OutputDescription,
-                Note = updateProblem.Note,
-                Tutorial = updateProblem.Tutorial,
-                Difficulty = (DAL.Models.Enums.Difficulty)(byte)updateProblem.Difficulty,
-            };
-            return await _problemRepo.UpdateProblemAsync(model);
         }
     }
 }

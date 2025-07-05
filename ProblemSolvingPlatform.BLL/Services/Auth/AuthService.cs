@@ -16,8 +16,6 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
-
-
     public async Task<AuthResponseDTO> LoginAsync(LoginRequestDTO loginDTO)
     {
         var user = await _userRepo.GetUserByUsernameAndPasswordAsync(loginDTO.Username, loginDTO.Password);
@@ -49,11 +47,11 @@ public class AuthService : IAuthService
         
         string? imagePath = await FileService.SaveImageAndGetURL(registerDTO.ProfileImage);
 
-        DAL.Models.Users.User user = new()
-        {
+        DAL.Models.Users.User user = new() {
             Username = registerDTO.Username,
             Password = registerDTO.Password,
-            ImagePath = imagePath
+            ImagePath = imagePath,
+            Role = 1 // 0 for system role, 1 for user role
         };
         var userId = await _userRepo.AddUserAsync(user);
         if (!userId.HasValue)

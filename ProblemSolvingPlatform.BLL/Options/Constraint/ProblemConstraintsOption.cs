@@ -1,5 +1,7 @@
-﻿namespace ProblemSolvingPlatform.Options {
-    public class ProblemConstraintsOption {
+﻿namespace ProblemSolvingPlatform.BLL.Options.Constraint
+{
+    public class ProblemConstraintsOption
+    {
         public Range TitleLength { get; set; }
         public Range GeneralDescriptionLength { get; set; }
         public Range InputDescriptionLength { get; set; }

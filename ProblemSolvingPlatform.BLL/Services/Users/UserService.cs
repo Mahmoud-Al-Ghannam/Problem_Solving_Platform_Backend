@@ -2,6 +2,7 @@
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using System.Collections.Immutable;
+using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -34,7 +35,7 @@ public class UserService : IUserService
             UserId = user.UserId,
             Username = user.Username,
             CreatedAt = user.CreatedAt,
-            role = user.Role,
+            Role = (Role) user.Role,
             ImagePath = user.ImagePath != null ? $"{baseUrl}/Images/{user.ImagePath}" : null
         };
     }
@@ -77,8 +78,16 @@ public class UserService : IUserService
             Username = x.Username,
             CreatedAt = x.CreatedAt,
             ImagePath = x.ImagePath != null ? $"{baseUrl}/Images/{x.ImagePath}" : null,
-            role = x.Role
+            Role = (Role) x.Role
         }).ToList();
         return usersInfoLST;
+    }
+
+    public async Task<bool> DoesUserExistByUsernameAsync(string Username) {
+        return await _userRepo.DoesUserExistByUsernameAsync(Username);
+    }
+
+    public async Task<bool> DoesUserExistByIDAsync(int UserID) {
+        return await _userRepo.DoesUserExistByIDAsync(UserID);
     }
 }

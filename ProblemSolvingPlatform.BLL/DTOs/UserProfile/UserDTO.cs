@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
 
@@ -11,7 +12,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
         public int UserId { get; set; }
         public string Username { get; set; }
         public string? ImagePath { get; set; }
-        public byte role { get; set; }
+        public Role Role { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

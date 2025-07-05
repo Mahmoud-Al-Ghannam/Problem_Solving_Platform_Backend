@@ -1,4 +1,4 @@
-﻿namespace ProblemSolvingPlatform.Options.TestCase
+﻿namespace ProblemSolvingPlatform.BLL.Options.Constraint.TestCase
 {
     public class TestCaseConstraintsOption
     {

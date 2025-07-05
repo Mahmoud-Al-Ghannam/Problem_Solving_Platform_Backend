@@ -10,7 +10,7 @@ namespace ProblemSolvingPlatform.BLL.Exceptions {
         public Dictionary<string, List<string>> errors { get; set; } = new Dictionary<string, List<string>>();
         public CustomValidationException() { }
         public CustomValidationException(string message) : base(message) {
-            this.errors = new Dictionary<string, List<string>> { [""] = new List<string> { message } };
+            this.errors = new Dictionary<string, List<string>> { ["Unknown"] = new List<string> { message } };
         }
         public CustomValidationException(Dictionary<string, List<string>> errors) : base(JsonConvert.SerializeObject(errors)) {
             this.errors = errors;

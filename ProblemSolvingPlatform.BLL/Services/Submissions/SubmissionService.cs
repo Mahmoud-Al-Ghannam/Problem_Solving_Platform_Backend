@@ -31,7 +31,7 @@ public class SubmissionService : ISubmissionService
     // general submission 
     public async Task<SubmitResponseDTO> Submit(SubmitDTO submitDTO, int userId)
     {
-        if (!await _problemRepo.ProblemExistsAsync(submitDTO.ProblemId))
+        if (!await _problemRepo.DoesProblemExistByIDAsync(submitDTO.ProblemId))
             return new SubmitResponseDTO()
             {
                 isSuccess = false,
