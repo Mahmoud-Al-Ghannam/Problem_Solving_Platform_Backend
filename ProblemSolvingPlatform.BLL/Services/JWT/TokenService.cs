@@ -33,7 +33,7 @@ public class TokenService
 
             Subject = new ClaimsIdentity(new Claim[] {
                 new Claim(ClaimTypes.NameIdentifier, userID.ToString()),
-                new Claim(ClaimTypes.Role,(role == Enums.Role.System ? "System" : "User"))
+                new Claim(ClaimTypes.Role,(role == Enums.Role.System ? Constants.Roles.System : Constants.Roles.User))
             })
         };
 

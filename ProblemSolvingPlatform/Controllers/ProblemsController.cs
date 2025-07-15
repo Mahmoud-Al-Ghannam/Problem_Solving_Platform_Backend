@@ -19,9 +19,9 @@ namespace ProblemSolvingPlatform.Controllers {
             _problemService = problemService;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int?>> AddProblem([FromBody] NewProblemDTO newProblemDTO) {
             int? id = null;
             int userID = AuthUtils.GetUserId(User)??-1;

@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.DAL.Models.Problems;
+﻿using Microsoft.Identity.Client;
+using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Tags;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Tags {
     public interface ITagRepo {
+
+        public Task<int?> AddNewTagAsync(NewTagModel newTag);
+        public Task<bool> UpdateTagAsync(TagModel tag);
+        public Task<bool> DeleteTagAsync(int tagID);
+        public Task<bool> DoesTagExistByIDAsync(int tagID);
+        public Task<bool> DoesTagExistByNameAsync(string name);
         public Task<IEnumerable<TagModel>?> GetAllTagsAsync ();
     }
 }
