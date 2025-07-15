@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Problems;
+using ProblemSolvingPlatform.Responses;
 using System.ComponentModel.DataAnnotations;
 
 namespace ProblemSolvingPlatform.Controllers {
 
     [ApiController]
     [Route("api/problems")]
-    public class ProblemsController : Controller {
+    public class ProblemsController : GeneralController {
 
         private readonly IProblemService _problemService;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using ProblemSolvingPlatform.BLL.Exceptions;
+using ProblemSolvingPlatform.Responses;
 using System.Text;
 
 namespace ProblemSolvingPlatform.Middlewares {
@@ -18,14 +19,16 @@ namespace ProblemSolvingPlatform.Middlewares {
             catch (CustomValidationException ex) {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Response.ContentType = "application/json";
-                var json = JsonConvert.SerializeObject(ex.errors);
+                BadRequestResponseBody responseBody = new BadRequestResponseBody(ex.errors);    
+                var json = JsonConvert.SerializeObject(responseBody);
                 context.Response.ContentLength = Encoding.UTF8.GetBytes(json).Length;
                 await context.Response.WriteAsync(json);
             }
             catch (Exception ex) {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
-                var json = JsonConvert.SerializeObject(new { error = ex.Message });
+                ErrorResponseBody responseBody = new ErrorResponseBody(ex.Message);
+                var json = JsonConvert.SerializeObject(responseBody);
                 context.Response.ContentLength = Encoding.UTF8.GetBytes(json).Length;
                 await context.Response.WriteAsync(json);
             }

@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client.Extensibility;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
 using ProblemSolvingPlatform.BLL.Services.Users;
+using ProblemSolvingPlatform.Responses;
 using System.Security.Claims;
 
 namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
 [Route("api/profiles")]
-public class ProfilesController : ControllerBase
-{
+public class ProfilesController : GeneralController {
     private IUserService _userService { get; }
     public ProfilesController(IUserService userService)
     {

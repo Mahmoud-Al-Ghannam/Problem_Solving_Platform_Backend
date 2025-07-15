@@ -6,7 +6,7 @@ namespace ProblemSolvingPlatform.Controllers {
 
     [ApiController]
     [Route("/api/test-cases")]
-    public class TestCasesController : Controller {
+    public class TestCasesController : GeneralController {
         
         private readonly ITestCaseService _testCaseService;
 

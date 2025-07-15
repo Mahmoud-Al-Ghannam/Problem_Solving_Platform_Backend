@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
 using ProblemSolvingPlatform.BLL.Services.Tags;
+using ProblemSolvingPlatform.Responses;
 
 namespace ProblemSolvingPlatform.Controllers {
 
     [ApiController]
     [Route("/api/tags")]
-    public class TagsController : Controller {
+    public class TagsController : GeneralController {
 
         private readonly ITagService _tagService;
 

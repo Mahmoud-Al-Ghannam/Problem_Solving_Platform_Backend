@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 using ProblemSolvingPlatform.BLL.Services.Submissions;
+using ProblemSolvingPlatform.Responses;
 using System.Security.Claims;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
@@ -13,8 +14,7 @@ namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
 [Route("api/submissions")]
-public class SubmissionsController : ControllerBase
-{
+public class SubmissionsController : GeneralController {
     private ISubmissionService _submissionService { get; }
     public SubmissionsController(ISubmissionService submissionsService)
     {

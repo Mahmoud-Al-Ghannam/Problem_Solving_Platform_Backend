@@ -9,8 +9,8 @@ namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
-{
+
+public class AuthController : GeneralController {
     private IAuthService _authService { get; }
     public AuthController(IAuthService authService)
     {

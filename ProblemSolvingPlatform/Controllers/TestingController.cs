@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
+using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Auth;
 using ProblemSolvingPlatform.BLL.Services.Submissions.Handling_Submission;
@@ -8,6 +9,7 @@ using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
+using ProblemSolvingPlatform.Responses;
 using Swashbuckle.AspNetCore.Annotations;
 
 
@@ -15,9 +17,7 @@ namespace ProblemSolvingPlatform.Controllers
 {
     [ApiController]
     [Route("api/testing")]
-    
-    public class TestingController : Controller
-    {
+    public class TestingController : GeneralController {
         private readonly DbContext _db;
         private SubmissionHandler _submissionHandler { get; set; }
         public TestingController(DbContext dbContext, SubmissionHandler submissionHandler) {
@@ -26,11 +26,23 @@ namespace ProblemSolvingPlatform.Controllers
         }
 
 
-        [SwaggerResponse(200,"Returns sum of two numbers")]
-        [SwaggerOperation("This is summary","This is description",OperationId = "This is Operation ID")]
+        /// <summary>
+        /// Summary two
+        /// </summary>
+        /// <remarks>
+        ///     Hello Hello
+        /// </remarks>
+        /// <response code="200">
+        ///     {
+        ///         hello hello hello man hi
+        ///     }
+        /// </response>
+        /// <param name="n1">this is first parm</param>
+        /// <param name="x">this is second parm</param>
+        /// <returns>returns some thing </returns>
         [HttpGet("add")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<int>> sum([FromBody] List<int> n1, [FromQuery] int x) {
+        public ActionResult<int> sum([FromBody] List<int> n1, [FromQuery] int x) {
             return Ok(n1.Sum() * x);
         }
     }
