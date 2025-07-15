@@ -33,6 +33,12 @@ namespace ProblemSolvingPlatform
         private static ConstraintsOption GetConstraintsFromConfiguration(ConfigurationManager config) {
             ConstraintsOption constraints = new ConstraintsOption();
 
+            constraints.MinPageNumber = int.Parse(config["Constraints:General:PageNumber:Min"] ?? "0");
+            constraints.PageSize = new Range(
+                int.Parse(config["Constraints:General:PageSize:Min"] ?? "0"),
+                int.Parse(config["Constraints:General:PageSize:Max"] ?? "0")
+            );
+
             #region Problem 
             constraints.Problem.TitleLength = new Range(
                 int.Parse(config["Constraints:Problem:Title:MinLength"] ?? "0"),

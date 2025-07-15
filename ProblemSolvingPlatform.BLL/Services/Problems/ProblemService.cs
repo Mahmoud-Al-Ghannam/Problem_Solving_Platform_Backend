@@ -30,12 +30,14 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         private readonly IUserService _userService;
         private readonly ICompilerService _compilerService;
         private readonly ProblemValidation _problemValidation;
+        private readonly ConstraintsOption _constraintsOptions;
 
-        public ProblemService(IProblemRepo problemRepo, ICompilerService compilerService, ProblemValidation problemValidation, IUserService userService) {
+        public ProblemService(IProblemRepo problemRepo, ICompilerService compilerService, ProblemValidation problemValidation, IUserService userService, ConstraintsOption constraintsOptions) {
             _problemRepo = problemRepo;
             _compilerService = compilerService;
             _problemValidation = problemValidation;
             _userService = userService;
+            _constraintsOptions = constraintsOptions;
         }
 
         public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy) {
@@ -66,11 +68,11 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 for (int i = 0; i < compileReponsesDTO.Count; i++) {
                     if (!errors.Keys.Contains($"TestCases[{i}]"))
                         errors[$"TestCases[{i}]"] = [];
-                    if (!errors.Keys.Contains($"SolutionCode"))
-                        errors[$"SolutionCode"] = [];
+                    if (!errors.Keys.Contains($"SolutionCode_ForTestCase[{i}]"))
+                        errors[$"SolutionCode_ForTestCase[{i}]"] = [];
 
                     if (!compileReponsesDTO[i].CompilationSuccess) {
-                        errors[$"SolutionCode"].Add(string.Join("\n", compileReponsesDTO[i].CompilationErrors ?? []));
+                        errors[$"SolutionCode_ForTestCase[{i}]"].Add(string.Join("\n", compileReponsesDTO[i].CompilationErrors ?? []));
                         break;
                     }
                     else if (!compileReponsesDTO[i].ExecutionSuccess) {
@@ -183,6 +185,20 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
 
 
         public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, byte? role = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+            Dictionary<string, List<string>> errors = new();
+            errors["Page"] = [];
+            errors["Limit"] = [];
+
+            if (page < _constraintsOptions.MinPageNumber)
+                errors["Page"].Add($"The page must to be greater than {_constraintsOptions.MinPageNumber}");
+
+            if (limit < _constraintsOptions.PageSize.Start.Value || limit > _constraintsOptions.PageSize.End.Value)
+                errors["Limit"].Add($"The limit must to be in range [{_constraintsOptions.PageSize.Start.Value},{_constraintsOptions.PageSize.End.Value}]");
+
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
+
+
             return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy,role, createdAt, tagIDs))
                 ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
