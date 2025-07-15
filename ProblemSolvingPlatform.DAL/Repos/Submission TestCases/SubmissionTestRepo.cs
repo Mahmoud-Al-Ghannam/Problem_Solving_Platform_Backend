@@ -59,14 +59,16 @@ public class SubmissionTestRepo : ISubmissionTestRepo
         }
     }
 
-    public async Task<List<SubmissionTestCase>?> GetAllSubmissionTestCases(int submissionId)
+    public async Task<List<SubmissionTestCase>?> GetAllSubmissionTestCases(int? submissionId = null)
     {
         List<SubmissionTestCase> testCases = new();
         using (SqlConnection connection = _db.GetConnection())
-        using (SqlCommand command = new("SP_Submission_GetTestCases", connection))
+        using (SqlCommand command = new("SP_Submission_GetAllSubmissionTestCases", connection))
         {
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@SubmissionId", submissionId);
+
+            if (submissionId == null) command.Parameters.AddWithValue("@SubmissionId", DBNull.Value);
+            else command.Parameters.AddWithValue("@SubmissionId", submissionId.Value);
 
             try
             {

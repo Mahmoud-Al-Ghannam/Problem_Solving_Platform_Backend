@@ -11,5 +11,5 @@ public interface ISubmissionTestRepo
 {
     public Task<int?> AddNewSubmissionTestCase(SubmissionTestCase submissionTestCase);
 
-    public Task<List<SubmissionTestCase>?> GetAllSubmissionTestCases(int submissionId);
+    public Task<List<SubmissionTestCase>?> GetAllSubmissionTestCases(int? submissionId = null);
 }
