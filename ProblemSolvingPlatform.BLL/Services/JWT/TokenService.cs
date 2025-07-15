@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -8,28 +12,33 @@ namespace ProblemSolvingPlatform.BLL.Services.JWT;
 
 public class TokenService
 {
-    private readonly IConfiguration _config;
+    private readonly JwtOption _jwtOption;
 
-    public TokenService(IConfiguration config)
-    {
-        _config = config;
+    public TokenService(JwtOption jwtOption) {
+        _jwtOption = jwtOption;
     }
 
-    public string GenerateToken(DAL.Models.Users.User user)
+    public string GenerateToken(int userID,Enums.Role role)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenDescriptor = new SecurityTokenDescriptor() { 
+            Audience = _jwtOption.Audience,
+            Issuer = _jwtOption.Issuer,
+            Expires = DateTime.UtcNow.AddMinutes(_jwtOption.LifeTimeMin),
 
-        var Myclaims = new[]
-        {
-           new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOption.Key)),
+                SecurityAlgorithms.HmacSha256
+            ),
+
+            Subject = new ClaimsIdentity(new Claim[] {
+                new Claim(ClaimTypes.NameIdentifier, userID.ToString()),
+                new Claim(ClaimTypes.Role,(role == Enums.Role.System ? "System" : "User"))
+            })
         };
 
-        var token = new JwtSecurityToken(
-            claims: Myclaims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: credentials
-        );
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        string accessToken = tokenHandler.WriteToken(token);
+        return accessToken;
     }
 }

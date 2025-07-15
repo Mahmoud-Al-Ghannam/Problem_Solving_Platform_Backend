@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
+﻿using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
@@ -35,7 +36,7 @@ public class AuthService : IAuthService
             Success = true,
             StatusCode = 200,
             Message = "Login successful :)",
-            Token = _tokenService.GenerateToken(user)
+            Token = _tokenService.GenerateToken(user.UserId, (Enums.Role)user.Role)
         };
     }
 
@@ -59,12 +60,11 @@ public class AuthService : IAuthService
 
         
         user.UserId = userId.Value;
-        return new AuthResponseDTO()
-        {
+        return new AuthResponseDTO() {
             Success = true,
             StatusCode = 200,
             Message = "User Registered Successfully",
-            Token = _tokenService.GenerateToken(user)
+            Token = _tokenService.GenerateToken(user.UserId, (Enums.Role) user.Role)
         };
 
     }

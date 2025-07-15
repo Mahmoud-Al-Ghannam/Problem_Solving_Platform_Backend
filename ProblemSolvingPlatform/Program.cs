@@ -25,9 +25,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using ProblemSolvingPlatform.BLL.Validation.Problem;
+using ProblemSolvingPlatform.BLL.Options;
 
-namespace ProblemSolvingPlatform
-{
+namespace ProblemSolvingPlatform {
     public class Program {
 
         private static ConstraintsOption GetConstraintsFromConfiguration(ConfigurationManager config) {
@@ -184,20 +184,32 @@ namespace ProblemSolvingPlatform
             ConstraintsOption constraintsOption = GetConstraintsFromConfiguration(builder.Configuration);
             builder.Services.AddSingleton(constraintsOption);
 
+            JwtOption jwtOption = new JwtOption() {
+                Issuer = builder.Configuration["Jwt:Issuer"] ?? "Unknown",
+                Audience = builder.Configuration["Jwt:Audience"] ?? "Unknown",
+                LifeTimeMin = int.Parse(builder.Configuration["Jwt:LifeTimeMin"] ?? "30"),
+                Key = builder.Configuration["Jwt:Key"] ?? "Unknown"
+            };
+            builder.Services.AddSingleton(jwtOption);
+
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options => {
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOption.Issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtOption.Audience,
+
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-                         )
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOption.Key))
                 };
             });
+
             builder.Services.AddControllers()
             .AddJsonOptions(options => {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
