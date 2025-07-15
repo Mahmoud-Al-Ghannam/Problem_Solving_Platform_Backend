@@ -10,7 +10,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
 public interface ISubmissionRepo
 {
-    public Task<int?> AddGeneralProblemSubmission(int problemId, Models.Submissions.Submission submission);
+    public Task<int?> AddNewSubmission(Models.Submissions.Submission submission);
     
     public Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId);
 

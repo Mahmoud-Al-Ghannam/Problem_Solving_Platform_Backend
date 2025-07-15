@@ -38,16 +38,16 @@ public class SubmissionService : ISubmissionService
                 msg = "The problem not found :)"
             };
 
-        string compilerName = CompilerUtils.GetCompiler(submitDTO.CompilerName)?.CompilerName ?? "";
-
+        
         var submission = new Submission()
         {
             UserID = userId,
-            CompilerName = compilerName,
+            ProblemID = submitDTO.ProblemId,
+            CompilerName = submitDTO.CompilerName,
             Code = submitDTO.Code,
             VisionScope = submitDTO.VisionScope
         };
-        var submissionId = await _submissionsRepo.AddGeneralProblemSubmission(submitDTO.ProblemId, submission);
+        var submissionId = await _submissionsRepo.AddNewSubmission(submission);
         if (submissionId == null)
             return new SubmitResponseDTO()
             {

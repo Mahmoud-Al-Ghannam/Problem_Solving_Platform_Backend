@@ -22,11 +22,11 @@ public class SubmissionRepo : ISubmissionRepo
     }
 
 
-    public async Task<int?> AddGeneralProblemSubmission(int problemId, Models.Submissions.Submission submission)
+    public async Task<int?> AddNewSubmission(Models.Submissions.Submission submission)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
-            using (SqlCommand cmd = new("SP_Submission_AddGeneralProblemSubmission", connection))
+            using (SqlCommand cmd = new("SP_Submission_AddNewSubmission", connection))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 
@@ -34,7 +34,7 @@ public class SubmissionRepo : ISubmissionRepo
                 cmd.Parameters.AddWithValue("@CompilerName", submission.CompilerName);
                 cmd.Parameters.AddWithValue("@Code", submission.Code);
                 cmd.Parameters.AddWithValue("@VisionScope", submission.VisionScope);
-                cmd.Parameters.AddWithValue("@ProblemID", problemId);
+                cmd.Parameters.AddWithValue("@ProblemID", submission.ProblemID);
 
                 // output 
                 var submissionID = new SqlParameter("@SubmissionID", SqlDbType.Int)
@@ -194,7 +194,8 @@ public class SubmissionRepo : ISubmissionRepo
                         {
                             SubmissionId = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
                             UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
-                            CompilerName = (string) reader["CompilerName"],
+                            ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),
+                            CompilerName = reader.GetString(reader.GetOrdinal("CompilerName")),
                             Status = reader.GetByte(reader.GetOrdinal("Status")),
                             ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),
                             VisionScope = reader.GetByte(reader.GetOrdinal("VisionScope")),
