@@ -10,6 +10,7 @@ public class SubmissionDTO
 {
     public int SubmissionId { get; set; }
     public int UserID { get; set; }
+    public int ProblemID { get; set; }
     public string CompilerName { get; set; }
     public string Status { get; set; }
     public int ExecutionTimeMilliseconds { get; set; }

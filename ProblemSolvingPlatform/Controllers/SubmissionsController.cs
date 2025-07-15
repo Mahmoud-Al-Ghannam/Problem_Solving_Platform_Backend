@@ -74,22 +74,35 @@ public class SubmissionsController : ControllerBase
 
     [HttpGet("")]
     //[Authorize]
-    public async Task<IActionResult> GetSubmissions(int? problemId = null, int page = 1, int limit = 10,VisionScope scope = VisionScope.all) 
+    public async Task<IActionResult> GetAllSubmissions(int page=1, int limit=10,int? userId = null,int? problemId = null, VisionScope? scope = null) 
     {
         if (page <= 0 || limit <= 0 || limit > 100)   
             return BadRequest("Page must be ≥ 1 and limit between 1–100");
-        var userId = 1;// AuthUtils.GetUserId(User);
-        //if (userId == null)
-        //    return BadRequest("no user found");
 
-        var submissions = await _submissionService.GetAllSubmissions(userId/*userId.Value*/, page, limit, problemId, scope);
+        var submissions = await _submissionService.GetAllSubmissions(page, limit,userId, problemId, scope);
         if (submissions == null)
             return NotFound(new { message = "No submissions Exist" });
         return Ok(submissions);
     }
-    
-    
-    
+
+
+    [HttpGet("own")]
+    [Authorize]
+    public async Task<IActionResult> GetAllOwnSubmissions(int page = 1, int limit = 10, int? problemId = null, VisionScope? scope = null) {
+        if (page <= 0 || limit <= 0 || limit > 100)
+            return BadRequest("Page must be ≥ 1 and limit between 1–100");
+        var userId = AuthUtils.GetUserId(User);
+        if (userId == null)
+            return BadRequest("no user found");
+
+        var submissions = await _submissionService.GetAllSubmissions(page, limit,userId.Value, problemId, scope);
+        if (submissions == null)
+            return NotFound(new { message = "No submissions Exist" });
+        return Ok(submissions);
+    }
+
+
+
     [HttpGet("{submissionId}")]
     public async Task<IActionResult> GetSubmissionDetails(int submissionId)
     {

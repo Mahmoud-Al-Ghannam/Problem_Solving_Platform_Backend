@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
-public interface ISubmissionRepo
-{
+public interface ISubmissionRepo {
     public Task<int?> AddNewSubmission(Models.Submissions.Submission submission);
-    
+
     public Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId);
 
-    public Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte  status, int execTimeMS);
+    public Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS);
 
     public Task<(int userId, byte visionScope)?> GetSubmissionAccessInfo(int submissionId);
-    
+
     public Task<string?> GetSubmissionCode(int submissionId);
 
-    public Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int? problemId, byte visionScope);
+    public Task<List<Submission>?> GetSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null);
 
 }

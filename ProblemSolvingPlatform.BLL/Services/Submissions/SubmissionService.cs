@@ -129,9 +129,9 @@ public class SubmissionService : ISubmissionService
     }
 
 
-    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int userId, int page, int limit, int? problemId, Enums.VisionScope scope)
+    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null)
     {
-        var submissions = await _submissionsRepo.GetSubmissions(userId,  page, limit, problemId, (byte)scope);
+        var submissions = await _submissionsRepo.GetSubmissions(page,limit,userId,problemId,(scope == null?null:(byte) scope.Value));
         if (submissions == null)
             return null;
 
@@ -145,7 +145,8 @@ public class SubmissionService : ISubmissionService
                 Status = ((Enums.SubmissionStatus)(submission.Status)).ToString(),
                 SubmissionId = submission.SubmissionId,
                 SubmittedDate = submission.SubmittedAt,
-                UserID = userId,
+                UserID = submission.UserID,
+                ProblemID = submission.ProblemID,
                 VisionScope = ((Enums.VisionScope)(submission.VisionScope)).ToString()
             });
         }

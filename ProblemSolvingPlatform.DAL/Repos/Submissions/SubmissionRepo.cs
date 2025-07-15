@@ -13,23 +13,18 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
-public class SubmissionRepo : ISubmissionRepo
-{
+public class SubmissionRepo : ISubmissionRepo {
     private DbContext _db { get; }
-    public SubmissionRepo(DbContext dbContext)
-    {
+    public SubmissionRepo(DbContext dbContext) {
         _db = dbContext;
     }
 
 
-    public async Task<int?> AddNewSubmission(Models.Submissions.Submission submission)
-    {
-        using (SqlConnection connection = _db.GetConnection())
-        {
-            using (SqlCommand cmd = new("SP_Submission_AddNewSubmission", connection))
-            {
+    public async Task<int?> AddNewSubmission(Models.Submissions.Submission submission) {
+        using (SqlConnection connection = _db.GetConnection()) {
+            using (SqlCommand cmd = new("SP_Submission_AddNewSubmission", connection)) {
                 cmd.CommandType = CommandType.StoredProcedure;
-                
+
                 cmd.Parameters.AddWithValue("@UserID", submission.UserID);
                 cmd.Parameters.AddWithValue("@CompilerName", submission.CompilerName);
                 cmd.Parameters.AddWithValue("@Code", submission.Code);
@@ -37,41 +32,35 @@ public class SubmissionRepo : ISubmissionRepo
                 cmd.Parameters.AddWithValue("@ProblemID", submission.ProblemID);
 
                 // output 
-                var submissionID = new SqlParameter("@SubmissionID", SqlDbType.Int)
-                {
+                var submissionID = new SqlParameter("@SubmissionID", SqlDbType.Int) {
                     Direction = ParameterDirection.Output
                 };
                 cmd.Parameters.Add(submissionID);
 
-               
-                try
-                {
+
+                try {
                     await connection.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
 
                     if (submissionID.Value == DBNull.Value) return null;
                     return (int?)submissionID?.Value;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return null;
                 }
             }
         }
     }
 
-    public async Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId)
-    {
+    public async Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId) {
         using (var connection = _db.GetConnection())
-        using (var command = new SqlCommand("SP_Submission_ChangeVisionScope", connection))
-        {
+        using (var command = new SqlCommand("SP_Submission_ChangeVisionScope", connection)) {
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@submissionId", submissionId);
             command.Parameters.AddWithValue("@visionScopeId", visionScopeId);
             command.Parameters.AddWithValue("@userId", userId);
 
-            try
-            {
+            try {
                 await connection.OpenAsync();
                 int rowsAffected = command.ExecuteNonQuery();
 
@@ -79,24 +68,20 @@ public class SubmissionRepo : ISubmissionRepo
                     return true;
                 return false;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return false;
             }
         }
     }
 
-    public async Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS)
-    {
+    public async Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS) {
         using (var connection = _db.GetConnection())
-        using (var command = new SqlCommand("SP_Submission_UpdateSubmissionStatusAndExecutionTime", connection))
-        {
+        using (var command = new SqlCommand("SP_Submission_UpdateSubmissionStatusAndExecutionTime", connection)) {
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@SubmissionID", submissionId);
             command.Parameters.AddWithValue("@Status", status);
             command.Parameters.AddWithValue("ExecTimeMS", execTimeMS);
-            try
-            {
+            try {
                 await connection.OpenAsync();
                 int rowsAffected = command.ExecuteNonQuery();
 
@@ -104,94 +89,84 @@ public class SubmissionRepo : ISubmissionRepo
                     return true;
                 return false;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return false;
             }
         }
     }
 
-    public async Task<string?> GetSubmissionCode(int submissionId)
-    {
+    public async Task<string?> GetSubmissionCode(int submissionId) {
         using (SqlConnection connection = _db.GetConnection())
-        using (SqlCommand command = new("SP_Submission_GetCode", connection))
-        {
+        using (SqlCommand command = new("SP_Submission_GetCode", connection)) {
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@SubmissionId", submissionId);
-            try
-            {
+            try {
                 await connection.OpenAsync();
                 var result = await command.ExecuteScalarAsync();
-                if (result != null && result != DBNull.Value) 
+                if (result != null && result != DBNull.Value)
                     return result.ToString();
                 return null;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return null;
             }
-            finally
-            {
+            finally {
                 await connection.CloseAsync();
             }
         }
     }
 
-    public async Task<(int userId, byte visionScope)?> GetSubmissionAccessInfo(int submissionId)
-    {
+    public async Task<(int userId, byte visionScope)?> GetSubmissionAccessInfo(int submissionId) {
         using SqlConnection connection = _db.GetConnection();
         using SqlCommand command = new SqlCommand("SP_Submission_GetAccessInfo", connection) {
             CommandType = CommandType.StoredProcedure
         };
         command.Parameters.AddWithValue("@SubmissionId", submissionId);
 
-        try
-        {
+        try {
             await connection.OpenAsync();
             using SqlDataReader reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
-            {
+            if (await reader.ReadAsync()) {
                 int userId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0;
                 byte visionScope = reader["VisionScope"] != DBNull.Value ? Convert.ToByte(reader["VisionScope"]) : (byte)0;
                 return (userId, visionScope);
             }
-            return null; 
-        }
-        catch
-        {
             return null;
         }
-        finally
-        {
+        catch {
+            return null;
+        }
+        finally {
             await connection.CloseAsync();
         }
     }
 
-    public async Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int? problemId, byte visionScope)
-    {
+    public async Task<List<Submission>?> GetSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
         var results = new List<Submission>();
 
         using (var conn = _db.GetConnection())
-        using (var cmd = new SqlCommand("SP_Submissions_GetSubmissions", conn))
-        {
+        using (var cmd = new SqlCommand("SP_Submissions_GetSubmissions", conn)) {
             cmd.CommandType = CommandType.StoredProcedure;
 
-            cmd.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int) { Value = userId });
-            cmd.Parameters.Add(new SqlParameter("@Scope", SqlDbType.TinyInt) { Value = visionScope });
-            cmd.Parameters.Add(new SqlParameter("@ProblemId", SqlDbType.Int) { Value = (problemId == null ? DBNull.Value : problemId.Value) });
-            cmd.Parameters.Add(new SqlParameter("@Page", SqlDbType.Int) { Value = page });
-            cmd.Parameters.Add(new SqlParameter("@Limit", SqlDbType.Int) { Value = limit });
 
-            try
-            {
+            cmd.Parameters.AddWithValue("@Page", page);
+            cmd.Parameters.AddWithValue("@Limit", limit);
+
+            if (userId == null) cmd.Parameters.AddWithValue("@UserId", DBNull.Value);
+            else cmd.Parameters.AddWithValue("@UserId", userId.Value);
+
+            if (problemId == null) cmd.Parameters.AddWithValue("@ProblemId", DBNull.Value);
+            else cmd.Parameters.AddWithValue("@ProblemId", problemId.Value);
+
+            if (visionScope == null) cmd.Parameters.AddWithValue("@Scope", DBNull.Value);
+            else cmd.Parameters.AddWithValue("@Scope", visionScope.Value);
+
+            try {
                 await conn.OpenAsync();
 
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        var sub = new Submission
-                        {
+                using (var reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        var sub = new Submission {
                             SubmissionId = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
                             UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
                             ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),
@@ -205,14 +180,13 @@ public class SubmissionRepo : ISubmissionRepo
                     }
                 }
             }
-            catch 
-            {
+            catch {
                 return null;
             }
         }
 
         return results;
-    
+
     }
 
 }

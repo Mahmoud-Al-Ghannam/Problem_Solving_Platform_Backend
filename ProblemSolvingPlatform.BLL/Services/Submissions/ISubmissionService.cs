@@ -19,7 +19,7 @@ public interface ISubmissionService
     public Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId);
 
 
-    public Task<List<SubmissionDTO>?> GetAllSubmissions(int userId,int page, int limit, int? problemId,  Enums.VisionScope scope);
+    public Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit,int? userId = null, int? problemId = null,  Enums.VisionScope? scope = null);
 
     public Task<SubmissionDetailsDTO?> GetSubmissionDetails(int submissionId, int? userId);
 

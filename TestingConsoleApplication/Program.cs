@@ -10,9 +10,9 @@ using static ProblemSolvingPlatform.API.Compiler.Services.CompilerApiService;
 
 namespace TestingConsoleApplication {
     public class Program {
+
         static void Main(string[] args)
         {
-
         }
     }
 }
