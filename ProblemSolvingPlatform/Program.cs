@@ -177,7 +177,6 @@ namespace ProblemSolvingPlatform
 
             ConstraintsOption constraintsOption = GetConstraintsFromConfiguration(builder.Configuration);
             builder.Services.AddSingleton(constraintsOption);
-             
 
             builder.Services.AddHttpContextAccessor();
 

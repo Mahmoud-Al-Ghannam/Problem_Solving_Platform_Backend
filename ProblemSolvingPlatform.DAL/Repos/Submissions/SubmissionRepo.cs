@@ -31,7 +31,7 @@ public class SubmissionRepo : ISubmissionRepo
                 cmd.CommandType = CommandType.StoredProcedure;
                 
                 cmd.Parameters.AddWithValue("@UserID", submission.UserID);
-                cmd.Parameters.AddWithValue("@ProgrammingLanguage", submission.ProgrammingLanguage);
+                cmd.Parameters.AddWithValue("@CompilerName", submission.CompilerName);
                 cmd.Parameters.AddWithValue("@Code", submission.Code);
                 cmd.Parameters.AddWithValue("@VisionScope", submission.VisionScope);
                 cmd.Parameters.AddWithValue("@ProblemID", problemId);
@@ -167,7 +167,7 @@ public class SubmissionRepo : ISubmissionRepo
         }
     }
 
-    public async Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int problemId, byte visionScope)
+    public async Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int? problemId, byte visionScope)
     {
         var results = new List<Submission>();
 
@@ -178,7 +178,7 @@ public class SubmissionRepo : ISubmissionRepo
 
             cmd.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int) { Value = userId });
             cmd.Parameters.Add(new SqlParameter("@Scope", SqlDbType.TinyInt) { Value = visionScope });
-            cmd.Parameters.Add(new SqlParameter("@ProblemId", SqlDbType.Int) { Value = problemId });
+            cmd.Parameters.Add(new SqlParameter("@ProblemId", SqlDbType.Int) { Value = (problemId == null ? DBNull.Value : problemId.Value) });
             cmd.Parameters.Add(new SqlParameter("@Page", SqlDbType.Int) { Value = page });
             cmd.Parameters.Add(new SqlParameter("@Limit", SqlDbType.Int) { Value = limit });
 
@@ -194,7 +194,7 @@ public class SubmissionRepo : ISubmissionRepo
                         {
                             SubmissionId = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
                             UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
-                            ProgrammingLanguage = reader.GetByte(reader.GetOrdinal("ProgrammingLanguage")),
+                            CompilerName = (string) reader["CompilerName"],
                             Status = reader.GetByte(reader.GetOrdinal("Status")),
                             ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),
                             VisionScope = reader.GetByte(reader.GetOrdinal("VisionScope")),

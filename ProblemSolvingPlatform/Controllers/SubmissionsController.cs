@@ -73,16 +73,16 @@ public class SubmissionsController : ControllerBase
 
 
     [HttpGet("")]
-    [Authorize]
-    public async Task<IActionResult> GetSubmissions(int problemId, int page = 1, int limit = 10,VisionScope scope = VisionScope.all) 
+    //[Authorize]
+    public async Task<IActionResult> GetSubmissions(int? problemId = null, int page = 1, int limit = 10,VisionScope scope = VisionScope.all) 
     {
         if (page <= 0 || limit <= 0 || limit > 100)   
             return BadRequest("Page must be ≥ 1 and limit between 1–100");
-        var userId = AuthUtils.GetUserId(User);
-        if (userId == null)
-            return BadRequest("no user found");
+        var userId = 1;// AuthUtils.GetUserId(User);
+        //if (userId == null)
+        //    return BadRequest("no user found");
 
-        var submissions = await _submissionService.GetAllSubmissions(userId.Value, page, limit, problemId, scope);
+        var submissions = await _submissionService.GetAllSubmissions(userId/*userId.Value*/, page, limit, problemId, scope);
         if (submissions == null)
             return NotFound(new { message = "No submissions Exist" });
         return Ok(submissions);

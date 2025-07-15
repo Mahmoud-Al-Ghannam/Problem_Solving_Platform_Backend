@@ -38,17 +38,12 @@ public class SubmissionService : ISubmissionService
                 msg = "The problem not found :)"
             };
 
-        string language = CompilerUtils.GetCompiler(submitDTO.CompilerName)?.Language ?? "";
+        string compilerName = CompilerUtils.GetCompiler(submitDTO.CompilerName)?.CompilerName ?? "";
 
-        Enums.ProgLanguages parsedLanguage = Enums.ProgLanguages.Unknown;
-        if (Enum.TryParse(language, true, out Enums.ProgLanguages result)) {
-            parsedLanguage = result;
-        }
-        byte languageNum = (byte)parsedLanguage;
         var submission = new Submission()
         {
             UserID = userId,
-            ProgrammingLanguage = languageNum,
+            CompilerName = compilerName,
             Code = submitDTO.Code,
             VisionScope = submitDTO.VisionScope
         };
@@ -134,7 +129,7 @@ public class SubmissionService : ISubmissionService
     }
 
 
-    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int userId, int page, int limit, int problemId, Enums.VisionScope scope)
+    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int userId, int page, int limit, int? problemId, Enums.VisionScope scope)
     {
         var submissions = await _submissionsRepo.GetSubmissions(userId,  page, limit, problemId, (byte)scope);
         if (submissions == null)
@@ -145,7 +140,7 @@ public class SubmissionService : ISubmissionService
         {
             submissionsLST.Add(new SubmissionDTO()
             {
-                ProgrammingLanguage = ((Enums.ProgLanguages)(submission.ProgrammingLanguage)).ToString(),
+                CompilerName = submission.CompilerName,
                 ExecutionTimeMilliseconds = submission.ExecutionTimeMilliseconds,
                 Status = ((Enums.SubmissionStatus)(submission.Status)).ToString(),
                 SubmissionId = submission.SubmissionId,

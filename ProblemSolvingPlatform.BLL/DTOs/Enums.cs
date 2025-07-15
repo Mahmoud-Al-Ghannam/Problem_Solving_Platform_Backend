@@ -13,8 +13,6 @@ namespace ProblemSolvingPlatform.BLL.DTOs {
         public enum Role { System = 0, User = 1 }
         public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
 
-        public enum ProgLanguages { Cpp = 0, Csharp = 1, C = 2, Unknown = 99 }
-
         public enum VisionScope { onlyme = 0, all = 1 }
 
         public enum SubmissionStatus {

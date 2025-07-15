@@ -11,7 +11,7 @@ public class Submission
 {
     public int SubmissionId { get; set; }
     public int UserID { get; set; }
-    public byte ProgrammingLanguage { get; set; }
+    public string CompilerName { get; set; }
     public byte Status { get; set; }
     public int ExecutionTimeMilliseconds { get; set; }
     public string Code { get; set; }

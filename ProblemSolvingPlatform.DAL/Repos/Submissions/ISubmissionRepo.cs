@@ -20,6 +20,6 @@ public interface ISubmissionRepo
     
     public Task<string?> GetSubmissionCode(int submissionId);
 
-    public Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int problemId, byte visionScope);
+    public Task<List<Submission>?> GetSubmissions(int userId, int page, int limit, int? problemId, byte visionScope);
 
 }
