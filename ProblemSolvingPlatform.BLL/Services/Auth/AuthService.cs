@@ -48,7 +48,7 @@ public class AuthService : IAuthService
         
         string? imagePath = await FileService.SaveImageAndGetURL(registerDTO.ProfileImage);
 
-        DAL.Models.Users.User user = new() {
+        DAL.Models.Users.UserModel user = new() {
             Username = registerDTO.Username,
             Password = registerDTO.Password,
             ImagePath = imagePath,

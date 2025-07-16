@@ -1,4 +1,6 @@
-﻿using ProblemSolvingPlatform.DAL.Models;
+﻿using Microsoft.Data.SqlClient;
+using ProblemSolvingPlatform.DAL.Models;
+using ProblemSolvingPlatform.DAL.Models.SubmissionTestCase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace ProblemSolvingPlatform.DAL.Repos;
 
 public interface ISubmissionTestRepo
 {
-    public Task<int?> AddNewSubmissionTestCase(SubmissionTestCase submissionTestCase);
+    public Task<int?> AddNewSubmissionTestCaseAsync(NewSubmissionTestCaseModel submissionTestCase, SqlConnection connection, SqlTransaction transaction);
 
-    public Task<List<SubmissionTestCase>?> GetAllSubmissionTestCases(int? submissionId = null);
+    public Task<List<SubmissionTestCaseModel>?> GetAllSubmissionTestCasesAsync(int? submissionId = null);
 }

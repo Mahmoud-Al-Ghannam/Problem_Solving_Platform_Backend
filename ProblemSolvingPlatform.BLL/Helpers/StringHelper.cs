@@ -9,6 +9,25 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.BLL.Helpers {
     public class StringHelper {
 
+        public static string RemoveWhiteSpaces(string str) {
+            str = str.Trim();
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < str.Length; i++) {
+                if (str[i] != ' ')
+                    stringBuilder.Append(str[i]);
+                else if (str[i - 1] != ' ')
+                    stringBuilder.Append(str[i]);
+            }
+
+            return stringBuilder.ToString();
+        }
+        public static bool EqualEgnoreWhiteSpaces(string str1, string str2) {
+            str1 = RemoveWhiteSpaces(str1);
+            str2 = RemoveWhiteSpaces(str2);
+            return str1.Equals(str2);
+        }
+
         public static object TrimStringsOfPrimitive(object value, HashSet<object> visited) {
             Type type = value.GetType();
             if (!type.IsPrimitive) throw new Exception("The value must to be primitive type");

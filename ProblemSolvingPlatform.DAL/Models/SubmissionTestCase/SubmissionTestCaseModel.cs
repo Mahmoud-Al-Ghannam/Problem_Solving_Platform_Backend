@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProblemSolvingPlatform.DAL.Models;
+namespace ProblemSolvingPlatform.DAL.Models.SubmissionTestCase;
 
-public class SubmissionTestCase
+public class SubmissionTestCaseModel
 {
     public int SubmissionTestCaseID { get; set; }
     public int TestCaseID { get; set; }

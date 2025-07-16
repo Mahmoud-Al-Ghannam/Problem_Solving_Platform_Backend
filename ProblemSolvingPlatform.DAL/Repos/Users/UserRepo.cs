@@ -13,7 +13,7 @@ public class UserRepo : IUserRepo
         _db = dbContext;
     }
 
-    public async Task<int?> AddUserAsync(Models.Users.User user)
+    public async Task<int?> AddUserAsync(Models.Users.UserModel user)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -138,9 +138,9 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<List<Models.Users.User>> GetAllUsersByFiltersAsync(int page, int limit, string username)
+    public async Task<List<Models.Users.UserModel>> GetAllUsersByFiltersAsync(int page, int limit, string username)
     {
-        var usersLST = new List<Models.Users.User>(); 
+        var usersLST = new List<Models.Users.UserModel>(); 
 
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -159,7 +159,7 @@ public class UserRepo : IUserRepo
                     {
                         while (await reader.ReadAsync())
                         {
-                            Models.Users.User userInfo = new()
+                            Models.Users.UserModel userInfo = new()
                             {
                                 UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
                                 Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
@@ -181,7 +181,7 @@ public class UserRepo : IUserRepo
 
     }
 
-    public async Task<Models.Users.User> GetUserByIdAsync(int userId)
+    public async Task<Models.Users.UserModel> GetUserByIdAsync(int userId)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -196,7 +196,7 @@ public class UserRepo : IUserRepo
                     var reader = await command.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        Models.Users.User userInfo = new()
+                        Models.Users.UserModel userInfo = new()
                         {
                             UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
                             Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
@@ -221,7 +221,7 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<Models.Users.User> GetUserByUsernameAndPasswordAsync(string Username, string Password)
+    public async Task<Models.Users.UserModel> GetUserByUsernameAndPasswordAsync(string Username, string Password)
     {
         using (SqlConnection connection = _db.GetConnection())
         {
@@ -239,7 +239,7 @@ public class UserRepo : IUserRepo
                     var reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        Models.Users.User user = new Models.Users.User()
+                        Models.Users.UserModel user = new Models.Users.UserModel()
                         {
                             UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
                             Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",

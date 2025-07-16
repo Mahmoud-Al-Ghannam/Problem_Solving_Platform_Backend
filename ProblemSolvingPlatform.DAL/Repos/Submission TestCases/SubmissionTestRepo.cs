@@ -1,7 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Submissions;
+using ProblemSolvingPlatform.DAL.Models.SubmissionTestCase;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,23 +13,18 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Repos;
 
-public class SubmissionTestRepo : ISubmissionTestRepo
-{
+public class SubmissionTestRepo : ISubmissionTestRepo {
 
     private DbContext _db { get; }
-    public SubmissionTestRepo(DbContext dbContext)
-    {
+    public SubmissionTestRepo(DbContext dbContext) {
         _db = dbContext;
     }
 
 
-    public async Task<int?> AddNewSubmissionTestCase(SubmissionTestCase submissionTestCase)
-    {
+    public async Task<int?> AddNewSubmissionTestCaseAsync(NewSubmissionTestCaseModel submissionTestCase, SqlConnection connection, SqlTransaction transaction) {
         //SP_SubmissionTestCase_AddNewSubmissionTestCase
-        using (SqlConnection connection = _db.GetConnection())
-        {
-            using (SqlCommand cmd = new("SP_SubmissionTestCase_AddNewSubmissionTestCase", connection))
-            {
+        try {
+            using (SqlCommand cmd = new("SP_SubmissionTestCase_AddNewSubmissionTestCase", connection, transaction)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@TestCaseID", submissionTestCase.TestCaseID);
@@ -36,49 +33,45 @@ public class SubmissionTestRepo : ISubmissionTestRepo
                 cmd.Parameters.AddWithValue("@ExecutionTimeMilliseconds", submissionTestCase.ExecutionTimeMilliseconds);
 
                 // output 
-                var submissionTestCaseID = new SqlParameter("@SubmissionTestCaseID", SqlDbType.Int)
-                {
+                var ParmSubmissionTestCaseID = new SqlParameter("@SubmissionTestCaseID", SqlDbType.Int) {
                     Direction = ParameterDirection.Output
                 };
-                cmd.Parameters.Add(submissionTestCaseID);
+                cmd.Parameters.Add(ParmSubmissionTestCaseID);
+
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(IsSuccess);
+
+                await cmd.ExecuteNonQueryAsync();
+
+                if ((bool)IsSuccess.Value)
+                    return (int)ParmSubmissionTestCaseID.Value;
 
 
-                try
-                {
-                    await connection.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-
-                    if (submissionTestCaseID.Value == DBNull.Value) return null;
-                    return (int?)submissionTestCaseID?.Value;
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
             }
         }
+        catch (Exception ex) {
+            return null;
+        }
+
+        return null;
     }
 
-    public async Task<List<SubmissionTestCase>?> GetAllSubmissionTestCases(int? submissionId = null)
-    {
-        List<SubmissionTestCase> testCases = new();
+    public async Task<List<SubmissionTestCaseModel>?> GetAllSubmissionTestCasesAsync(int? submissionId = null) {
+        List<SubmissionTestCaseModel> testCases = new();
         using (SqlConnection connection = _db.GetConnection())
-        using (SqlCommand command = new("SP_Submission_GetAllSubmissionTestCases", connection))
-        {
+        using (SqlCommand command = new("SP_Submission_GetAllSubmissionTestCases", connection)) {
             command.CommandType = CommandType.StoredProcedure;
 
             if (submissionId == null) command.Parameters.AddWithValue("@SubmissionId", DBNull.Value);
             else command.Parameters.AddWithValue("@SubmissionId", submissionId.Value);
 
-            try
-            {
+            try {
                 await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        SubmissionTestCase testCase = new()
-                        {
+                using (var reader = await command.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        SubmissionTestCaseModel testCase = new() {
                             SubmissionTestCaseID = reader["SubmissionTestCaseID"] != DBNull.Value ? Convert.ToInt32(reader["SubmissionTestCaseID"]) : 0,
                             TestCaseID = reader["TestCaseID"] != DBNull.Value ? Convert.ToInt32(reader["TestCaseID"]) : 0,
                             SubmissionID = reader["SubmissionID"] != DBNull.Value ? Convert.ToInt32(reader["SubmissionID"]) : 0,
@@ -92,12 +85,10 @@ public class SubmissionTestRepo : ISubmissionTestRepo
 
                 return testCases;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 return null;
             }
-            finally
-            {
+            finally {
                 await connection.CloseAsync();
             }
         }

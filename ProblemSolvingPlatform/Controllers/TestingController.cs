@@ -4,7 +4,6 @@ using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Auth;
-using ProblemSolvingPlatform.BLL.Services.Submissions.Handling_Submission;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.TestCases;
@@ -19,10 +18,8 @@ namespace ProblemSolvingPlatform.Controllers
     [Route("api/testing")]
     public class TestingController : GeneralController {
         private readonly DbContext _db;
-        private SubmissionHandler _submissionHandler { get; set; }
-        public TestingController(DbContext dbContext, SubmissionHandler submissionHandler) {
+        public TestingController(DbContext dbContext) {
             _db = dbContext;
-            _submissionHandler = submissionHandler;
         }
 
 

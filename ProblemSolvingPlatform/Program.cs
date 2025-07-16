@@ -8,7 +8,6 @@ using ProblemSolvingPlatform.BLL.Services.Compiler;
 using ProblemSolvingPlatform.BLL.Services.JWT;
 using ProblemSolvingPlatform.BLL.Services.Problems;
 using ProblemSolvingPlatform.BLL.Services.Submissions;
-using ProblemSolvingPlatform.BLL.Services.Submissions.Handling_Submission;
 using ProblemSolvingPlatform.BLL.Services.Tags;
 using ProblemSolvingPlatform.BLL.Services.TestCases;
 using ProblemSolvingPlatform.BLL.Services.Users;
@@ -181,7 +180,6 @@ namespace ProblemSolvingPlatform {
             builder.Services.AddScoped<ICompilerService, CompilerService>();
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
-            builder.Services.AddScoped<SubmissionHandler, SubmissionHandler>();
             builder.Services.AddScoped<ISubmissionTestRepo, SubmissionTestRepo>();
             builder.Services.AddScoped<ProblemValidation>();
 

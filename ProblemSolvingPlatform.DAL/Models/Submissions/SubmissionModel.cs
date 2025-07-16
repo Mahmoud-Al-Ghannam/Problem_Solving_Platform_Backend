@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Models.Submissions;
 
-public class Submission
+public class SubmissionModel
 {
     public int SubmissionId { get; set; }
     public int UserID { get; set; }
@@ -17,6 +17,5 @@ public class Submission
     public int ExecutionTimeMilliseconds { get; set; }
     public string Code { get; set; }
     public byte VisionScope { get; set; }
-    public byte SubType { get; set; }
     public DateTime SubmittedAt { get; set; }
 }

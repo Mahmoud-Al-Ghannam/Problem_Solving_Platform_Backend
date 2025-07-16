@@ -67,13 +67,14 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                 }
 
                 if (ok) {
+                    newProblem.TestCases = newProblem.TestCases.Select(tc => { tc.ProblemID = ProblemID.Value; return tc; }).ToList();
                     foreach (NewTestCaseModel newTestCase in newProblem.TestCases) {
                         int? TestCaseID = null;
                         // Exec SP_TestCase_AddNewTestCase
                         using (SqlCommand cmd = new("SP_TestCase_AddNewTestCase", connection, transaction)) {
                             cmd.CommandType = CommandType.StoredProcedure;
 
-                            cmd.Parameters.AddWithValue("@ProblemID", ProblemID);
+                            cmd.Parameters.AddWithValue("@ProblemID", newTestCase.ProblemID);
                             cmd.Parameters.AddWithValue("@Input", newTestCase.Input);
                             cmd.Parameters.AddWithValue("@Output", newTestCase.Output);
                             cmd.Parameters.AddWithValue("@IsPublic", newTestCase.IsPublic);

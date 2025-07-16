@@ -18,5 +18,5 @@ public class SubmitDTO
     [Required]
     public required string Code { get; set; }
 
-    public byte VisionScope { get; set; } = (byte)Enums.VisionScope.all;
+    public Enums.VisionScope VisionScope { get; set; } = Enums.VisionScope.all;
 }

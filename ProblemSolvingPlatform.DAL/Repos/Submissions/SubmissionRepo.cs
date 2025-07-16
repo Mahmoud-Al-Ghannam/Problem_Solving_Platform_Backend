@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
+using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Submissions;
 using ProblemSolvingPlatform.DAL.Models.Users;
 using System;
@@ -15,41 +16,82 @@ namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
 public class SubmissionRepo : ISubmissionRepo {
     private DbContext _db { get; }
-    public SubmissionRepo(DbContext dbContext) {
+    private readonly ISubmissionTestRepo _submissionTestRepo;
+    public SubmissionRepo(DbContext dbContext, ISubmissionTestRepo submissionTestRepo) {
         _db = dbContext;
+        _submissionTestRepo = submissionTestRepo;
     }
 
 
-    public async Task<int?> AddNewSubmission(Models.Submissions.Submission submission) {
-        using (SqlConnection connection = _db.GetConnection()) {
-            using (SqlCommand cmd = new("SP_Submission_AddNewSubmission", connection)) {
+    public async Task<int?> AddNewSubmission(NewSubmissionModel submission) {
+        SqlTransaction transaction = null;
+        SqlConnection connection = _db.GetConnection();
+        bool ok = true;
+        int? SubmissionID = null;
+        Enums.SubmissionStatus submissionStatus = submission.SubmissionTestCases.Where(stc => stc.Status != Enums.SubmissionStatus.Accepted)
+                                                                                .Select(stc => stc.Status)
+                                                                                .FirstOrDefault(Enums.SubmissionStatus.Accepted);
+
+        int submissionExecutionTimeMS = submission.SubmissionTestCases.Max(stc => stc.ExecutionTimeMilliseconds);
+        try {
+            await connection.OpenAsync();
+            transaction = connection.BeginTransaction();
+
+
+            using (SqlCommand cmd = new("SP_Submission_AddNewSubmission", connection, transaction)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@UserID", submission.UserID);
+                cmd.Parameters.AddWithValue("@ProblemID", submission.ProblemID);
                 cmd.Parameters.AddWithValue("@CompilerName", submission.CompilerName);
+                cmd.Parameters.AddWithValue("@Status", (byte)submissionStatus);
+                cmd.Parameters.AddWithValue("@ExecutionTimeMilliseconds", submissionExecutionTimeMS);
                 cmd.Parameters.AddWithValue("@Code", submission.Code);
                 cmd.Parameters.AddWithValue("@VisionScope", submission.VisionScope);
-                cmd.Parameters.AddWithValue("@ProblemID", submission.ProblemID);
 
                 // output 
-                var submissionID = new SqlParameter("@SubmissionID", SqlDbType.Int) {
+                var ParmSubmissionID = new SqlParameter("@SubmissionID", SqlDbType.Int) {
                     Direction = ParameterDirection.Output
                 };
-                cmd.Parameters.Add(submissionID);
+                cmd.Parameters.Add(ParmSubmissionID);
 
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(IsSuccess);
 
-                try {
-                    await connection.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync();
 
-                    if (submissionID.Value == DBNull.Value) return null;
-                    return (int?)submissionID?.Value;
+                if ((bool)IsSuccess.Value)
+                    SubmissionID = (int)ParmSubmissionID.Value;
+                else {
+                    ok = false;
                 }
-                catch (Exception ex) {
-                    return null;
+
+
+            }
+
+            if (ok) {
+                foreach (var submissionTestCase in submission.SubmissionTestCases) {
+                    submissionTestCase.SubmissionID = SubmissionID.Value;
+                    int? submissionTestCaseID = await _submissionTestRepo.AddNewSubmissionTestCaseAsync(submissionTestCase,connection,transaction);
+                    if (submissionTestCaseID == null) {
+                        ok = false;
+                        break;
+                    }
                 }
             }
         }
+        catch (Exception ex) {
+            ok = false;
+            SubmissionID = null;
+        }
+
+        if (ok) transaction.Commit();
+        else transaction.Rollback();
+
+        await connection.CloseAsync();
+        return SubmissionID;
     }
 
     public async Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId) {
@@ -141,8 +183,8 @@ public class SubmissionRepo : ISubmissionRepo {
         }
     }
 
-    public async Task<List<Submission>?> GetSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
-        var results = new List<Submission>();
+    public async Task<List<SubmissionModel>?> GetSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
+        var results = new List<SubmissionModel>();
 
         using (var conn = _db.GetConnection())
         using (var cmd = new SqlCommand("SP_Submissions_GetSubmissions", conn)) {
@@ -166,7 +208,7 @@ public class SubmissionRepo : ISubmissionRepo {
 
                 using (var reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
-                        var sub = new Submission {
+                        var sub = new SubmissionModel {
                             SubmissionId = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
                             UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
                             ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),

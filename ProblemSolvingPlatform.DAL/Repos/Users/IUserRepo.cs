@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.DAL.Repos.Users {
 
     public interface IUserRepo {
-        public Task<int?> AddUserAsync(Models.Users.User user);
+        public Task<int?> AddUserAsync(Models.Users.UserModel user);
         public Task<bool> UpdateUserInfoByIdAsync(int userId, string ImagePath);
 
-        public Task<Models.Users.User> GetUserByUsernameAndPasswordAsync(string Username, string Password);
-        public Task<Models.Users.User> GetUserByIdAsync(int userId);
+        public Task<Models.Users.UserModel> GetUserByUsernameAndPasswordAsync(string Username, string Password);
+        public Task<Models.Users.UserModel> GetUserByIdAsync(int userId);
 
         public Task<bool> DoesUserExistByUsernameAsync(string Username);
         public Task<bool> DoesUserExistByIDAsync(int UserID);
 
         public Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
 
-        public Task<List<Models.Users.User>> GetAllUsersByFiltersAsync(int page, int limit, string username);
+        public Task<List<Models.Users.UserModel>> GetAllUsersByFiltersAsync(int page, int limit, string username);
     }
 }
