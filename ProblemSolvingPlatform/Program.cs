@@ -26,6 +26,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using ProblemSolvingPlatform.BLL.Validation.Problem;
 using ProblemSolvingPlatform.BLL.Options;
+using ProblemSolvingPlatform.ActionFilters;
 
 namespace ProblemSolvingPlatform {
     public class Program {
@@ -141,7 +142,10 @@ namespace ProblemSolvingPlatform {
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options => {
+                options.Filters.Add<TrimStringsActionFilter>();
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 

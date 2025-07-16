@@ -1,6 +1,7 @@
 ﻿using Azure;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
 using ProblemSolvingPlatform.BLL.Exceptions;
+using ProblemSolvingPlatform.BLL.Options.Constraint;
 using ProblemSolvingPlatform.DAL.Models.Tags;
 using ProblemSolvingPlatform.DAL.Repos.Tags;
 using System;
@@ -13,8 +14,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Tags {
     public class TagService : ITagService {
 
         private readonly ITagRepo _tagRepo;
-        public TagService(ITagRepo tagRepo) {
+        private readonly ConstraintsOption _constraintsOption;
+        public TagService(ITagRepo tagRepo, ConstraintsOption constraintsOption) {
             _tagRepo = tagRepo;
+            _constraintsOption = constraintsOption;
         }
 
         public async Task<bool> DoesTagExistByIDAsync(int tagID) {
@@ -26,15 +29,24 @@ namespace ProblemSolvingPlatform.BLL.Services.Tags {
         }
 
         public async Task<int?> AddNewTagAsync(NewTagDTO newTag) {
-
             if (await _tagRepo.DoesTagExistByNameAsync(newTag.Name))
                 throw new CustomValidationException("Name", [$"The tag with name = {newTag.Name} is already exists"]);
 
+            if (newTag.Name.Length < _constraintsOption.Tag.NameLength.Start.Value ||
+                newTag.Name.Length > _constraintsOption.Tag.NameLength.End.Value)
+                throw new CustomValidationException("Name", [$"The length of tag's name must to be in range [{_constraintsOption.Tag.NameLength.Start.Value},{_constraintsOption.Tag.NameLength.End.Value}]"]);
+            
+            
             return await _tagRepo.AddNewTagAsync(new NewTagModel() { Name = newTag.Name });
         }
         public async Task<bool> UpdateTagAsync(TagDTO tag) {
             if (!await _tagRepo.DoesTagExistByIDAsync(tag.TagID))
                 throw new CustomValidationException("TagID", [$"The tag with id = {tag.TagID} was not found"]);
+
+
+            if (tag.Name.Length < _constraintsOption.Tag.NameLength.Start.Value ||
+               tag.Name.Length > _constraintsOption.Tag.NameLength.End.Value)
+                throw new CustomValidationException("Name", [$"The length of tag's name must to be in range [{_constraintsOption.Tag.NameLength.Start.Value},{_constraintsOption.Tag.NameLength.End.Value}]"]);
 
 
             return await _tagRepo.UpdateTagAsync(

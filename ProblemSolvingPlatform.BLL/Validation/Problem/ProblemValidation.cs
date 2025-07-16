@@ -37,7 +37,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.Title.Length > conProblem.TitleLength.End.Value || newProblem.Title.Length < conProblem.TitleLength.Start.Value)
-                    errors["Title"].Add($"The length of title of problem must to be in range [{conProblem.TitleLength.Start.Value},{conProblem.TitleLength.End.Value}]");
+                    errors["Title"].Add($"The length of problem's title must to be in range [{conProblem.TitleLength.Start.Value},{conProblem.TitleLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(newProblem.GeneralDescription)) {
@@ -46,7 +46,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.GeneralDescription.Length > conProblem.GeneralDescriptionLength.End.Value || newProblem.GeneralDescription.Length < conProblem.GeneralDescriptionLength.Start.Value)
-                    errors["GeneralDescription"].Add($"The length of general description of problem must to be in range [{conProblem.GeneralDescriptionLength.Start.Value},{conProblem.GeneralDescriptionLength.End.Value}]");
+                    errors["GeneralDescription"].Add($"The length of problem's general description must to be in range [{conProblem.GeneralDescriptionLength.Start.Value},{conProblem.GeneralDescriptionLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(newProblem.InputDescription)) {
@@ -55,7 +55,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.InputDescription.Length > conProblem.InputDescriptionLength.End.Value || newProblem.InputDescription.Length < conProblem.InputDescriptionLength.Start.Value)
-                    errors["InputDescription"].Add($"The length of input description of problem must to be in range [{conProblem.InputDescriptionLength.Start.Value},{conProblem.InputDescriptionLength.End.Value}]");
+                    errors["InputDescription"].Add($"The length of problem's input description must to be in range [{conProblem.InputDescriptionLength.Start.Value},{conProblem.InputDescriptionLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(newProblem.OutputDescription)) {
@@ -64,7 +64,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.OutputDescription.Length > conProblem.OutputDescriptionLength.End.Value || newProblem.OutputDescription.Length < conProblem.OutputDescriptionLength.Start.Value)
-                    errors["OutputDescription"].Add($"The length of output description of problem must to be in range [{conProblem.OutputDescriptionLength.Start.Value},{conProblem.OutputDescriptionLength.End.Value}]");
+                    errors["OutputDescription"].Add($"The length of problem's output description must to be in range [{conProblem.OutputDescriptionLength.Start.Value},{conProblem.OutputDescriptionLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(newProblem.Note)) {
@@ -73,7 +73,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.Note.Length > conProblem.NoteLength.End.Value || newProblem.Note.Length < conProblem.NoteLength.Start.Value)
-                    errors["Note"].Add($"The length of note of problem must to be in range [{conProblem.NoteLength.Start.Value},{conProblem.NoteLength.End.Value}]");
+                    errors["Note"].Add($"The length of problem's note must to be in range [{conProblem.NoteLength.Start.Value},{conProblem.NoteLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(newProblem.Tutorial)) {
@@ -82,7 +82,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.Tutorial.Length > conProblem.TutorialLength.End.Value || newProblem.Tutorial.Length < conProblem.TutorialLength.Start.Value)
-                    errors["Tutorial"].Add($"The length of tutorial of problem must to be in range [{conProblem.TutorialLength.Start.Value},{conProblem.TutorialLength.End.Value}]");
+                    errors["Tutorial"].Add($"The length of problem's tutorial must to be in range [{conProblem.TutorialLength.Start.Value},{conProblem.TutorialLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(newProblem.SolutionCode)) {
@@ -91,7 +91,7 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.SolutionCode.Length > conProblem.SolutionCodeLength.End.Value || newProblem.SolutionCode.Length < conProblem.SolutionCodeLength.Start.Value)
-                    errors["SolutionCode"].Add($"The length of solution code of problem must to be in range [{conProblem.SolutionCodeLength.Start.Value},{conProblem.SolutionCodeLength.End.Value}]");
+                    errors["SolutionCode"].Add($"The length of problem's solution code must to be in range [{conProblem.SolutionCodeLength.Start.Value},{conProblem.SolutionCodeLength.End.Value}]");
             }
 
             if (newProblem.TimeLimitMilliseconds > conProblem.TimeLimitMS.End.Value || newProblem.TimeLimitMilliseconds < conProblem.TimeLimitMS.Start.Value)
@@ -103,11 +103,11 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
             }
             else {
                 if (newProblem.TestCases.Count() > conProblem.NoTotalTestCases.End.Value || newProblem.TestCases.Count() < conProblem.NoTotalTestCases.Start.Value)
-                    errors["TestCases"].Add($"The number of total test cases of problem must to be in range [{conProblem.NoTotalTestCases.Start.Value},{conProblem.NoTotalTestCases.End.Value}]");
+                    errors["TestCases"].Add($"The number of problem's total test cases must to be in range [{conProblem.NoTotalTestCases.Start.Value},{conProblem.NoTotalTestCases.End.Value}]");
 
                 int noSampleTestCases = newProblem.TestCases.Count(e => e.IsSample);
                 if (noSampleTestCases > conProblem.NoSampleTestCases.End.Value || noSampleTestCases < conProblem.NoSampleTestCases.Start.Value)
-                    errors["TestCases"].Add($"The number of sample test cases of problem must to be in range [{conProblem.NoSampleTestCases.Start.Value},{conProblem.NoSampleTestCases.End.Value}]");
+                    errors["TestCases"].Add($"The number of problem's sample test cases must to be in range [{conProblem.NoSampleTestCases.Start.Value},{conProblem.NoSampleTestCases.End.Value}]");
 
                 for (int i = 0; i < newProblem.TestCases.Count(); i++) {
                     errors[$"TestCases[{i}].Input"] = [];
@@ -118,24 +118,24 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
 
                         if (string.IsNullOrEmpty(newProblem.TestCases[i].Input)) {
                             if (conTestCase.Sample.InputLength.Start.Value > 0)
-                                errors[$"TestCases[{i}].Input"].Add($"The input of test case of problem is required");
+                                errors[$"TestCases[{i}].Input"].Add($"The input of problem's test case is required");
                         }
                         else {
                             if (newProblem.TestCases[i].Input.Length > conTestCase.Sample.InputLength.End.Value || newProblem.TestCases[i].Input.Length < conTestCase.Sample.InputLength.Start.Value)
-                                errors[$"TestCases[{i}].Input"].Add($"The length of input of test case of problem must to be in range [{conTestCase.Sample.InputLength.Start.Value},{conTestCase.Sample.InputLength.End.Value}]");
+                                errors[$"TestCases[{i}].Input"].Add($"The length of problem's input test case must to be in range [{conTestCase.Sample.InputLength.Start.Value},{conTestCase.Sample.InputLength.End.Value}]");
 
                             if (noLines > conTestCase.Sample.InputNoLines.End.Value || noLines < conTestCase.Sample.InputNoLines.Start.Value)
-                                errors[$"TestCases[{i}].Input"].Add($"The number of lines of input of test case of problem must to be in range [{conTestCase.Sample.InputNoLines.Start.Value},{conTestCase.Sample.InputNoLines.End.Value}]");
+                                errors[$"TestCases[{i}].Input"].Add($"The number of problem's input test case lines must to be in range [{conTestCase.Sample.InputNoLines.Start.Value},{conTestCase.Sample.InputNoLines.End.Value}]");
                         }
                     }
                     else {
                         if (string.IsNullOrEmpty(newProblem.TestCases[i].Input)) {
                             if (conTestCase.General.InputLength.Start.Value > 0)
-                                errors[$"TestCases[{i}].Input"].Add($"The input of test case of problem is required");
+                                errors[$"TestCases[{i}].Input"].Add($"The input of problem's test case is required");
                         }
                         else {
                             if (newProblem.TestCases[i].Input.Length > conTestCase.General.InputLength.End.Value || newProblem.TestCases[i].Input.Length < conTestCase.General.InputLength.Start.Value)
-                                errors[$"TestCases[{i}].Input"].Add($"The length of input of test case of problem must to be in range [{conTestCase.General.InputLength.Start.Value},{conTestCase.General.InputLength.End.Value}]");
+                                errors[$"TestCases[{i}].Input"].Add($"The length of problem's input test case must to be in range [{conTestCase.General.InputLength.Start.Value},{conTestCase.General.InputLength.End.Value}]");
                         }
                     }
 
@@ -160,56 +160,56 @@ namespace ProblemSolvingPlatform.BLL.Validation.Problem {
 
             if (string.IsNullOrEmpty(updateProblem.Title)) {
                 if (conProblem.TitleLength.Start.Value > 0)
-                    errors["Title"].Add($"The title of problem is required");
+                    errors["Title"].Add($"The problem's title is required");
             }
             else {
                 if (updateProblem.Title.Length > conProblem.TitleLength.End.Value || updateProblem.Title.Length < conProblem.TitleLength.Start.Value)
-                    errors["Title"].Add($"The length of title of problem must to be in range [{conProblem.TitleLength.Start.Value},{conProblem.TitleLength.End.Value}]");
+                    errors["Title"].Add($"The length of problem's title must to be in range [{conProblem.TitleLength.Start.Value},{conProblem.TitleLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(updateProblem.GeneralDescription)) {
                 if (conProblem.GeneralDescriptionLength.Start.Value > 0)
-                    errors["GeneralDescription"].Add($"The general description of problem is required");
+                    errors["GeneralDescription"].Add($"The problem's general description is required");
             }
             else {
                 if (updateProblem.GeneralDescription.Length > conProblem.GeneralDescriptionLength.End.Value || updateProblem.GeneralDescription.Length < conProblem.GeneralDescriptionLength.Start.Value)
-                    errors["GeneralDescription"].Add($"The length of general description of problem must to be in range [{conProblem.GeneralDescriptionLength.Start.Value},{conProblem.GeneralDescriptionLength.End.Value}]");
+                    errors["GeneralDescription"].Add($"The length of problem's general description must to be in range [{conProblem.GeneralDescriptionLength.Start.Value},{conProblem.GeneralDescriptionLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(updateProblem.InputDescription)) {
                 if (conProblem.InputDescriptionLength.Start.Value > 0)
-                    errors["InputDescription"].Add($"The input description of problem is required");
+                    errors["InputDescription"].Add($"The problem's input description is required");
             }
             else {
                 if (updateProblem.InputDescription.Length > conProblem.InputDescriptionLength.End.Value || updateProblem.InputDescription.Length < conProblem.InputDescriptionLength.Start.Value)
-                    errors["InputDescription"].Add($"The length of input description of problem must to be in range [{conProblem.InputDescriptionLength.Start.Value},{conProblem.InputDescriptionLength.End.Value}]");
+                    errors["InputDescription"].Add($"The length of problem's input description must to be in range [{conProblem.InputDescriptionLength.Start.Value},{conProblem.InputDescriptionLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(updateProblem.OutputDescription)) {
                 if (conProblem.OutputDescriptionLength.Start.Value > 0)
-                    errors["OutputDescription"].Add($"The output description of problem is required");
+                    errors["OutputDescription"].Add($"The problem's output description is required");
             }
             else {
                 if (updateProblem.OutputDescription.Length > conProblem.OutputDescriptionLength.End.Value || updateProblem.OutputDescription.Length < conProblem.OutputDescriptionLength.Start.Value)
-                    errors["OutputDescription"].Add($"The length of output description of problem must to be in range [{conProblem.OutputDescriptionLength.Start.Value},{conProblem.OutputDescriptionLength.End.Value}]");
+                    errors["OutputDescription"].Add($"The length of problem's output description must to be in range [{conProblem.OutputDescriptionLength.Start.Value},{conProblem.OutputDescriptionLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(updateProblem.Note)) {
                 if (conProblem.NoteLength.Start.Value > 0)
-                    errors["Note"].Add($"The note of problem is required");
+                    errors["Note"].Add($"The problem's note is required");
             }
             else {
                 if (updateProblem.Note.Length > conProblem.NoteLength.End.Value || updateProblem.Note.Length < conProblem.NoteLength.Start.Value)
-                    errors["Note"].Add($"The length of note of problem must to be in range [{conProblem.NoteLength.Start.Value},{conProblem.NoteLength.End.Value}]");
+                    errors["Note"].Add($"The length of problem's note must to be in range [{conProblem.NoteLength.Start.Value},{conProblem.NoteLength.End.Value}]");
             }
 
             if (string.IsNullOrEmpty(updateProblem.Tutorial)) {
                 if (conProblem.TutorialLength.Start.Value > 0)
-                    errors["Tutorial"].Add($"The tutorial of problem is required");
+                    errors["Tutorial"].Add($"The problem's tutorial is required");
             }
             else {
                 if (updateProblem.Tutorial.Length > conProblem.TutorialLength.End.Value || updateProblem.Tutorial.Length < conProblem.TutorialLength.Start.Value)
-                    errors["Tutorial"].Add($"The length of tutorial of problem must to be in range [{conProblem.TutorialLength.Start.Value},{conProblem.TutorialLength.End.Value}]");
+                    errors["Tutorial"].Add($"The length of problem's tutorial must to be in range [{conProblem.TutorialLength.Start.Value},{conProblem.TutorialLength.End.Value}]");
             }
 
 

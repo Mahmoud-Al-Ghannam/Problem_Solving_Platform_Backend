@@ -1,37 +1,13 @@
-﻿using AutoMapper.Configuration.Annotations;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
-using ProblemSolvingPlatform.API.Base;
-using ProblemSolvingPlatform.API.Compiler.Services;
-using ProblemSolvingPlatform.DAL.Context;
-using ProblemSolvingPlatform.DAL.Models.Problems;
-using ProblemSolvingPlatform.DAL.Models.TestCases;
-using ProblemSolvingPlatform.DAL.Repos.Problems;
-using Swashbuckle.AspNetCore.SwaggerGen;
+﻿using System;
 using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using static ProblemSolvingPlatform.API.Compiler.Services.CompilerApiService;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace TestingConsoleApplication {
-    public class Program {
-
-        public class A {
-            public string X { get; set; } = "         aaa   ";
-            public string[] a { get; set; } = new string[] { "  bbb  ", "  cccc  " };
-            public List<string> b { get; set; } = new() { "  bbb1  ", "  cccc1  " };
-
-            public Dictionary<string, string> c { get; set; } = new() {
-                { "   hhh ","   iiii                   " }
-            };
-
-            public Collection d { get; set; } = new Collection() {
-                "     kkkk     ", "     ooooooo    "
-            };
-        }
-
+namespace ProblemSolvingPlatform.BLL.Helpers {
+    public class StringHelper {
 
         public static object TrimStringsOfPrimitive(object value, HashSet<object> visited) {
             Type type = value.GetType();
@@ -156,38 +132,5 @@ namespace TestingConsoleApplication {
         }
 
 
-        static void Main(string[] args) {
-            A ob = new A();
-            Console.WriteLine($"x{ob.X}x");
-            Console.WriteLine($"x{ob.a[0]}x");
-            Console.WriteLine($"x{ob.a[1]}x");
-            Console.WriteLine($"x{ob.b[0]}x");
-            Console.WriteLine($"x{ob.b[1]}x");
-
-            foreach (var item in ob.c) {
-                Console.WriteLine($"x{item}x");
-            }
-
-            foreach (var item in ob.d) {
-                Console.WriteLine($"x{item}x");
-            }
-            Console.WriteLine("-----------------------");
-            ob = (A)TrimStringsOfObject(ob, new HashSet<object>());
-
-            Console.WriteLine($"x{ob.X}x");
-            Console.WriteLine($"x{ob.a[0]}x");
-            Console.WriteLine($"x{ob.a[1]}x");
-            Console.WriteLine($"x{ob.b[0]}x");
-            Console.WriteLine($"x{ob.b[1]}x");
-
-            foreach (var item in ob.c) {
-                Console.WriteLine($"x{item}x");
-            }
-
-            foreach (var item in ob.d) {
-                Console.WriteLine($"x{item}x");
-            }
-
-        }
     }
 }
