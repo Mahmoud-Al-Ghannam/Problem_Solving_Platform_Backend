@@ -13,45 +13,41 @@ namespace ProblemSolvingPlatform.Controllers;
 [Route("api/profiles")]
 public class ProfilesController : GeneralController {
     private IUserService _userService { get; }
-    public ProfilesController(IUserService userService)
-    {
+    public ProfilesController(IUserService userService) {
         _userService = userService;
     }
 
 
     [HttpGet("{userId}")]
-    public async Task<IActionResult> GetUserInfo(int userId)
-    {
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<UserDTO>> GetUserInfo(int userId) {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null)
-            return NotFound(new { message = "User Not Found :)" });
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(user);
     }
 
     [Authorize]
     [HttpPut("")]
-    public async Task<IActionResult> UpdateUserInfo([FromForm] UpdateUserDTO updateUser)
-    {
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateUserInfo([FromForm] UpdateUserDTO updateUser) {
         var userId = AuthUtils.GetUserId(User);
-        if(userId == null)
-            return Unauthorized("Invalid Token");
+        if (userId == null)
+            return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
 
         var isUpdated = await _userService.UpdateUserInfoByIdAsync(userId.Value, updateUser);
-        if (isUpdated)
-            return Ok(new { message = "user info updated successfully" } );
-        else return BadRequest( new { message = "Failed to update user info :)" } );
+        if (!isUpdated)
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
+        return NoContent();
     }
 
     // get all users (without token)
     [HttpGet("")]
-    public async Task<IActionResult> GetAllUsers([FromQuery] int page = BLL.Constants.PaginationDefaultValues.Page, [FromQuery] int limit = BLL.Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null)
-    {
-        if (page <= 0 || limit <= 0 || limit > 100)
-            return BadRequest("Page must be ≥ 1 and limit between 1–100");
-
-        var users = await _userService.GetAllUsersWithFiltersAsync(page, limit, username);
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int page = BLL.Constants.PaginationDefaultValues.Page, [FromQuery] int limit = BLL.Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null) {
+        var users = await _userService.GetAllUsersAsync(page, limit, username);
         if (users == null)
-            return NotFound(new { message = "Users not found :| " });
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(users);
     }
 }

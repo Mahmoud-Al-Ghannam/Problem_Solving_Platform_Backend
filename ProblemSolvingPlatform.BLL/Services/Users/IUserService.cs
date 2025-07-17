@@ -11,7 +11,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Users;
 public interface IUserService
 {
     public Task<UserDTO?> GetUserByIdAsync(int userId);
-    public Task<List<UserDTO>> GetAllUsersWithFiltersAsync(int page, int limit, string? username);
+    public Task<List<UserDTO>> GetAllUsersAsync(int page, int limit, string? username);
 
     public Task<bool> DoesUserExistByUsernameAsync(string Username);
     public Task<bool> DoesUserExistByIDAsync(int UserID);

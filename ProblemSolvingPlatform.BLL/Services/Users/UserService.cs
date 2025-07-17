@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.Exceptions;
+using ProblemSolvingPlatform.BLL.Options.Constraint;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using System.Collections.Immutable;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
@@ -11,24 +13,24 @@ namespace ProblemSolvingPlatform.BLL.Services.Users;
 public class UserService : IUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ConstraintsOption _constraintsOption;
     private IUserRepo _userRepo { get; }
-    public UserService(IUserRepo userRepo, IHttpContextAccessor httpContextAccessor)
-    {
+    public UserService(IUserRepo userRepo, IHttpContextAccessor httpContextAccessor, ConstraintsOption constraintsOption) {
         _userRepo = userRepo;
         _httpContextAccessor = httpContextAccessor;
+        _constraintsOption = constraintsOption;
     }
 
     public async Task<UserDTO?> GetUserByIdAsync(int userId)
     {
+        if (!await _userRepo.DoesUserExistByIDAsync(userId)) 
+            throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
+
         var user = await _userRepo.GetUserByIdAsync(userId);
-
-        if (user == null) return null;
-
-
+        if (user == null) throw new Exception(Constants.ErrorMessages.General);
 
         var request = _httpContextAccessor.HttpContext?.Request;
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
-
 
         return new UserDTO()
         {
@@ -42,12 +44,16 @@ public class UserService : IUserService
 
     public async Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser)
     {
-        if(updateUser == null) return false;
+        if (!await _userRepo.DoesUserExistByIDAsync(userId))
+            throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
+
+        if (updateUser == null) 
+            throw new CustomValidationException("UpdateUser", [$"This field is required"]);
 
 
         // 1 remove the image from the server 
         var user = await _userRepo.GetUserByIdAsync(userId);
-        if(user == null) return false;
+        if(user == null) throw new Exception(Constants.ErrorMessages.General);
 
 
         if (updateUser.profileImage != null)
@@ -62,8 +68,22 @@ public class UserService : IUserService
         return await _userRepo.UpdateUserInfoByIdAsync(userId, newpath);
     }
 
-    public async Task<List<UserDTO>?> GetAllUsersWithFiltersAsync(int page, int limit, string? username)
+    public async Task<List<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username)
     {
+        Dictionary<string, List<string>> errors = new();
+        errors["Page"] = [];
+        errors["Limit"] = [];
+
+        if (page < _constraintsOption.MinPageNumber)
+            errors["Page"].Add($"The page must to be greater than {_constraintsOption.MinPageNumber}");
+
+        if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value)
+            errors["Limit"].Add($"The limit must to be in range [{_constraintsOption.PageSize.Start.Value},{_constraintsOption.PageSize.End.Value}]");
+
+
+        errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+        if (errors.Count > 0) throw new CustomValidationException(errors);
+
         var users = await _userRepo.GetAllUsersByFiltersAsync(page, limit, username);
         if (users == null)
             return null;

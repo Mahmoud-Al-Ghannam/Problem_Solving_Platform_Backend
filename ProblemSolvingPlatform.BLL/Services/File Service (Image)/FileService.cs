@@ -17,7 +17,7 @@ public class FileService
     {
         if (imageFile == null)
             return null;
-
+        
         string pathOfImage = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
         string fullpath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", pathOfImage);
         using (var stream = new FileStream(fullpath, FileMode.Create))
