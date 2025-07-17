@@ -40,7 +40,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             _constraintsOption = constraintsOptions;
         }
 
-        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy) {
+        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy,bool isSystemProblem) {
             Dictionary<string, List<string>> errors = _problemValidation.ValidateNewProblem(newProblem);
             if (errors == null) errors = new();
 
@@ -113,6 +113,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 Note = newProblem.Note,
                 Tutorial = newProblem.Tutorial,
                 Difficulty = (DAL.Models.Enums.Difficulty)(int)newProblem.Difficulty,
+                IsSystemProblem = isSystemProblem,
                 SolutionCode = newProblem.SolutionCode,
                 TimeLimitMilliseconds = newProblem.TimeLimitMilliseconds,
                 TestCases = newProblem.TestCases.Select((t, i) => new DAL.Models.TestCases.NewTestCaseModel() {
@@ -196,7 +197,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         }
 
 
-        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, Enums.Role? role = null, DateTime? createdAt = null, string? tagIDs = null) {
+        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null, string? tagIDs = null) {
             Dictionary<string, List<string>> errors = new();
             errors["Page"] = [];
             errors["Limit"] = [];
@@ -224,12 +225,13 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, (byte?)role, createdAt, listTagIDs))
+            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, listTagIDs))
                 ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
                     Difficulty = (Difficulty)(int)model.Difficulty,
                     Title = model.Title,
                     GeneralDescription = model.GeneralDescription,
+                    IsSystemProblem = model.IsSystemProblem,
                     SolutionsCount = model.SolutionsCount,
                     AttemptsCount = model.AttemptsCount,
                     Tags = model.Tags.Select(t => new TagDTO() { Name = t.Name, TagID = t.TagID }),
@@ -256,6 +258,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 Note = problemModel.Note,
                 Tutorial = problemModel.Tutorial,
                 Difficulty = (Enums.Difficulty)(int)problemModel.Difficulty,
+                IsSystemProblem = problemModel.IsSystemProblem,
                 SolutionCode = problemModel.SolutionCode,
                 TimeLimitMilliseconds = problemModel.TimeLimitMilliseconds,
 

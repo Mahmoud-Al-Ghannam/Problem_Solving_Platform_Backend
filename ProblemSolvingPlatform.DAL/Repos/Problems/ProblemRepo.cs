@@ -45,6 +45,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                     cmd.Parameters.AddWithValue("@Difficulty", (byte)newProblem.Difficulty);
                     cmd.Parameters.AddWithValue("@SolutionCode", newProblem.SolutionCode);
                     cmd.Parameters.AddWithValue("@TimeLimitMilliseconds", newProblem.TimeLimitMilliseconds);
+                    cmd.Parameters.AddWithValue("@IsSystemProblem", newProblem.IsSystemProblem);
 
                     // output 
                     var ParmProblemID = new SqlParameter("@ProblemID", SqlDbType.Int) {
@@ -162,7 +163,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                 problemModel.CreatedBy = Convert.ToInt32(reader["CreatedBy"].ToString());
                                 problemModel.CreatedAt = (DateTime)reader["CreatedAt"];
                                 problemModel.DeletedBy = reader["DeletedBy"] == DBNull.Value ? null : (int)reader["DeletedBy"];
-                                problemModel.DeletedAt = reader["DeletedAt"] == DBNull.Value ? null : (DateTime)reader["DeletedBy"];
+                                problemModel.DeletedAt = reader["DeletedAt"] == DBNull.Value ? null : (DateTime)reader["DeletedAt"];
                                 problemModel.Title = (string)reader["Title"];
                                 problemModel.GeneralDescription = (string)reader["GeneralDescription"];
                                 problemModel.InputDescription = (string)reader["InputDescription"];
@@ -173,6 +174,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                 problemModel.SolutionCode = (string)reader["SolutionCode"];
                                 problemModel.CompilerName = (string)reader["CompilerName"];
                                 problemModel.TimeLimitMilliseconds = (int)reader["TimeLimitMilliseconds"];
+                                problemModel.IsSystemProblem = (bool)reader["IsSystemProblem"];
                             }
                             else return null;
                         }
@@ -302,7 +304,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,byte? role = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
             var problems = new List<ShortProblemModel>();
 
             try {
@@ -316,7 +318,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         command.Parameters.AddWithValue("@Title", string.IsNullOrWhiteSpace(title) ? DBNull.Value : title);
                         command.Parameters.AddWithValue("@Difficulty", difficulty == null ? DBNull.Value : difficulty);
                         command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy);
-                        command.Parameters.AddWithValue("@Role", role);
+                        command.Parameters.AddWithValue("@IsSystemProblem", isSystemProblem == null ? DBNull.Value : isSystemProblem.Value);
                         command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
                         TagIDsParm.TypeName = "dbo.IntegersTableType";
@@ -335,6 +337,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                     Title = reader["Title"].ToString() ?? "",
                                     GeneralDescription = reader["GeneralDescription"].ToString() ?? "",
                                     Difficulty = (Difficulty)Convert.ToInt32(reader["Difficulty"]),
+                                    IsSystemProblem = Convert.ToBoolean(reader["IsSystemProblem"]),
                                     SolutionsCount = Convert.ToInt32(reader["SolutionsCount"]),
                                     AttemptsCount = Convert.ToInt32(reader["AttemptsCount"]),
                                     Tags = await GetProblemTagsAsync(problemID) ?? []

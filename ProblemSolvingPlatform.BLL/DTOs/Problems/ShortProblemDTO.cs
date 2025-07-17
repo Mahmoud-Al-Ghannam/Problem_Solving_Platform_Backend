@@ -14,6 +14,8 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
         public int ProblemID { get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }
+        public bool IsSystemProblem { get; set; }
+
         public Difficulty Difficulty { get; set; }
         public IEnumerable<TagDTO> Tags { get; set; }
         public int SolutionsCount { get; set; }

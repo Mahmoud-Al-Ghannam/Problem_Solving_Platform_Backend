@@ -27,6 +27,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
         public Difficulty Difficulty { get; set; }
         public string SolutionCode { get; set; }
         public int TimeLimitMilliseconds { get; set; }
+        public bool IsSystemProblem { get; set; }
         public IEnumerable<TestCaseDTO> SampleTestCases { get; set; }
 
         public IEnumerable<TagDTO> Tags { get; set; }

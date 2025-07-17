@@ -17,6 +17,6 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
         public Task<IEnumerable<TagModel>?> GetProblemTagsAsync(int problemID);
 
         public Task<bool> DoesProblemExistByIDAsync(int problemId);
-        public Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page,int limit,string? title = null,byte? difficulty = null,int? createdBy = null,byte? role = null,DateTime? createdAt = null,IEnumerable<int>? tagIDs = null);
+        public Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page,int limit,string? title = null,byte? difficulty = null,int? createdBy = null,bool? isSystemProblem = null,DateTime? createdAt = null,IEnumerable<int>? tagIDs = null);
     }
 }
