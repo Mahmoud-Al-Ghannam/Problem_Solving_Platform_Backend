@@ -9,13 +9,13 @@ namespace ProblemSolvingPlatform.DAL.Models.Submissions;
 
 public class SubmissionModel
 {
-    public int SubmissionId { get; set; }
+    public int SubmissionID { get; set; }
     public int UserID { get; set; }
     public int ProblemID { get; set; }
     public string CompilerName { get; set; }
-    public byte Status { get; set; }
+    public Enums.SubmissionStatus Status { get; set; }
     public int ExecutionTimeMilliseconds { get; set; }
     public string Code { get; set; }
-    public byte VisionScope { get; set; }
+    public Enums.VisionScope VisionScope { get; set; }
     public DateTime SubmittedAt { get; set; }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using ProblemSolvingPlatform.BLL.DTOs.TestCases;
 using ProblemSolvingPlatform.BLL.Services.TestCases;
+using ProblemSolvingPlatform.Responses;
 
 namespace ProblemSolvingPlatform.Controllers {
 
@@ -15,10 +17,11 @@ namespace ProblemSolvingPlatform.Controllers {
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TestCaseDTO>?>> GetAllTestCases (int Page, int Limit, int? ProblemID = null, bool? IsSample = null, bool? IsPublic = null) {
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<TestCaseDTO>?>> GetAllTestCases (int Page = BLL.Constants.PaginationDefaultValues.Page, int Limit = BLL.Constants.PaginationDefaultValues.Limit, int? ProblemID = null, bool? IsSample = null, bool? IsPublic = null) {
             var testcases = await _testCaseService.GetAllTestCasesAsync(Page,Limit,ProblemID,IsSample,IsPublic);
             if (testcases == null)
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(testcases);
         }
     }

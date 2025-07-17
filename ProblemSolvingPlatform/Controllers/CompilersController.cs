@@ -16,23 +16,15 @@ namespace ProblemSolvingPlatform.Controllers {
         }
 
         [HttpPost("compile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CompileResponseDTO>>> CompileAsync(CompileRequestDTO request) {
-            try {
-                return await _compilerService.CompileAsync(request);
-            }
-            catch (Exception ex) { 
-                return StatusCode(StatusCodes.Status500InternalServerError,new {error=ex.Message});
-            }
+            return Ok(await _compilerService.CompileAsync(request));
         }
 
         [HttpGet("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<CompilerDTO>> GetAllCompilers() {
-            try {
-                return _compilerService.GetAllCompilers();
-            }
-            catch (Exception ex) {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
-            }
+            return Ok(_compilerService.GetAllCompilers());
         }
     }
 }

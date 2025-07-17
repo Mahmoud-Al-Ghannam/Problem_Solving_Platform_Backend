@@ -26,27 +26,27 @@ namespace ProblemSolvingPlatform.Controllers {
             int? id = null;
             id = await _tagService.AddNewTagAsync(newTag);
             if (id == null)
-                return StatusCode(StatusCodes.Status500InternalServerError,new ErrorResponseBody("Some error occurred"));
+                return StatusCode(StatusCodes.Status500InternalServerError,new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(id);
         }
 
 
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize(Roles = BLL.Constants.Roles.System)]
         public async Task<ActionResult<int?>> UpdateTag(TagDTO tag) {
             bool ok = await _tagService.UpdateTagAsync(tag);
-            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody("Some error occurred"));
-            return Ok(ok);
+            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
+            return NoContent();
         }
 
         [HttpDelete ("{tagID}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Authorize(Roles = BLL.Constants.Roles.System)]
-        public async Task<ActionResult<int?>> DeleteTag(int tagID) {
+        public async Task<ActionResult> DeleteTag(int tagID) {
             bool ok = await _tagService.DeleteTagAsync(tagID);
-            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody("Some error occurred"));
-            return Ok(ok);
+            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
+            return NoContent();
         }
 
 
@@ -55,7 +55,7 @@ namespace ProblemSolvingPlatform.Controllers {
         public async Task<ActionResult<IEnumerable<TagDTO>>> GetAllTags() {
             var tags = await _tagService.GetAllTagsAsync();
             if (tags == null)
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(tags);
         }
     }

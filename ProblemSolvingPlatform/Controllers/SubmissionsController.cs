@@ -3,8 +3,11 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration.UserSecrets;
+using Microsoft.VisualBasic;
 using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission;
 using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
+using ProblemSolvingPlatform.BLL.DTOs.Submissions.VisionScope;
 using ProblemSolvingPlatform.BLL.Services.Submissions;
 using ProblemSolvingPlatform.Responses;
 using System.Security.Claims;
@@ -23,46 +26,47 @@ public class SubmissionsController : GeneralController {
 
 
     [HttpPost("submit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<IActionResult> Submit(SubmitDTO submitDTO)
+    public async Task<ActionResult<int?>> AddNewSubmission(SubmitDTO submitDTO)
     {
         var userId = AuthUtils.GetUserId(User);
         if(userId == null)
-            return Unauthorized("User ID not found");
+            return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
         
-        var response = await _submissionService.Submit(submitDTO, userId.Value);
-        if (response.isSuccess)
-            return Ok(new { message = response.msg }); 
+        int? submissionID = await _submissionService.AddNewSubmission(submitDTO, userId.Value);
+        if (submissionID == null)
+            return StatusCode(StatusCodes.Status500InternalServerError,new { error = BLL.Constants.ErrorMessages.General }); 
 
-        return BadRequest(new {message =  response.msg});
+        return Ok(submissionID.Value);
     }
 
     [HttpPut("change-vision-scope")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [Authorize]
     public async Task<IActionResult> ChangeVisionScope(int submissionId, int visionScopeId)
     {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
-            return Unauthorized("User ID not found");
+            return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
 
         var isUpdated = await _submissionService.ChangeVisionScope(submissionId, visionScopeId, userId.Value);
-        if (isUpdated)
-            return Ok("DONE");
-        return BadRequest("Failed");
+        if (!isUpdated) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
+        return NoContent();
     }
 
 
     [HttpGet("vision-scopes")]
-    public IActionResult GetAllVisionScopes()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult<VisionScopesDTO> GetAllVisionScopes()
     {
-        var result = new List<object>();
+        var result = new List<VisionScopesDTO>();
 
         foreach (VisionScope visionScope in Enum.GetValues(typeof(VisionScope)))
         {
-            result.Add(new
-            {
-                name = visionScope.ToString(),
-                value = (int)visionScope
+            result.Add(new VisionScopesDTO {
+                VisionScope = visionScope.ToString(),
+                Id = (int)visionScope
             }
             );
         }
@@ -73,44 +77,58 @@ public class SubmissionsController : GeneralController {
 
 
     [HttpGet("")]
-    //[Authorize]
-    public async Task<IActionResult> GetAllSubmissions(int page=1, int limit=10,int? userId = null,int? problemId = null, VisionScope? scope = null) 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllSubmissions(int page= BLL.Constants.PaginationDefaultValues.Page, int limit= BLL.Constants.PaginationDefaultValues.Limit, int? userId = null,int? problemId = null, VisionScope? scope = null) 
     {
-        if (page <= 0 || limit <= 0 || limit > 100)   
-            return BadRequest("Page must be ≥ 1 and limit between 1–100");
-
         var submissions = await _submissionService.GetAllSubmissions(page, limit,userId, problemId, scope);
         if (submissions == null)
-            return NotFound(new { message = "No submissions Exist" });
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(submissions);
     }
 
 
     [HttpGet("own")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<IActionResult> GetAllOwnSubmissions(int page = 1, int limit = 10, int? problemId = null, VisionScope? scope = null) {
-        if (page <= 0 || limit <= 0 || limit > 100)
-            return BadRequest("Page must be ≥ 1 and limit between 1–100");
+    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllOwnSubmissions(int page = BLL.Constants.PaginationDefaultValues.Page, int limit = BLL.Constants.PaginationDefaultValues.Limit, int? problemId = null, VisionScope? scope = null) {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
-            return BadRequest("no user found");
+            return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
 
         var submissions = await _submissionService.GetAllSubmissions(page, limit,userId.Value, problemId, scope);
         if (submissions == null)
-            return NotFound(new { message = "No submissions Exist" });
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(submissions);
     }
 
 
 
-    [HttpGet("{submissionId}")]
-    public async Task<IActionResult> GetSubmissionDetails(int submissionId)
+    [HttpGet("details/{submissionId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<SubmissionDetailsDTO>> GetSubmissionDetails(int submissionId)
     {
         var userId = AuthUtils.GetUserId(User);
+        if (userId == null)
+            return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+
         var subDetails = await _submissionService.GetSubmissionDetails(submissionId, userId);
         if (subDetails == null)
-            return BadRequest(new { message = "Failed to view submission :)" });
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(subDetails);
+    }
+
+    [HttpGet("{submissionId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<SubmissionDTO>> GetSubmissionByID(int submissionId) {
+        var userId = AuthUtils.GetUserId(User);
+        if (userId == null)
+            return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+
+        var submission = await _submissionService.GetSubmissionByID(submissionId, userId);
+        if (submission == null)
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
+        return Ok(submission);
     }
 
 

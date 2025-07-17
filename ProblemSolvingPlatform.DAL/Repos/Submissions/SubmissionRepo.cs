@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models;
+using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Submissions;
 using ProblemSolvingPlatform.DAL.Models.Users;
 using System;
@@ -158,32 +159,8 @@ public class SubmissionRepo : ISubmissionRepo {
         }
     }
 
-    public async Task<(int userId, byte visionScope)?> GetSubmissionAccessInfo(int submissionId) {
-        using SqlConnection connection = _db.GetConnection();
-        using SqlCommand command = new SqlCommand("SP_Submission_GetAccessInfo", connection) {
-            CommandType = CommandType.StoredProcedure
-        };
-        command.Parameters.AddWithValue("@SubmissionId", submissionId);
 
-        try {
-            await connection.OpenAsync();
-            using SqlDataReader reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync()) {
-                int userId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0;
-                byte visionScope = reader["VisionScope"] != DBNull.Value ? Convert.ToByte(reader["VisionScope"]) : (byte)0;
-                return (userId, visionScope);
-            }
-            return null;
-        }
-        catch {
-            return null;
-        }
-        finally {
-            await connection.CloseAsync();
-        }
-    }
-
-    public async Task<List<SubmissionModel>?> GetSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
+    public async Task<List<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
         var results = new List<SubmissionModel>();
 
         using (var conn = _db.GetConnection())
@@ -209,13 +186,13 @@ public class SubmissionRepo : ISubmissionRepo {
                 using (var reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
                         var sub = new SubmissionModel {
-                            SubmissionId = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
+                            SubmissionID = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
                             UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
                             ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),
                             CompilerName = reader.GetString(reader.GetOrdinal("CompilerName")),
-                            Status = reader.GetByte(reader.GetOrdinal("Status")),
+                            Status = (Enums.SubmissionStatus)reader.GetByte(reader.GetOrdinal("Status")),
                             ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),
-                            VisionScope = reader.GetByte(reader.GetOrdinal("VisionScope")),
+                            VisionScope = (Enums.VisionScope) reader.GetByte(reader.GetOrdinal("VisionScope")),
                             SubmittedAt = reader.GetDateTime(reader.GetOrdinal("SubmittedAt"))
                         };
                         results.Add(sub);
@@ -231,4 +208,60 @@ public class SubmissionRepo : ISubmissionRepo {
 
     }
 
+    public async Task<SubmissionModel?> GetSubmissionByID (int submissionID) {
+        SubmissionModel submissionModel = new SubmissionModel();
+
+        try {
+            using (SqlConnection connection = _db.GetConnection()) {
+
+                await connection.OpenAsync();
+                using (SqlCommand cmd = new("SP_Submission_GetSubmissionByID", connection)) {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@SubmissionID", submissionID);
+                    using (var reader = await cmd.ExecuteReaderAsync()) {
+                        if (await reader.ReadAsync()) {
+                            submissionModel.SubmissionID = Convert.ToInt32(reader["SubmissionID"].ToString());
+                            submissionModel.UserID = Convert.ToInt32(reader["UserID"].ToString());
+                            submissionModel.ProblemID = Convert.ToInt32(reader["ProblemID"].ToString());
+                            submissionModel.CompilerName = (string)reader["CompilerName"];
+                            submissionModel.Status = (Enums.SubmissionStatus)(byte)reader["Status"];
+                            submissionModel.ExecutionTimeMilliseconds = Convert.ToInt32(reader["ExecutionTimeMilliseconds"].ToString());
+                            submissionModel.Code = (string)reader["Code"];
+                            submissionModel.VisionScope = (Enums.VisionScope)(byte)reader["VisionScope"];
+                            submissionModel.SubmittedAt = (DateTime)reader["SubmittedAt"];
+                        }
+                        else return null;
+                    }
+                }
+            }
+        }
+        catch (Exception ex) {
+            return null;
+        }
+
+        return submissionModel;
+    }
+    public async Task<bool> DoesSubmissionExistByID(int submissionID) {
+        try {
+            using (SqlConnection connection = _db.GetConnection()) {
+
+                await connection.OpenAsync();
+
+                using (SqlCommand cmd = new("SP_Submission_DoesSubmissionExistByID", connection)) {
+
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@SubmissionID", submissionID);
+
+
+                    var res = await cmd.ExecuteScalarAsync();
+                    if (res == null || Convert.ToInt32(res.ToString()) == 0) return false;
+                    return true;
+                }
+
+            }
+        }
+        catch (Exception ex) {
+            return false;
+        }
+    }
 }

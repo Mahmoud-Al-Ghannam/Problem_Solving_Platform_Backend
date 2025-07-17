@@ -9,6 +9,6 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission;
 
 public class SubmissionDetailsDTO
 {
-     public string Code { get; set; } = string.Empty;
-     public List<SubmissionTestCaseDTO> SubmissionsTestCases {  get; set; }
+     public SubmissionDTO SubmissionInfo { get; set; } = new();
+    public List<SubmissionTestCaseDTO> SubmissionsTestCases { get; set; } = new();
 }

@@ -44,7 +44,7 @@ public class ProfilesController : GeneralController {
 
     // get all users (without token)
     [HttpGet("")]
-    public async Task<IActionResult> GetAllUsers([FromQuery] int page = 1, [FromQuery] int limit = 2, [FromQuery] string? username = null)
+    public async Task<IActionResult> GetAllUsers([FromQuery] int page = BLL.Constants.PaginationDefaultValues.Page, [FromQuery] int limit = BLL.Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null)
     {
         if (page <= 0 || limit <= 0 || limit > 100)
             return BadRequest("Page must be ≥ 1 and limit between 1–100");

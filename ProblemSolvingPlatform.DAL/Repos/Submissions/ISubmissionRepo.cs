@@ -15,10 +15,10 @@ public interface ISubmissionRepo {
 
     public Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS);
 
-    public Task<(int userId, byte visionScope)?> GetSubmissionAccessInfo(int submissionId);
-
     public Task<string?> GetSubmissionCode(int submissionId);
 
-    public Task<List<SubmissionModel>?> GetSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null);
+    public Task<SubmissionModel?> GetSubmissionByID(int submissionID);
+    public Task<List<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null);
 
+    public Task<bool> DoesSubmissionExistByID(int submissionID);
 }

@@ -8,6 +8,8 @@ namespace ProblemSolvingPlatform.DAL.Models {
     public class Enums {
         public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
 
+        public enum VisionScope { onlyme = 0, all = 1 }
+
         public enum SubmissionStatus {
             Pending = 0, Accepted = 1, WrongAnswer = 2,
             CompilationError = 3,

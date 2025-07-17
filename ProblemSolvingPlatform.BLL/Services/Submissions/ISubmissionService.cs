@@ -12,7 +12,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Submissions;
 
 public interface ISubmissionService
 { 
-    public Task<SubmitResponseDTO> Submit(SubmitDTO submitDTO, int userId);
+    public Task<int?> AddNewSubmission(SubmitDTO submitDTO, int userId);
 
     public List<VisionScopesDTO> GetAllVisionScopes();
 
@@ -22,5 +22,6 @@ public interface ISubmissionService
     public Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit,int? userId = null, int? problemId = null,  Enums.VisionScope? scope = null);
 
     public Task<SubmissionDetailsDTO?> GetSubmissionDetails(int submissionId, int? userId);
+    public Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int? userId);
 
 }

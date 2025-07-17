@@ -24,31 +24,39 @@ namespace ProblemSolvingPlatform.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int?>> AddProblem([FromBody] NewProblemDTO newProblemDTO) {
             int? id = null;
-            int userID = AuthUtils.GetUserId(User)??-1;
-            id = await _problemService.AddProblemAsync(newProblemDTO,userID);
-            if (id == null) return StatusCode(StatusCodes.Status500InternalServerError);
+            int? userID = AuthUtils.GetUserId(User);
+            if (userID == null)
+                return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+
+            id = await _problemService.AddProblemAsync(newProblemDTO,userID.Value);
+            if (id == null) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(id);
         }
 
         [Authorize]
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateProblem([FromBody] UpdateProblemDTO updateProblemDTO) {
             bool ok;
-            int userID = AuthUtils.GetUserId(User) ?? -1;
-            ok = await _problemService.UpdateProblemAsync(updateProblemDTO, userID);
-            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError);
+            int? userID = AuthUtils.GetUserId(User);
+            if (userID == null)
+                return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+
+            ok = await _problemService.UpdateProblemAsync(updateProblemDTO, userID.Value);
+            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return NoContent();
         }
 
         [Authorize]
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteProblem([FromRoute(Name = "id")] int problemID) {
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> DeleteProblem([FromRoute(Name = "id")] int problemID)  {
             bool ok;
-            int userID = AuthUtils.GetUserId(User) ?? -1;
-            ok = await _problemService.DeleteProblemByIDAsync(problemID, userID);
-            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError);
+            int? userID = AuthUtils.GetUserId(User);
+            if (userID == null)
+                return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+            ok = await _problemService.DeleteProblemByIDAsync(problemID, userID.Value);
+            if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return NoContent();
         }
 
@@ -57,16 +65,16 @@ namespace ProblemSolvingPlatform.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ProblemDTO?>> GetProblemByID([FromRoute(Name = "id")] int problemID) {
             var problemDTO = await _problemService.GetProblemByIDAsync(problemID);
-            if (problemDTO == null) return StatusCode(StatusCodes.Status500InternalServerError);
+            if (problemDTO == null) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(problemDTO);
         }
 
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page=1, [FromQuery]int limit=20, [FromQuery] string? title = null,[FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] byte? role = null, [FromQuery] DateTime? createdAt = null, [FromBody] IEnumerable<int>? tagIDs = null) {
+        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page= BLL.Constants.PaginationDefaultValues.Page, [FromQuery]int limit= BLL.Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null,[FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] byte? role = null, [FromQuery] DateTime? createdAt = null, [FromBody] IEnumerable<int>? tagIDs = null) {
             var problems = await _problemService.GetAllProblemsAsync(page,limit,title,difficulty,createdBy,role,createdAt,tagIDs);
             if(problems == null)
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(problems);
         }
 

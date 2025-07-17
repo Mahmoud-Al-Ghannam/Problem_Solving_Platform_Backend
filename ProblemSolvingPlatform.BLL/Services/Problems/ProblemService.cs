@@ -30,14 +30,14 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         private readonly IUserService _userService;
         private readonly ICompilerService _compilerService;
         private readonly ProblemValidation _problemValidation;
-        private readonly ConstraintsOption _constraintsOptions;
+        private readonly ConstraintsOption _constraintsOption;
 
         public ProblemService(IProblemRepo problemRepo, ICompilerService compilerService, ProblemValidation problemValidation, IUserService userService, ConstraintsOption constraintsOptions) {
             _problemRepo = problemRepo;
             _compilerService = compilerService;
             _problemValidation = problemValidation;
             _userService = userService;
-            _constraintsOptions = constraintsOptions;
+            _constraintsOption = constraintsOptions;
         }
 
         public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy) {
@@ -68,11 +68,11 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 for (int i = 0; i < compileReponsesDTO.Count; i++) {
                     if (!errors.Keys.Contains($"TestCases[{i}]"))
                         errors[$"TestCases[{i}]"] = [];
-                    if (!errors.Keys.Contains($"SolutionCode_ForTestCase[{i}]"))
-                        errors[$"SolutionCode_ForTestCase[{i}]"] = [];
+                    if (!errors.Keys.Contains($"SolutionCode"))
+                        errors[$"SolutionCode"] = [];
 
                     if (!compileReponsesDTO[i].CompilationSuccess) {
-                        errors[$"SolutionCode_ForTestCase[{i}]"].Add(string.Join("\n", compileReponsesDTO[i].CompilationErrors ?? []));
+                        errors[$"SolutionCode"].Add(string.Join("\n", compileReponsesDTO[i].CompilationErrors ?? []));
                         break;
                     }
                     else if (!compileReponsesDTO[i].ExecutionSuccess) {
@@ -189,11 +189,11 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             errors["Page"] = [];
             errors["Limit"] = [];
 
-            if (page < _constraintsOptions.MinPageNumber)
-                errors["Page"].Add($"The page must to be greater than {_constraintsOptions.MinPageNumber}");
+            if (page < _constraintsOption.MinPageNumber)
+                errors["Page"].Add($"The page must to be greater than {_constraintsOption.MinPageNumber}");
 
-            if (limit < _constraintsOptions.PageSize.Start.Value || limit > _constraintsOptions.PageSize.End.Value)
-                errors["Limit"].Add($"The limit must to be in range [{_constraintsOptions.PageSize.Start.Value},{_constraintsOptions.PageSize.End.Value}]");
+            if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value)
+                errors["Limit"].Add($"The limit must to be in range [{_constraintsOption.PageSize.Start.Value},{_constraintsOption.PageSize.End.Value}]");
 
             errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
             if (errors.Count > 0) throw new CustomValidationException(errors);
