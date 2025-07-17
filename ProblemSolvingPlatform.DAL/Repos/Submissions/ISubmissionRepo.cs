@@ -13,10 +13,6 @@ public interface ISubmissionRepo {
 
     public Task<bool> ChangeVisionScope(int submissionId, int visionScopeId, int userId);
 
-    public Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS);
-
-    public Task<string?> GetSubmissionCode(int submissionId);
-
     public Task<SubmissionModel?> GetSubmissionByID(int submissionID);
     public Task<List<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null);
 

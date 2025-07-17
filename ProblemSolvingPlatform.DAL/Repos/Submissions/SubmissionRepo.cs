@@ -117,54 +117,11 @@ public class SubmissionRepo : ISubmissionRepo {
         }
     }
 
-    public async Task<bool> UpdateSubmissionStatusAndExecTime(int submissionId, byte status, int execTimeMS) {
-        using (var connection = _db.GetConnection())
-        using (var command = new SqlCommand("SP_Submission_UpdateSubmissionStatusAndExecutionTime", connection)) {
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@SubmissionID", submissionId);
-            command.Parameters.AddWithValue("@Status", status);
-            command.Parameters.AddWithValue("ExecTimeMS", execTimeMS);
-            try {
-                await connection.OpenAsync();
-                int rowsAffected = command.ExecuteNonQuery();
-
-                if (rowsAffected > 0)
-                    return true;
-                return false;
-            }
-            catch (Exception ex) {
-                return false;
-            }
-        }
-    }
-
-    public async Task<string?> GetSubmissionCode(int submissionId) {
-        using (SqlConnection connection = _db.GetConnection())
-        using (SqlCommand command = new("SP_Submission_GetCode", connection)) {
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@SubmissionId", submissionId);
-            try {
-                await connection.OpenAsync();
-                var result = await command.ExecuteScalarAsync();
-                if (result != null && result != DBNull.Value)
-                    return result.ToString();
-                return null;
-            }
-            catch (Exception ex) {
-                return null;
-            }
-            finally {
-                await connection.CloseAsync();
-            }
-        }
-    }
-
-
     public async Task<List<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
         var results = new List<SubmissionModel>();
 
         using (var conn = _db.GetConnection())
-        using (var cmd = new SqlCommand("SP_Submissions_GetSubmissions", conn)) {
+        using (var cmd = new SqlCommand("SP_Submissions_GetAllSubmissions", conn)) {
             cmd.CommandType = CommandType.StoredProcedure;
 
 
@@ -241,6 +198,7 @@ public class SubmissionRepo : ISubmissionRepo {
 
         return submissionModel;
     }
+    
     public async Task<bool> DoesSubmissionExistByID(int submissionID) {
         try {
             using (SqlConnection connection = _db.GetConnection()) {

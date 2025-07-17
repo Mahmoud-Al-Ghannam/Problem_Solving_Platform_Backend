@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.BLL.DTOs.Problems;
+﻿using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,6 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         public Task<bool> UpdateProblemAsync(UpdateProblemDTO updateProblem,int userID);
         public Task<bool> DeleteProblemByIDAsync(int problemID,int deletedBy);
         public Task<ProblemDTO?> GetProblemByIDAsync(int problemID);
-        public Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,byte? role = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null);
+        public Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,Enums.Role? role = null, DateTime? createdAt = null, string? tagIDs = null);
     }
 }

@@ -81,7 +81,7 @@ public class SubmissionsController : GeneralController {
     [Authorize]
     public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllSubmissions(int page= BLL.Constants.PaginationDefaultValues.Page, int limit= BLL.Constants.PaginationDefaultValues.Limit, int? userId = null,int? problemId = null, VisionScope? scope = null) 
     {
-        var submissions = await _submissionService.GetAllSubmissions(page, limit,userId, problemId, scope);
+        var submissions = await _submissionService.GetAllSubmissions(page, limit,AuthUtils.GetUserId(User),userId, problemId, scope);
         if (submissions == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(submissions);
@@ -96,7 +96,7 @@ public class SubmissionsController : GeneralController {
         if (userId == null)
             return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
 
-        var submissions = await _submissionService.GetAllSubmissions(page, limit,userId.Value, problemId, scope);
+        var submissions = await _submissionService.GetAllSubmissions(page, limit, AuthUtils.GetUserId(User), userId.Value, problemId, scope);
         if (submissions == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(submissions);

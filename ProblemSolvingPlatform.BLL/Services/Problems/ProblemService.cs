@@ -57,8 +57,20 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 TimeoutMs = newProblem.TimeLimitMilliseconds
             };
 
+            List<CompileResponseDTO> compileReponsesDTO = new();
 
-            List<CompileResponseDTO> compileReponsesDTO = await _compilerService.CompileAsync(compileRequestDTO);
+
+            try {
+                compileReponsesDTO = await _compilerService.CompileAsync(compileRequestDTO);
+            }
+            catch (CustomValidationException ex) {
+                foreach (var (k, v) in ex.errors) {
+                    if (errors.ContainsKey(k))
+                        errors[k].AddRange(v);
+                    else
+                        errors[k] = v;
+                }
+            }
 
             if (compileReponsesDTO.Any(res => !res.CompilationSuccess ||
                                     !res.ExecutionSuccess ||
@@ -184,7 +196,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         }
 
 
-        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, byte? role = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, Enums.Role? role = null, DateTime? createdAt = null, string? tagIDs = null) {
             Dictionary<string, List<string>> errors = new();
             errors["Page"] = [];
             errors["Limit"] = [];
@@ -195,11 +207,24 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value)
                 errors["Limit"].Add($"The limit must to be in range [{_constraintsOption.PageSize.Start.Value},{_constraintsOption.PageSize.End.Value}]");
 
+            List<int>? listTagIDs = null;
+            if (tagIDs != null) {
+                List<string> stringTagIDs = tagIDs.Split(",").ToList();
+                listTagIDs = new();
+                for (int i = 0; i < stringTagIDs.Count; i++) {
+                    bool ok = int.TryParse(stringTagIDs[i], out int res);
+                    if (ok) listTagIDs.Add(res);
+                    else errors[$"TagIDs[{i}]"] = [$"must to be integer but it's '{stringTagIDs[i]}'"];
+                }
+            }
+
+
+
             errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy,role, createdAt, tagIDs))
+            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, (byte?)role, createdAt, listTagIDs))
                 ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
                     Difficulty = (Difficulty)(int)model.Difficulty,

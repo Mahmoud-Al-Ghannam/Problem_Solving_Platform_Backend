@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ProblemSolvingPlatform.BLL.Services.Tags {
     public class TagService : ITagService {
@@ -29,25 +30,37 @@ namespace ProblemSolvingPlatform.BLL.Services.Tags {
         }
 
         public async Task<int?> AddNewTagAsync(NewTagDTO newTag) {
+            Dictionary<string, List<string>> errors = new();
+            errors["Name"] = [];
+
             if (await _tagRepo.DoesTagExistByNameAsync(newTag.Name))
-                throw new CustomValidationException("Name", [$"The tag with name = {newTag.Name} is already exists"]);
+                errors["Name"].Add($"The tag with name = {newTag.Name} is already exists");
 
             if (newTag.Name.Length < _constraintsOption.Tag.NameLength.Start.Value ||
                 newTag.Name.Length > _constraintsOption.Tag.NameLength.End.Value)
-                throw new CustomValidationException("Name", [$"The length of tag's name must to be in range [{_constraintsOption.Tag.NameLength.Start.Value},{_constraintsOption.Tag.NameLength.End.Value}]"]);
-            
-            
+                errors["Name"].Add($"The length of tag's name must to be in range [{_constraintsOption.Tag.NameLength.Start.Value},{_constraintsOption.Tag.NameLength.End.Value}]");
+
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
+
             return await _tagRepo.AddNewTagAsync(new NewTagModel() { Name = newTag.Name });
         }
         public async Task<bool> UpdateTagAsync(TagDTO tag) {
+            Dictionary<string, List<string>> errors = new();
+            errors["TagID"] = [];
+            errors["Name"] = [];
+
             if (!await _tagRepo.DoesTagExistByIDAsync(tag.TagID))
-                throw new CustomValidationException("TagID", [$"The tag with id = {tag.TagID} was not found"]);
+                errors["TagID"].Add($"The tag with id = {tag.TagID} was not found");
 
 
             if (tag.Name.Length < _constraintsOption.Tag.NameLength.Start.Value ||
                tag.Name.Length > _constraintsOption.Tag.NameLength.End.Value)
-                throw new CustomValidationException("Name", [$"The length of tag's name must to be in range [{_constraintsOption.Tag.NameLength.Start.Value},{_constraintsOption.Tag.NameLength.End.Value}]"]);
+                errors["Name"].Add($"The length of tag's name must to be in range [{_constraintsOption.Tag.NameLength.Start.Value},{_constraintsOption.Tag.NameLength.End.Value}]");
 
+
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
 
             return await _tagRepo.UpdateTagAsync(
                 new TagModel() { 

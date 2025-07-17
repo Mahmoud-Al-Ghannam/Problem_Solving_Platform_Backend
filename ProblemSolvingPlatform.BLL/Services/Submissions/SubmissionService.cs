@@ -153,7 +153,7 @@ public class SubmissionService : ISubmissionService {
         return await _submissionsRepo.ChangeVisionScope(submissionId, visionScopeId, userId);
     }
 
-    public async Task<SubmissionDetailsDTO?> GetSubmissionDetails(int submissionId, int? userId) {
+    public async Task<SubmissionDetailsDTO?> GetSubmissionDetails(int submissionId, int? requestedBy) {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["SubmissionID"] = [];
         errors["UserID"] = [];
@@ -161,17 +161,17 @@ public class SubmissionService : ISubmissionService {
         if (!await _submissionsRepo.DoesSubmissionExistByID(submissionId))
             errors["SubmissionID"].Add($"The submission with id = {submissionId} was not found");
 
-        if (userId.HasValue && !await _userRepo.DoesUserExistByIDAsync(userId.Value))
-            errors["UserID"].Add($"The user with id = {userId} was not found");
+        if (requestedBy.HasValue && !await _userRepo.DoesUserExistByIDAsync(requestedBy.Value))
+            errors["UserID"].Add($"The user with id = {requestedBy} was not found");
 
         var submissionDetails = new SubmissionDetailsDTO();
 
         var submission = await _submissionsRepo.GetSubmissionByID(submissionId);
         if (submission == null) throw new Exception(Constants.ErrorMessages.General);
 
-        if (((userId.HasValue && submission.UserID == userId.Value)
+        if (((requestedBy.HasValue && submission.UserID == requestedBy.Value)
                || (submission.VisionScope == DAL.Models.Enums.VisionScope.all)) == false)
-            errors["UserID"].Add($"The user with id = {userId} cannot see the submission with id = {submissionId}");
+            errors["UserID"].Add($"The user with id = {requestedBy} cannot see the submission with id = {submissionId}");
 
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
@@ -206,7 +206,7 @@ public class SubmissionService : ISubmissionService {
         };
     }
 
-    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
+    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit,int? requestedBy = null, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
         Dictionary<string, List<string>> errors = new();
         errors["Page"] = [];
         errors["Limit"] = [];
@@ -223,6 +223,12 @@ public class SubmissionService : ISubmissionService {
         var submissions = await _submissionsRepo.GetAllSubmissions(page, limit, userId, problemId, (scope == null ? null : (byte)scope.Value));
         if (submissions == null)
             return null;
+
+        if (requestedBy == null)
+            submissions = submissions.Where(s => s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
+        else
+            submissions = submissions.Where(s => s.UserID == requestedBy.Value || s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
+
 
         var submissionsLST = new List<SubmissionDTO>();
         foreach (var submission in submissions) {

@@ -1,6 +1,7 @@
 ﻿using AuthHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Problems;
@@ -71,8 +72,8 @@ namespace ProblemSolvingPlatform.Controllers {
 
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page= BLL.Constants.PaginationDefaultValues.Page, [FromQuery]int limit= BLL.Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null,[FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] byte? role = null, [FromQuery] DateTime? createdAt = null, [FromBody] IEnumerable<int>? tagIDs = null) {
-            var problems = await _problemService.GetAllProblemsAsync(page,limit,title,difficulty,createdBy,role,createdAt,tagIDs);
+        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page= BLL.Constants.PaginationDefaultValues.Page, [FromQuery]int limit= BLL.Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null,[FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] Enums.Role? source = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null) {
+            var problems = await _problemService.GetAllProblemsAsync(page,limit,title,difficulty,createdBy,source,createdAt,tagIDs);
             if(problems == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
             return Ok(problems);
