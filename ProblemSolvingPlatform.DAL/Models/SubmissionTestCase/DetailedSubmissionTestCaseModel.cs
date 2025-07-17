@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.DAL.Models.SubmissionTestCase {
-    public class NewSubmissionTestCaseModel {
+    public class DetailedSubmissionTestCaseModel {
+        public int SubmissionTestCaseID { get; set; }
         public int TestCaseID { get; set; }
         public int SubmissionID { get; set; }
-        public Enums.SubmissionStatus Status { get; set; }
+        public byte Status { get; set; }
         public int ExecutionTimeMilliseconds { get; set; }
         public string Output { get; set; }
+        public string Input { get; set; }
+        public string ExpectedOutput { get; set; }
     }
 }

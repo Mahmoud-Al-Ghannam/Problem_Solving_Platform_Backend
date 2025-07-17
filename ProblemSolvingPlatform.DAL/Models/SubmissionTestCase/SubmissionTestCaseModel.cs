@@ -13,4 +13,5 @@ public class SubmissionTestCaseModel
     public int SubmissionID { get; set; }
     public byte Status { get; set; }
     public int ExecutionTimeMilliseconds { get; set; }
+    public string Output { get; set; }
 }

@@ -106,13 +106,13 @@ public class SubmissionsController : GeneralController {
 
     [HttpGet("details/{submissionId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<SubmissionDetailsDTO>> GetSubmissionDetails(int submissionId)
+    public async Task<ActionResult<DetailedSubmissionDTO>> GetSubmissionDetails(int submissionId)
     {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
             return Unauthorized(BLL.Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
 
-        var subDetails = await _submissionService.GetSubmissionDetails(submissionId, userId);
+        var subDetails = await _submissionService.GetDetailedSubmissionByID(submissionId, userId);
         if (subDetails == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(BLL.Constants.ErrorMessages.General));
         return Ok(subDetails);

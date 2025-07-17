@@ -31,6 +31,7 @@ public class SubmissionTestRepo : ISubmissionTestRepo {
                 cmd.Parameters.AddWithValue("@SubmissionID", submissionTestCase.SubmissionID);
                 cmd.Parameters.AddWithValue("@Status", submissionTestCase.Status);
                 cmd.Parameters.AddWithValue("@ExecutionTimeMilliseconds", submissionTestCase.ExecutionTimeMilliseconds);
+                cmd.Parameters.AddWithValue("@Output", submissionTestCase.Output);
 
                 // output 
                 var ParmSubmissionTestCaseID = new SqlParameter("@SubmissionTestCaseID", SqlDbType.Int) {
@@ -72,11 +73,12 @@ public class SubmissionTestRepo : ISubmissionTestRepo {
                 using (var reader = await command.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
                         SubmissionTestCaseModel testCase = new() {
-                            SubmissionTestCaseID = reader["SubmissionTestCaseID"] != DBNull.Value ? Convert.ToInt32(reader["SubmissionTestCaseID"]) : 0,
-                            TestCaseID = reader["TestCaseID"] != DBNull.Value ? Convert.ToInt32(reader["TestCaseID"]) : 0,
-                            SubmissionID = reader["SubmissionID"] != DBNull.Value ? Convert.ToInt32(reader["SubmissionID"]) : 0,
-                            Status = reader["Status"] != DBNull.Value ? Convert.ToByte(reader["Status"]) : (byte)0,
-                            ExecutionTimeMilliseconds = reader["ExecutionTimeMilliseconds"] != DBNull.Value ? Convert.ToInt32(reader["ExecutionTimeMilliseconds"]) : 0
+                            SubmissionTestCaseID = (int) reader["SubmissionTestCaseID"],
+                            TestCaseID = (int) reader["TestCaseID"],
+                            SubmissionID = (int) reader["SubmissionID"],
+                            Status = (byte) reader["Status"],
+                            ExecutionTimeMilliseconds = (int) reader["ExecutionTimeMilliseconds"],
+                            Output = (string) reader["Output"]
                         };
 
                         testCases.Add(testCase);
@@ -94,4 +96,42 @@ public class SubmissionTestRepo : ISubmissionTestRepo {
         }
     }
 
+    public async Task<List<DetailedSubmissionTestCaseModel>?> GetAllDetailedSubmissionTestCasesAsync(int? submissionId = null) {
+        List<DetailedSubmissionTestCaseModel> testCases = new();
+        using (SqlConnection connection = _db.GetConnection())
+        using (SqlCommand command = new("SP_Submission_GetAllDetailedSubmissionTestCases", connection)) {
+            command.CommandType = CommandType.StoredProcedure;
+
+            if (submissionId == null) command.Parameters.AddWithValue("@SubmissionId", DBNull.Value);
+            else command.Parameters.AddWithValue("@SubmissionId", submissionId.Value);
+
+            try {
+                await connection.OpenAsync();
+                using (var reader = await command.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        DetailedSubmissionTestCaseModel testCase = new() {
+                            SubmissionTestCaseID = (int)reader["SubmissionTestCaseID"],
+                            TestCaseID = (int)reader["TestCaseID"],
+                            SubmissionID = (int)reader["SubmissionID"],
+                            Status = (byte)reader["Status"],
+                            ExecutionTimeMilliseconds = (int)reader["ExecutionTimeMilliseconds"],
+                            Output = (string)reader["Output"],
+                            Input = (string)reader["Input"],
+                            ExpectedOutput = (string)reader["ExpectedOutput"]
+                        };
+
+                        testCases.Add(testCase);
+                    }
+                }
+
+                return testCases;
+            }
+            catch (Exception ex) {
+                return null;
+            }
+            finally {
+                await connection.CloseAsync();
+            }
+        }
+    }
 }

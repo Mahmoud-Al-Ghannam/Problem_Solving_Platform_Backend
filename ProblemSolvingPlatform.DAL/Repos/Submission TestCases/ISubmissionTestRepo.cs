@@ -14,4 +14,5 @@ public interface ISubmissionTestRepo
     public Task<int?> AddNewSubmissionTestCaseAsync(NewSubmissionTestCaseModel submissionTestCase, SqlConnection connection, SqlTransaction transaction);
 
     public Task<List<SubmissionTestCaseModel>?> GetAllSubmissionTestCasesAsync(int? submissionId = null);
+    public Task<List<DetailedSubmissionTestCaseModel>?> GetAllDetailedSubmissionTestCasesAsync(int? submissionId = null);
 }

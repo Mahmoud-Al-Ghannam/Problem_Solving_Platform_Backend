@@ -138,8 +138,8 @@ public class SubmissionRepo : ISubmissionRepo {
             else cmd.Parameters.AddWithValue("@Scope", visionScope.Value);
 
             try {
-                await conn.OpenAsync();
-
+                await conn.OpenAsync(); 
+                 
                 using (var reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
                         var sub = new SubmissionModel {
@@ -148,8 +148,9 @@ public class SubmissionRepo : ISubmissionRepo {
                             ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),
                             CompilerName = reader.GetString(reader.GetOrdinal("CompilerName")),
                             Status = (Enums.SubmissionStatus)reader.GetByte(reader.GetOrdinal("Status")),
+                            Code = reader.GetString(reader.GetOrdinal("Code")),
                             ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),
-                            VisionScope = (Enums.VisionScope) reader.GetByte(reader.GetOrdinal("VisionScope")),
+                            VisionScope = (Enums.VisionScope)reader.GetByte(reader.GetOrdinal("VisionScope")),
                             SubmittedAt = reader.GetDateTime(reader.GetOrdinal("SubmittedAt"))
                         };
                         results.Add(sub);

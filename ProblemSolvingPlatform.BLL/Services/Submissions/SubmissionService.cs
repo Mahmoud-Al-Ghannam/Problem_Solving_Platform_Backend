@@ -106,6 +106,7 @@ public class SubmissionService : ISubmissionService {
 
             submissionTestCase.TestCaseID = testCases[i].TestCaseID;
             submissionTestCase.ExecutionTimeMilliseconds = (int)(compileResult.ExecutionTimeMs ?? 0);
+            submissionTestCase.Output = StringHelper.RemoveWhiteSpaces(compileResult.Output??"");
 
             if (!compileResult.CompilationSuccess) {
                 submissionTestCase.Status = DAL.Models.Enums.SubmissionStatus.CompilationError;
@@ -182,7 +183,7 @@ public class SubmissionService : ISubmissionService {
         return await _submissionsRepo.ChangeVisionScope(submissionId, visionScopeId, userId);
     }
 
-    public async Task<SubmissionDetailsDTO?> GetSubmissionDetails(int submissionId, int? requestedBy) {
+    public async Task<DetailedSubmissionDTO?> GetDetailedSubmissionByID(int submissionId, int? requestedBy) {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["SubmissionID"] = [];
         errors["UserID"] = [];
@@ -193,7 +194,7 @@ public class SubmissionService : ISubmissionService {
         if (requestedBy.HasValue && !await _userRepo.DoesUserExistByIDAsync(requestedBy.Value))
             errors["UserID"].Add($"The user with id = {requestedBy} was not found");
 
-        var submissionDetails = new SubmissionDetailsDTO();
+        var submissionDetails = new DetailedSubmissionDTO();
 
         var submission = await _submissionsRepo.GetSubmissionByID(submissionId);
         if (submission == null) throw new Exception(Constants.ErrorMessages.General);
@@ -206,20 +207,25 @@ public class SubmissionService : ISubmissionService {
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-        var submissionsTestCases = await _submissionTestRepo.GetAllSubmissionTestCasesAsync(submissionId);
+        var submissionsTestCases = await _submissionTestRepo.GetAllDetailedSubmissionTestCasesAsync(submissionId);
 
-        List<SubmissionTestCaseDTO> submissionTests = new();
+        List<DetailedSubmissionTestCaseDTO> submissionTests = new();
         if (submissionsTestCases != null) {
             foreach (var test in submissionsTestCases) {
-                submissionTests.Add(new SubmissionTestCaseDTO() {
+                submissionTests.Add(new DetailedSubmissionTestCaseDTO() {
+                    SubmissionTestCaseID = test.SubmissionTestCaseID,
+                    SubmissionID = test.SubmissionID,
                     TestCaseID = test.TestCaseID,
                     ExecutionTimeMilliseconds = test.ExecutionTimeMilliseconds,
-                    Status = ((Enums.SubmissionStatus)(test.Status)).ToString()
+                    Status = ((Enums.SubmissionStatus)(test.Status)).ToString(),
+                    Output = test.Output,
+                    Input = test.Input,
+                    ExpectedOutput = test.ExpectedOutput
                 });
             }
         }
 
-        return new SubmissionDetailsDTO() {
+        return new DetailedSubmissionDTO() {
             SubmissionInfo = new SubmissionDTO() { 
                 SubmissionID = submission.SubmissionID,
                 UserID = submission.UserID,
@@ -268,6 +274,7 @@ public class SubmissionService : ISubmissionService {
                 SubmissionID = submission.SubmissionID,
                 SubmittedAt = submission.SubmittedAt,
                 UserID = submission.UserID,
+                Code = submission.Code,
                 ProblemID = submission.ProblemID,
                 VisionScope = ((Enums.VisionScope)(submission.VisionScope)).ToString()
             });
@@ -276,7 +283,7 @@ public class SubmissionService : ISubmissionService {
     }
 
     public async Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int? userId) {
-        return (await GetSubmissionDetails(submissionId, userId))?.SubmissionInfo;
+        return (await GetDetailedSubmissionByID(submissionId, userId))?.SubmissionInfo;
     }
 }
 

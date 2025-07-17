@@ -21,7 +21,7 @@ public interface ISubmissionService
 
     public Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit,int? requestedBy=null,int? userId = null, int? problemId = null,  Enums.VisionScope? scope = null);
 
-    public Task<SubmissionDetailsDTO?> GetSubmissionDetails(int submissionId, int? userId);
+    public Task<DetailedSubmissionDTO?> GetDetailedSubmissionByID(int submissionId, int? userId);
     public Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int? userId);
 
 }
