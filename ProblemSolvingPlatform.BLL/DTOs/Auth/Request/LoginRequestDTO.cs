@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.BLL.DTOs.Auth.Request {
 
     public class LoginRequestDTO {
-        [Required]
         public string Username { get; set; }
-        [Required]
         public string Password { get; set; }
     }
 }

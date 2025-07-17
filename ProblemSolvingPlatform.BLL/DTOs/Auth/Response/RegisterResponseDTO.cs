@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.Auth.Response {
 
-    public class AuthResponseDTO {
-        public bool Success { get; set; }
-        public int StatusCode { get; set; }
-        public string? Message { get; set; }
+    public class RegisterResponseDTO {
+        public int UserID {  get; set; }
+        public string Username { get; set; }
         public string? Token { get; set; }
     }
 }

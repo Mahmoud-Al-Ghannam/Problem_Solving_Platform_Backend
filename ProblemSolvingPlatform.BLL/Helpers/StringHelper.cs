@@ -136,6 +136,7 @@ namespace ProblemSolvingPlatform.BLL.Helpers {
         }
 
         public static object TrimStringsOfObject(object value, HashSet<object> visited) {
+            if (value == null) return null;
             Type type = value.GetType();
 
             if (type == typeof(string))

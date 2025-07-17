@@ -10,6 +10,7 @@ namespace ProblemSolvingPlatform.DAL.Models {
 
         public enum VisionScope { onlyme = 0, all = 1 }
 
+        public enum Role { System = 0, User = 1 }
         public enum SubmissionStatus {
             Pending = 0, Accepted = 1, WrongAnswer = 2,
             CompilationError = 3,

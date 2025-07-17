@@ -11,7 +11,7 @@ namespace ProblemSolvingPlatform.DAL.Models.Users {
         public string Username { get; set; }
         public string Password { get; set; }
         public string? ImagePath { get; set; }
-        public byte Role { get; set; }
+        public Enums.Role Role { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

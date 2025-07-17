@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
+using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.Auth;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
+using ProblemSolvingPlatform.Responses;
 using System.Security.Claims;
 
 namespace ProblemSolvingPlatform.Controllers;
@@ -12,47 +15,37 @@ namespace ProblemSolvingPlatform.Controllers;
 
 public class AuthController : GeneralController {
     private IAuthService _authService { get; }
-    public AuthController(IAuthService authService)
-    {
+    public AuthController(IAuthService authService) {
         _authService = authService;
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginRequestDTO loginDTO)
-    {
-        var result = await _authService.LoginAsync(loginDTO);
-        if (result.Success)
-            return StatusCode(result.StatusCode, new { result.Message, result.Token });
-        else
-            return StatusCode(result.StatusCode, new { result.Message });
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDTO loginDTO) {
+        return Ok(await _authService.LoginAsync(loginDTO));
     }
 
 
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequestDTO registerDTO)
-    {
-        var result = await _authService.RegisterAsync(registerDTO);
-        if (result.Success)
-            return StatusCode(result.StatusCode, new { message = result.Message, token = result.Token });
-        else
-            return StatusCode(result.StatusCode, new { message = result.Message });
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<RegisterResponseDTO>> RegisterAsync([FromForm] RegisterRequestDTO registerDTO) {
+        return Ok(await _authService.RegisterAsync(registerDTO));
     }
-
 
 
     [Authorize]
     [HttpPut("change-password")]
-    public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
-    {
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO) {
         var ClaimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(ClaimUserId, out int userId))
-            return Unauthorized("Invalid Token");
+            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
 
         var isChanged = await _authService.ChangePasswordAsync(userId, changePasswordDTO);
-        if (isChanged)
-            return Ok(new { message = "Password updated successfully" });
-        return BadRequest(new { message = "Invalid current password or request .. Please try again :)" });
+        if (!isChanged)
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
+        return NoContent();
     }
 
 }

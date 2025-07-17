@@ -161,11 +161,11 @@ public class UserRepo : IUserRepo
                         {
                             Models.Users.UserModel userInfo = new()
                             {
-                                UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
-                                Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
-                                ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
-                                Role = reader["Role"] != DBNull.Value ? Convert.ToByte(reader["Role"]) : (byte)0,
-                                CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
+                                UserId = Convert.ToInt32(reader["UserID"].ToString()),
+                                Username = (string)reader["Username"],
+                                ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
+                                Role = (DAL.Models.Enums.Role)(byte) reader["Role"],
+                                CreatedAt = (DateTime)reader["CreatedAt"]
                             };
                             usersLST.Add(userInfo);
                         }
@@ -198,11 +198,11 @@ public class UserRepo : IUserRepo
                     {
                         Models.Users.UserModel userInfo = new()
                         {
-                            UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
-                            Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
-                            ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
-                            Role = reader["Role"] != DBNull.Value ? Convert.ToByte(reader["Role"]) : (byte)0,
-                            CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
+                            UserId = Convert.ToInt32(reader["UserID"].ToString()),
+                            Username = (string)reader["Username"],
+                            ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
+                            Role = (DAL.Models.Enums.Role)(byte)reader["Role"],
+                            CreatedAt = (DateTime)reader["CreatedAt"]
                         };
 
                         return userInfo;
@@ -241,11 +241,11 @@ public class UserRepo : IUserRepo
                     {
                         Models.Users.UserModel user = new Models.Users.UserModel()
                         {
-                            UserId = reader["UserID"] != DBNull.Value ? Convert.ToInt32(reader["UserID"]) : 0,
-                            Username = reader["Username"] != DBNull.Value ? reader["Username"].ToString() : "",
-                            ImagePath = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : null,
-                            Role = reader["Role"] != DBNull.Value ? Convert.ToByte(reader["Role"]) : (byte)0,
-                            CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
+                            UserId = Convert.ToInt32(reader["UserID"].ToString()),
+                            Username = (string)reader["Username"],
+                            ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
+                            Role = (DAL.Models.Enums.Role)(byte)reader["Role"],
+                            CreatedAt = (DateTime) reader["CreatedAt"]
                         };
                         return user;
                     }
