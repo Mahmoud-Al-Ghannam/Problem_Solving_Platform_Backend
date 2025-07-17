@@ -11,11 +11,8 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 
 public class SubmitDTO
 {
-    [Required]
     public int ProblemId { get; set; }
-    [Required]
     public string CompilerName { get; set; }
-    [Required]
     public required string Code { get; set; }
 
     public Enums.VisionScope VisionScope { get; set; } = Enums.VisionScope.all;

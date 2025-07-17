@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ProblemSolvingPlatform.API.Compiler.Services;
 using ProblemSolvingPlatform.API.Compiler.Utils;
 using ProblemSolvingPlatform.API.DTOs;
@@ -9,13 +10,17 @@ using ProblemSolvingPlatform.BLL.DTOs.Submissions.VisionScope;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Helpers;
 using ProblemSolvingPlatform.BLL.Options.Constraint;
+using ProblemSolvingPlatform.BLL.Services.Compiler;
+using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Submissions;
 using ProblemSolvingPlatform.DAL.Models.SubmissionTestCase;
+using ProblemSolvingPlatform.DAL.Models.TestCases;
 using ProblemSolvingPlatform.DAL.Repos;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
 using ProblemSolvingPlatform.DAL.Repos.Submissions;
 using ProblemSolvingPlatform.DAL.Repos.Tests;
 using ProblemSolvingPlatform.DAL.Repos.Users;
+using System.Collections.Generic;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
 namespace ProblemSolvingPlatform.BLL.Services.Submissions;
@@ -26,16 +31,16 @@ public class SubmissionService : ISubmissionService {
 
     private ConstraintsOption _constraintsOption { get; }   
     private IUserRepo _userRepo { get; }
-    private ICompilerApiService _compilerApiService { get; }
+    private ICompilerService _compilerService { get; }
     private ITestCaseRepo _testCaseRepo { get; }
     private ISubmissionTestRepo _submissionTestRepo { get; }
     public SubmissionService(ISubmissionRepo submissionsRepo, IProblemRepo problemRepo,
-        ISubmissionTestRepo submissionTestRepo, ITestCaseRepo testCaseRepo, ICompilerApiService compilerApiService, IUserRepo userRepo, ConstraintsOption constraintsOption) {
+        ISubmissionTestRepo submissionTestRepo, ITestCaseRepo testCaseRepo, ICompilerService compilerService, IUserRepo userRepo, ConstraintsOption constraintsOption) {
         _submissionsRepo = submissionsRepo;
         _problemRepo = problemRepo;
         _submissionTestRepo = submissionTestRepo;
         _testCaseRepo = testCaseRepo;
-        _compilerApiService = compilerApiService;
+        _compilerService = compilerService;
         _userRepo = userRepo;
         _constraintsOption = constraintsOption;
     }
@@ -45,6 +50,7 @@ public class SubmissionService : ISubmissionService {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["ProblemID"] = [];
         errors["UserID"] = [];
+        errors["Code"] = [];
 
         if (!await _problemRepo.DoesProblemExistByIDAsync(submitDTO.ProblemId))
             errors["ProblemID"].Add($"The problem with id = {submitDTO.ProblemId} was not found");
@@ -53,21 +59,44 @@ public class SubmissionService : ISubmissionService {
             errors["UserID"].Add($"The user with id = {userId} was not found");
 
 
+        if (string.IsNullOrEmpty(submitDTO.Code)) {
+            if (_constraintsOption.Submission.CodeLength.Start.Value > 0)
+                errors["Code"].Add($"The submission's code is required");
+        }
+        else {
+            if (submitDTO.Code.Length > _constraintsOption.Submission.CodeLength.End.Value || submitDTO.Code.Length < _constraintsOption.Submission.CodeLength.Start.Value)
+                errors["Code"].Add($"The length of submission's code must to be in range [{_constraintsOption.Submission.CodeLength.Start.Value},{_constraintsOption.Submission.CodeLength.End.Value}]");
+        }
+
+
+        List<TestCaseModel>? testCases = (await _testCaseRepo.GetTestCasesByProblemIdAsync(submitDTO.ProblemId))?.ToList();
+        ProblemModel? problem = await _problemRepo.GetProblemByIDAsync(submitDTO.ProblemId);
+
+
+        List<CompileResponseDTO> compileResults = new();
+        try {
+            compileResults = await _compilerService.CompileAsync(new CompileRequestDTO() {
+                Compiler = submitDTO.CompilerName,
+                Inputs = testCases?.Select(t => t.Input).ToList() ?? [],
+                Source = submitDTO.Code,
+                TimeoutMs = problem?.TimeLimitMilliseconds ?? 0
+            });
+        }
+        catch (CustomValidationException ex) {
+            foreach (var (k, v) in ex.errors) {
+                if (errors.ContainsKey(k))
+                    errors[k].AddRange(v);
+                else
+                    errors[k] = v;
+            }
+        }
+
+
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-        var testCases = (await _testCaseRepo.GetTestCasesByProblemIdAsync(submitDTO.ProblemId))?.ToList();
-        var problem = await _problemRepo.GetProblemByIDAsync(submitDTO.ProblemId);
-
-        if (testCases == null || problem == null) throw new Exception("Some errors occurred");
-
-        var compileResults = await _compilerApiService.CompileAsync(new CompileRequestDTO() {
-            Compiler = submitDTO.CompilerName,
-            Inputs = testCases.Select(t => t.Input).ToList(),
-            Source = submitDTO.Code,
-            TimeoutMs = problem.TimeLimitMilliseconds
-        });
+        if (testCases == null || problem == null) throw new Exception(Constants.ErrorMessages.General);
 
         List<NewSubmissionTestCaseModel> submissionTestCases = new List<NewSubmissionTestCaseModel>();
 
