@@ -11,6 +11,7 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems
     public class ShortProblemModel
     {
         public int ProblemID { get; set; }
+        public int CreatedBy { get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }
 

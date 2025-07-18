@@ -335,6 +335,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                 int problemID = Convert.ToInt32(reader["ProblemID"]);
                                 ShortProblemModel problem = new ShortProblemModel() {
                                     ProblemID = problemID,
+                                    CreatedBy =(int) reader["CreatedBy"],
                                     Title = reader["Title"].ToString() ?? "",
                                     GeneralDescription = reader["GeneralDescription"].ToString() ?? "",
                                     Difficulty = (Difficulty)Convert.ToInt32(reader["Difficulty"]),

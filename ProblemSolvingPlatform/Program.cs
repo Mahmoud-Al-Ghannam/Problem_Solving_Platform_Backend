@@ -26,6 +26,7 @@ using System.Text.Json.Serialization;
 using ProblemSolvingPlatform.BLL.Validation.Problem;
 using ProblemSolvingPlatform.BLL.Options;
 using ProblemSolvingPlatform.ActionFilters;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace ProblemSolvingPlatform {
     public class Program {
@@ -148,21 +149,48 @@ namespace ProblemSolvingPlatform {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddSwaggerGen(c => {
-                c.SwaggerDoc(name: "v1", new OpenApiInfo() {
-                    Title = "Problem Solving Platform - Public APIs",
-                    Version = "V1",
-                    Contact = new OpenApiContact() {
-                        Name = "Mahmoud Al-Ghannam & Abd Almalek Mokresh"
-                    }
+            builder.Services.AddSwaggerGen(options => {
+
+                options.SwaggerDoc("v1", new OpenApiInfo() {
+                    Title = "Problem Solving Platform APIs",
+                    Version = "v1"
                 });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-                c.EnableAnnotations();
+                options.IncludeXmlComments(xmlPath);
+                options.EnableAnnotations();
+
+
+                #region authSwagger
+                //Add JWT Bearer token support in Swagger UI
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your valid token in the text input below.\n\nExample: `Bearer eyJhbGciOi...`"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                         Type = ReferenceType.SecurityScheme,
+                         Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                    }
+                });
+                options.UseInlineDefinitionsForEnums();
+                #endregion
 
             });
+
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<TokenService, TokenService>();
@@ -217,34 +245,7 @@ namespace ProblemSolvingPlatform {
             });
 
 
-            #region authSwagger
-            builder.Services.AddSwaggerGen(options => {
-                // Add JWT Bearer token support in Swagger UI
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Enter your valid token in the text input below.\n\nExample: `Bearer eyJhbGciOi...`"
-                });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                         Type = ReferenceType.SecurityScheme,
-                         Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                    }
-                });
-                options.UseInlineDefinitionsForEnums();
-            });
-            #endregion
+
 
 
             builder.Services.AddCors(options => {
@@ -260,10 +261,20 @@ namespace ProblemSolvingPlatform {
 
             var app = builder.Build();
 
+
             app.UseCors("AllowAll");
-            app.UseSwagger();
+            
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseSwagger(c => {
+                c.RouteTemplate = "swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Public APIs");
             });
 
             app.UseMiddleware<ExceptionMiddleware>();
@@ -271,8 +282,6 @@ namespace ProblemSolvingPlatform {
             app.UseStaticFiles();
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
             app.MapControllers();
 
 

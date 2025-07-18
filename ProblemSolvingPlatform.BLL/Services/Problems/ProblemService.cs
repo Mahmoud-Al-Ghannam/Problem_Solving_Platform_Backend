@@ -228,6 +228,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt,isDeleted, listTagIDs))
                 ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
+                    CreatedBy = model.CreatedBy,
                     Difficulty = (Difficulty)(int)model.Difficulty,
                     Title = model.Title,
                     GeneralDescription = model.GeneralDescription,
