@@ -304,7 +304,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null, IEnumerable<int>? tagIDs = null) {
+        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null) {
             var problems = new List<ShortProblemModel>();
 
             try {
@@ -320,6 +320,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy);
                         command.Parameters.AddWithValue("@IsSystemProblem", isSystemProblem == null ? DBNull.Value : isSystemProblem.Value);
                         command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
+                        command.Parameters.AddWithValue("@IsDeleted", isDeleted == null ? DBNull.Value : isDeleted);
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
                         TagIDsParm.TypeName = "dbo.IntegersTableType";
                         DataTable dtTagIDs = new DataTable();

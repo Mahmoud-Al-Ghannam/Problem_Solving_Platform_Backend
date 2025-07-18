@@ -197,7 +197,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         }
 
 
-        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null, string? tagIDs = null) {
+        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, string? tagIDs = null) {
             Dictionary<string, List<string>> errors = new();
             errors["Page"] = [];
             errors["Limit"] = [];
@@ -225,7 +225,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, listTagIDs))
+            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt,isDeleted, listTagIDs))
                 ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
                     Difficulty = (Difficulty)(int)model.Difficulty,
