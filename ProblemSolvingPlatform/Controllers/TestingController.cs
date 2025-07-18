@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission;
 using ProblemSolvingPlatform.BLL.Exceptions;
@@ -10,12 +11,13 @@ using ProblemSolvingPlatform.DAL.Models.TestCases;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
 using ProblemSolvingPlatform.Responses;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Reflection.Metadata;
 
 
 namespace ProblemSolvingPlatform.Controllers
 {
     [ApiController]
-    [Route("api/testing")]
+    [Route($"{Constants.Api.PrefixPublicApi}/testing")]
     public class TestingController : GeneralController {
         private readonly DbContext _db;
         public TestingController(DbContext dbContext) {

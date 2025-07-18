@@ -149,10 +149,9 @@ namespace ProblemSolvingPlatform {
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v1", new OpenApiInfo() {
-                    Title = "Problem Solving Platform APIs",
+                c.SwaggerDoc(name: "v1", new OpenApiInfo() {
+                    Title = "Problem Solving Platform - Public APIs",
                     Version = "V1",
-                    Description = "The backend team is king",
                     Contact = new OpenApiContact() {
                         Name = "Mahmoud Al-Ghannam & Abd Almalek Mokresh"
                     }
@@ -264,7 +263,7 @@ namespace ProblemSolvingPlatform {
             app.UseCors("AllowAll");
             app.UseSwagger();
             app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Problem Solving APIs V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
 
             app.UseMiddleware<ExceptionMiddleware>();

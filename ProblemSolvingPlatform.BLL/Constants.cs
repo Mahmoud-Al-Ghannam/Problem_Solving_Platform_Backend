@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.BLL {
     public class Constants {
 
+        public class Api {
+            public const string PrefixPublicApi = "api/v1/public";
+            public const string PrefixDashboardApi = "api/v1/dashboard";
+        }
+
         public class PaginationDefaultValues {
             public const int Page = 1;
             public const int Limit = 20;
@@ -17,6 +22,7 @@ namespace ProblemSolvingPlatform.BLL {
             public const string General = "Some error occurred";
             public const string JwtDoesnotIncludeSomeFields = "The token does not include some fields";
         }
+
         public class Roles {
             public const string System = "System";
             public const string User = "User";
