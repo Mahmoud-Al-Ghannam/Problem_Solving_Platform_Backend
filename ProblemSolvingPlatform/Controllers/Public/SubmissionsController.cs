@@ -10,6 +10,7 @@ using ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 using ProblemSolvingPlatform.BLL.DTOs.Submissions.VisionScope;
 using ProblemSolvingPlatform.BLL.Services.Submissions;
 using ProblemSolvingPlatform.Responses;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
@@ -57,7 +58,7 @@ public class SubmissionsController : GeneralController
     [HttpPut("change-vision-scope")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [Authorize]
-    public async Task<IActionResult> ChangeVisionScope(int submissionId, int visionScopeId)
+    public async Task<IActionResult> ChangeVisionScope([FromQuery][Required] int submissionId, [FromQuery][Required] int visionScopeId)
     {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
@@ -105,7 +106,7 @@ public class SubmissionsController : GeneralController
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllSubmissions(int page = Constants.PaginationDefaultValues.Page, int limit = Constants.PaginationDefaultValues.Limit, int? userId = null, int? problemId = null, VisionScope? scope = null)
+    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
     {
         var submissions = await _submissionService.GetAllSubmissions(page, limit, AuthUtils.GetUserId(User), userId, problemId, scope);
         if (submissions == null)
@@ -125,7 +126,7 @@ public class SubmissionsController : GeneralController
     [HttpGet("own")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllOwnSubmissions(int page = Constants.PaginationDefaultValues.Page, int limit = Constants.PaginationDefaultValues.Limit, int? problemId = null, VisionScope? scope = null)
+    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllOwnSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
     {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)

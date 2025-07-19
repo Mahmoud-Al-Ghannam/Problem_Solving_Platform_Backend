@@ -68,7 +68,7 @@ public class ProfilesController : GeneralController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null)
     {
-        var users = await _userService.GetAllUsersAsync(page, limit, username);
+        var users = await _userService.GetAllUsersAsync(page, limit, username,true);
         if (users == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
         return Ok(users);

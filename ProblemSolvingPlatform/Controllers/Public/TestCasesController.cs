@@ -32,7 +32,7 @@ namespace ProblemSolvingPlatform.Controllers.Public
         [Authorize]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<TestCaseDTO>?>> GetAllTestCases(int Page = Constants.PaginationDefaultValues.Page, int Limit = Constants.PaginationDefaultValues.Limit, int? ProblemID = null, bool? IsSample = null, bool? IsPublic = null)
+        public async Task<ActionResult<IEnumerable<TestCaseDTO>?>> GetAllTestCases([FromQuery] int Page = Constants.PaginationDefaultValues.Page, [FromQuery] int Limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? ProblemID = null, [FromQuery] bool? IsSample = null, [FromQuery] bool? IsPublic = null)
         {
             var testcases = await _testCaseService.GetAllTestCasesAsync(Page, Limit, ProblemID, IsSample, IsPublic);
             if (testcases == null)

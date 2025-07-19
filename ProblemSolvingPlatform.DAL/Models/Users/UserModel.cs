@@ -13,5 +13,6 @@ namespace ProblemSolvingPlatform.DAL.Models.Users {
         public string? ImagePath { get; set; }
         public Enums.Role Role { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
     }
 }

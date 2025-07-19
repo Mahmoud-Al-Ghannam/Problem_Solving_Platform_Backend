@@ -13,9 +13,9 @@ namespace ProblemSolvingPlatform.BLL.Services.Auth;
 
 public class AuthService : IAuthService {
     private readonly IUserRepo _userRepo;
-    private readonly TokenService _tokenService;
+    private readonly ITokenService _tokenService;
     private readonly ConstraintsOption _constraintsOption;
-    public AuthService(IUserRepo userRepo, TokenService tokenService, ConstraintsOption constraintsOption) {
+    public AuthService(IUserRepo userRepo, ITokenService tokenService, ConstraintsOption constraintsOption) {
         _userRepo = userRepo;
         _tokenService = tokenService;
         _constraintsOption = constraintsOption;
@@ -25,6 +25,7 @@ public class AuthService : IAuthService {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["Username"] = [];
         errors["Password"] = [];
+        errors["$"] = [];
 
         if (string.IsNullOrEmpty(loginDTO.Username))
             errors["Username"].Add("The username is required");
@@ -34,8 +35,10 @@ public class AuthService : IAuthService {
 
         var user = await _userRepo.GetUserByUsernameAndPasswordAsync(loginDTO.Username, loginDTO.Password);
         if (user == null) {
-            errors["Username"].Add("The username is wrong");
-            errors["Password"].Add("The password is wrong");
+            errors["$"].Add("The username or password is wrong");
+        } 
+        else if (!user.IsActive) {
+            errors["$"].Add($"The user with username = {loginDTO.Username} and password = {loginDTO.Password} was not active");
         }
 
 

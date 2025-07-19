@@ -5,21 +5,16 @@ using Microsoft.Data.SqlClient;
 namespace ProblemSolvingPlatform.DAL.Repos.Users;
 
 
-public class UserRepo : IUserRepo
-{
+public class UserRepo : IUserRepo {
     private readonly DbContext _db;
-    public UserRepo(DbContext dbContext)
-    {
+    public UserRepo(DbContext dbContext) {
         _db = dbContext;
     }
 
-    public async Task<int?> AddUserAsync(Models.Users.UserModel user)
-    {
-        using (SqlConnection connection = _db.GetConnection())
-        {
+    public async Task<int?> AddUserAsync(Models.Users.UserModel user) {
+        using (SqlConnection connection = _db.GetConnection()) {
 
-            using (SqlCommand cmd = new("SP_User_AddNewUser", connection))
-            {
+            using (SqlCommand cmd = new("SP_User_AddNewUser", connection)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@ImagePath", string.IsNullOrWhiteSpace(user.ImagePath) ? (object)DBNull.Value : user.ImagePath);
@@ -27,91 +22,75 @@ public class UserRepo : IUserRepo
                 cmd.Parameters.AddWithValue("@Password", user.Password);
 
                 // output 
-                var userID = new SqlParameter("@UserID", SqlDbType.Int)
-                {
+                var userID = new SqlParameter("@UserID", SqlDbType.Int) {
                     Direction = ParameterDirection.Output
                 };
                 cmd.Parameters.Add(userID);
-                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit)
-                {
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
                     Direction = ParameterDirection.Output
                 };
                 cmd.Parameters.Add(IsSuccess);
 
-                
-                try
-                {
+
+                try {
                     await connection.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
 
-                    if((bool)IsSuccess.Value)
+                    if ((bool)IsSuccess.Value)
                         return (int)userID.Value;
                     return null;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return null;
                 }
             }
         }
     }
 
-    public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
-    {
-        using (SqlConnection connection = _db.GetConnection())
-        {
-            using (SqlCommand command = new("SP_User_UpdateUserPassword", connection))
-            {
+    public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword) {
+        using (SqlConnection connection = _db.GetConnection()) {
+            using (SqlCommand command = new("SP_User_UpdateUserPassword", connection)) {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@OldPassword", oldPassword);
                 command.Parameters.AddWithValue("@NewPassword", newPassword);
                 command.Parameters.AddWithValue("@UserID", userId);
 
                 // output 
-                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit)
-                {
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
                     Direction = ParameterDirection.Output
                 };
                 command.Parameters.Add(IsSuccess);
 
-                try
-                {
+                try {
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
 
                     return (bool)IsSuccess.Value;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return false;
                 }
-                finally
-                {
+                finally {
                     await connection.CloseAsync();
                 }
             }
         }
     }
 
-    public async Task<bool> DoesUserExistByUsernameAsync(string Username)
-    {
-        using (SqlConnection connection = _db.GetConnection())
-        {
+    public async Task<bool> DoesUserExistByUsernameAsync(string Username) {
+        using (SqlConnection connection = _db.GetConnection()) {
 
-            using (SqlCommand cmd = new("SP_User_DoesUserExistByUsername", connection))
-            {
+            using (SqlCommand cmd = new("SP_User_DoesUserExistByUsername", connection)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Username", Username);
 
-                try
-                {
+                try {
                     await connection.OpenAsync();
                     var res = await cmd.ExecuteScalarAsync();
                     return (bool)res;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return false;
                 }
             }
@@ -138,42 +117,36 @@ public class UserRepo : IUserRepo
         }
     }
 
-    public async Task<List<Models.Users.UserModel>> GetAllUsersByFiltersAsync(int page, int limit, string username)
-    {
-        var usersLST = new List<Models.Users.UserModel>(); 
+    public async Task<List<Models.Users.UserModel>> GetAllUsersAsync(int page, int limit, string? username = null, bool? isActive = null) {
+        var usersLST = new List<Models.Users.UserModel>();
 
-        using (SqlConnection connection = _db.GetConnection())
-        {
-            using (SqlCommand cmd = new("SP_User_GetAllUsers", connection))
-            {
+        using (SqlConnection connection = _db.GetConnection()) {
+            using (SqlCommand cmd = new("SP_User_GetAllUsers", connection)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Page", page);
                 cmd.Parameters.AddWithValue("@Limit", limit);
                 cmd.Parameters.AddWithValue("@Username", string.IsNullOrWhiteSpace(username) ? (object)DBNull.Value : username);
+                cmd.Parameters.AddWithValue("@IsActive", isActive == null ? DBNull.Value : isActive.Value);
 
-                try
-                {
+                try {
                     await connection.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            Models.Users.UserModel userInfo = new()
-                            {
+                    using (var reader = await cmd.ExecuteReaderAsync()) {
+                        while (await reader.ReadAsync()) {
+                            Models.Users.UserModel userInfo = new() {
                                 UserId = Convert.ToInt32(reader["UserID"].ToString()),
                                 Username = (string)reader["Username"],
                                 ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
-                                Role = (DAL.Models.Enums.Role)(byte) reader["Role"],
-                                CreatedAt = (DateTime)reader["CreatedAt"]
+                                Role = (DAL.Models.Enums.Role)(byte)reader["Role"],
+                                CreatedAt = (DateTime)reader["CreatedAt"],
+                                IsActive = (bool)reader["IsActive"]
                             };
                             usersLST.Add(userInfo);
                         }
                     }
                     return usersLST;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return null;
                 }
             }
@@ -181,117 +154,141 @@ public class UserRepo : IUserRepo
 
     }
 
-    public async Task<Models.Users.UserModel> GetUserByIdAsync(int userId)
-    {
-        using (SqlConnection connection = _db.GetConnection())
-        {
-            using (SqlCommand command = new("SP_User_GetUserByID", connection))
-            {
+    public async Task<Models.Users.UserModel> GetUserByIdAsync(int userId) {
+        using (SqlConnection connection = _db.GetConnection()) {
+            using (SqlCommand command = new("SP_User_GetUserByID", connection)) {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@UserID", userId);
 
-                try
-                {
+                try {
                     await connection.OpenAsync();
                     var reader = await command.ExecuteReaderAsync();
-                    if (await reader.ReadAsync())
-                    {
-                        Models.Users.UserModel userInfo = new()
-                        {
+                    if (await reader.ReadAsync()) {
+                        Models.Users.UserModel userInfo = new() {
                             UserId = Convert.ToInt32(reader["UserID"].ToString()),
                             Username = (string)reader["Username"],
                             ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
                             Role = (DAL.Models.Enums.Role)(byte)reader["Role"],
-                            CreatedAt = (DateTime)reader["CreatedAt"]
+                            CreatedAt = (DateTime)reader["CreatedAt"],
+                            IsActive = (bool)reader["IsActive"]
                         };
 
                         return userInfo;
                     }
                     return null;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return null;
                 }
-                finally
-                {
+                finally {
                     await connection.CloseAsync();
                 }
             }
         }
     }
 
-    public async Task<Models.Users.UserModel> GetUserByUsernameAndPasswordAsync(string Username, string Password)
-    {
-        using (SqlConnection connection = _db.GetConnection())
-        {
+    public async Task<Models.Users.UserModel> GetUserByUsernameAndPasswordAsync(string Username, string Password) {
+        using (SqlConnection connection = _db.GetConnection()) {
 
-            using (SqlCommand cmd = new("SP_User_GetUserByUsernameAndPassword", connection))
-            {
+            using (SqlCommand cmd = new("SP_User_GetUserByUsernameAndPassword", connection)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Username", Username);
                 cmd.Parameters.AddWithValue("@Password", Password);
 
-                try
-                {
+                try {
                     await connection.OpenAsync();
                     var reader = await cmd.ExecuteReaderAsync();
-                    if (await reader.ReadAsync())
-                    {
-                        Models.Users.UserModel user = new Models.Users.UserModel()
-                        {
+                    if (await reader.ReadAsync()) {
+                        Models.Users.UserModel user = new Models.Users.UserModel() {
                             UserId = Convert.ToInt32(reader["UserID"].ToString()),
                             Username = (string)reader["Username"],
                             ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
                             Role = (DAL.Models.Enums.Role)(byte)reader["Role"],
-                            CreatedAt = (DateTime) reader["CreatedAt"]
+                            CreatedAt = (DateTime)reader["CreatedAt"],
+                            IsActive = (bool)reader["IsActive"]
                         };
                         return user;
                     }
                     return null;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return null;
                 }
             }
         }
     }
 
-    public async Task<bool> UpdateUserInfoByIdAsync(int userId, string ImagePath)
-    {
-        
-        using (SqlConnection connection = _db.GetConnection())
-        {
+    public async Task<bool> UpdateUserInfoByIdAsync(int userId, string ImagePath) {
 
-            using (SqlCommand cmd = new("SP_User_UpdateUser", connection))
-            {
+        using (SqlConnection connection = _db.GetConnection()) {
+
+            using (SqlCommand cmd = new("SP_User_UpdateUser", connection)) {
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@UserID", userId);
                 cmd.Parameters.AddWithValue("@ImagePath", ImagePath);
 
                 // output 
-                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit)
-                {
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
                     Direction = ParameterDirection.Output
                 };
                 cmd.Parameters.Add(IsSuccess);
-                try
-                {
+                try {
                     await connection.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                     return (bool)IsSuccess.Value;
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     return false;
                 }
             }
         }
     }
 
+    public async Task<bool> UpdateUserActivationAsync(int userId, bool isActive) {
+        using (SqlConnection connection = _db.GetConnection()) {
 
-    
+            using (SqlCommand cmd = new("SP_User_UpdateUserActivation", connection)) {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@UserID", userId);
+                cmd.Parameters.AddWithValue("@IsActive", isActive);
+
+                // output 
+                var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(IsSuccess);
+                try {
+                    await connection.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    return (bool)IsSuccess.Value;
+                }
+                catch (Exception ex) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    public async Task<bool> IsUserActiveByIDAsync(int UserID) {
+        using (SqlConnection connection = _db.GetConnection()) {
+
+            using (SqlCommand cmd = new("SP_User_IsUserActiveByID", connection)) {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@UserID", UserID);
+
+                try {
+                    await connection.OpenAsync();
+                    var res = await cmd.ExecuteScalarAsync();
+                    return (bool)res;
+                }
+                catch (Exception ex) {
+                    return false;
+                }
+            }
+        }
+    }
 }

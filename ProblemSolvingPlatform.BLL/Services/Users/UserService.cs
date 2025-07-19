@@ -4,14 +4,14 @@ using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Options.Constraint;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using System.Collections.Immutable;
+using System.Security.Claims;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ProblemSolvingPlatform.BLL.Services.Users;
 
-public class UserService : IUserService
-{
+public class UserService : IUserService {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ConstraintsOption _constraintsOption;
     private IUserRepo _userRepo { get; }
@@ -21,9 +21,8 @@ public class UserService : IUserService
         _constraintsOption = constraintsOption;
     }
 
-    public async Task<UserDTO?> GetUserByIdAsync(int userId)
-    {
-        if (!await _userRepo.DoesUserExistByIDAsync(userId)) 
+    public async Task<UserDTO?> GetUserByIdAsync(int userId) {
+        if (!await _userRepo.DoesUserExistByIDAsync(userId))
             throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
 
         var user = await _userRepo.GetUserByIdAsync(userId);
@@ -32,32 +31,30 @@ public class UserService : IUserService
         var request = _httpContextAccessor.HttpContext?.Request;
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
 
-        return new UserDTO()
-        {
+        return new UserDTO() {
             UserId = user.UserId,
             Username = user.Username,
             CreatedAt = user.CreatedAt,
-            Role = (Role) user.Role,
-            ImagePath = user.ImagePath != null ? $"{baseUrl}/Images/{user.ImagePath}" : null
+            Role = (Role)user.Role,
+            ImagePath = user.ImagePath != null ? $"{baseUrl}/Images/{user.ImagePath}" : null,
+            IsActive = user.IsActive
         };
     }
 
-    public async Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser)
-    {
+    public async Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser) {
         if (!await _userRepo.DoesUserExistByIDAsync(userId))
             throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
 
-        if (updateUser == null) 
+        if (updateUser == null)
             throw new CustomValidationException("UpdateUser", [$"This field is required"]);
 
 
         // 1 remove the image from the server 
         var user = await _userRepo.GetUserByIdAsync(userId);
-        if(user == null) throw new Exception(Constants.ErrorMessages.General);
+        if (user == null) throw new Exception(Constants.ErrorMessages.General);
 
 
-        if (updateUser.profileImage != null)
-        {
+        if (updateUser.profileImage != null) {
             var oldPath = user.ImagePath ?? "";
             string oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", oldPath);
             if (File.Exists(oldImagePath))
@@ -68,8 +65,7 @@ public class UserService : IUserService
         return await _userRepo.UpdateUserInfoByIdAsync(userId, newpath);
     }
 
-    public async Task<List<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username)
-    {
+    public async Task<List<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username = null, bool? isActive = null) {
         Dictionary<string, List<string>> errors = new();
         errors["Page"] = [];
         errors["Limit"] = [];
@@ -84,7 +80,7 @@ public class UserService : IUserService
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
-        var users = await _userRepo.GetAllUsersByFiltersAsync(page, limit, username);
+        var users = await _userRepo.GetAllUsersAsync(page, limit, username, isActive);
         if (users == null)
             return null;
 
@@ -92,22 +88,36 @@ public class UserService : IUserService
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
 
 
-        var usersInfoLST = users.Select(x => new UserDTO()
-        {
+        var usersInfoLST = users.Select(x => new UserDTO() {
             UserId = x.UserId,
             Username = x.Username,
             CreatedAt = x.CreatedAt,
             ImagePath = x.ImagePath != null ? $"{baseUrl}/Images/{x.ImagePath}" : null,
-            Role = (Role) x.Role
+            Role = (Role)x.Role,
+            IsActive = x.IsActive,
         }).ToList();
         return usersInfoLST;
     }
 
-    public async Task<bool> DoesUserExistByUsernameAsync(string Username) {
-        return await _userRepo.DoesUserExistByUsernameAsync(Username);
+    public async Task<bool> DoesUserExistByUsernameAsync(string username) {
+        return await _userRepo.DoesUserExistByUsernameAsync(username);
     }
 
-    public async Task<bool> DoesUserExistByIDAsync(int UserID) {
-        return await _userRepo.DoesUserExistByIDAsync(UserID);
+    public async Task<bool> DoesUserExistByIDAsync(int userID) {
+        return await _userRepo.DoesUserExistByIDAsync(userID);
+    }
+
+    public async Task<bool> UpdateUserActivationAsync(int userId, bool isActive) {
+        if (!await _userRepo.DoesUserExistByIDAsync(userId))
+            throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
+
+        return await _userRepo.UpdateUserActivationAsync(userId, isActive);
+    }
+
+    public async Task<bool> IsUserActiveByIDAsync(int userID) {
+        if (!await _userRepo.DoesUserExistByIDAsync(userID))
+            throw new CustomValidationException("UserID", [$"The user with id = {userID} was not fount"]);
+
+        return await _userRepo.IsUserActiveByIDAsync(userID);
     }
 }

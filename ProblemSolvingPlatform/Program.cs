@@ -28,7 +28,8 @@ using ProblemSolvingPlatform.BLL.Options;
 using ProblemSolvingPlatform.ActionFilters;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace ProblemSolvingPlatform {
+namespace ProblemSolvingPlatform
+{
     public class Program {
 
         private static ConstraintsOption GetConstraintsFromConfiguration(ConfigurationManager config) {
@@ -193,7 +194,7 @@ namespace ProblemSolvingPlatform {
 
 
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<TokenService, TokenService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IUserRepo, UserRepo>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IProblemRepo, ProblemRepo>();
@@ -209,6 +210,9 @@ namespace ProblemSolvingPlatform {
             builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
             builder.Services.AddScoped<ISubmissionTestRepo, SubmissionTestRepo>();
             builder.Services.AddScoped<ProblemValidation>();
+
+            builder.Services.AddTransient<ExceptionMiddleware>();
+            builder.Services.AddTransient<VerifyUserActivationMiddleware>();
 
             ConstraintsOption constraintsOption = GetConstraintsFromConfiguration(builder.Configuration);
             builder.Services.AddSingleton(constraintsOption);
@@ -264,6 +268,7 @@ namespace ProblemSolvingPlatform {
 
             app.UseCors("AllowAll");
             
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -278,6 +283,7 @@ namespace ProblemSolvingPlatform {
             });
 
             app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<VerifyUserActivationMiddleware>();
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();

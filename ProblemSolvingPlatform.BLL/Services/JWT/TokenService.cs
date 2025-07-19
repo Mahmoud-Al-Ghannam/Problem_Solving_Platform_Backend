@@ -10,18 +10,16 @@ using System.Text;
 
 namespace ProblemSolvingPlatform.BLL.Services.JWT;
 
-public class TokenService
-{
+public class TokenService : ITokenService {
     private readonly JwtOption _jwtOption;
 
     public TokenService(JwtOption jwtOption) {
         _jwtOption = jwtOption;
     }
 
-    public string GenerateToken(int userID,Enums.Role role)
-    {
+    public string GenerateToken(int userID, Enums.Role role) {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor() { 
+        var tokenDescriptor = new SecurityTokenDescriptor() {
             Audience = _jwtOption.Audience,
             Issuer = _jwtOption.Issuer,
             Expires = DateTime.UtcNow.AddMinutes(_jwtOption.LifeTimeMin),
@@ -40,5 +38,35 @@ public class TokenService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         string accessToken = tokenHandler.WriteToken(token);
         return accessToken;
+    }
+
+    public ClaimsPrincipal? GetPrincipalFromToken(string token) {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_jwtOption.Key);
+
+        try {
+            tokenHandler.ValidateToken(token, new TokenValidationParameters {
+                ValidateIssuer = true,
+                ValidIssuer = _jwtOption.Issuer,
+
+                ValidateAudience = true,
+                ValidAudience = _jwtOption.Audience,
+
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOption.Key))
+
+            }, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var claims = jwtToken.Claims.ToList();
+            claims.Add(new Claim("JWT_TOKEN", token));
+
+            var identity = new ClaimsIdentity(claims, "jwt");
+            return new ClaimsPrincipal(identity);
+        }
+        catch {
+            return null;
+        }
     }
 }

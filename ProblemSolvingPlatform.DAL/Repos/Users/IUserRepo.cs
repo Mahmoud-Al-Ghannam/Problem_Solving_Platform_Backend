@@ -15,9 +15,11 @@ namespace ProblemSolvingPlatform.DAL.Repos.Users {
 
         public Task<bool> DoesUserExistByUsernameAsync(string Username);
         public Task<bool> DoesUserExistByIDAsync(int UserID);
+        public Task<bool> IsUserActiveByIDAsync(int UserID);
 
         public Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+        public Task<bool> UpdateUserActivationAsync(int userId,bool isActive);
 
-        public Task<List<Models.Users.UserModel>> GetAllUsersByFiltersAsync(int page, int limit, string username);
+        public Task<List<Models.Users.UserModel>> GetAllUsersAsync(int page, int limit, string? username = null,bool? isActive = null);
     }
 }
