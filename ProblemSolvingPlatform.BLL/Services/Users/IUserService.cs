@@ -20,5 +20,5 @@ public interface IUserService
     public Task<bool> IsUserActiveByIDAsync(int userID);
     public Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser);
 
-    public Task<bool> UpdateUserActivationAsync(int userId, bool isActive);
+    public Task<bool> UpdateUserActivationAsync(int userId, bool isActive,int updatedBy);
 }

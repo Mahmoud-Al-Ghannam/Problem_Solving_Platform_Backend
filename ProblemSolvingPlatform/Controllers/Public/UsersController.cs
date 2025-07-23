@@ -11,11 +11,11 @@ using System.Security.Claims;
 namespace ProblemSolvingPlatform.Controllers.Public;
 
 [ApiController]
-[Route($"/{Constants.Api.PrefixPublicApi}/profiles")]
-public class ProfilesController : GeneralController
+[Route($"/{Constants.Api.PrefixPublicApi}/users")]
+public class UsersController : GeneralController
 {
     private IUserService _userService { get; }
-    public ProfilesController(IUserService userService)
+    public UsersController(IUserService userService)
     {
         _userService = userService;
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AuthHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
@@ -9,12 +10,12 @@ using System.ComponentModel.DataAnnotations;
 namespace ProblemSolvingPlatform.Controllers.Dashboard {
 
     [ApiController]
-    [Route($"/{Constants.Api.PrefixDashboardApi}/profiles")]
-    public class ProfilesDashboardController : DashboardController {
+    [Route($"/{Constants.Api.PrefixDashboardApi}/users")]
+    public class UsersDashboardController : DashboardController {
 
         private readonly IUserService _userService;
 
-        public ProfilesDashboardController(IUserService userService) {
+        public UsersDashboardController(IUserService userService) {
             _userService = userService;
         }
 
@@ -28,8 +29,10 @@ namespace ProblemSolvingPlatform.Controllers.Dashboard {
         [HttpPut("activation")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateUserInfo([FromQuery][Required] int userID,[FromQuery][Required] bool isActive) {
-
-            var isUpdated = await _userService.UpdateUserActivationAsync(userID, isActive);
+            int? id = AuthUtils.GetUserId(User);
+            if (id == null) return StatusCode(StatusCodes.Status401Unauthorized, new ErrorResponseBody(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields));
+            
+            var isUpdated = await _userService.UpdateUserActivationAsync(userID, isActive,id.Value);
             if (!isUpdated)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return NoContent();

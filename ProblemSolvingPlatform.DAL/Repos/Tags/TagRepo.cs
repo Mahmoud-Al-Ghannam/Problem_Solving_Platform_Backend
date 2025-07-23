@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
+using ProblemSolvingPlatform.DAL.Models.Problems;
+using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Tags;
 using System;
 using System.Collections.Generic;
@@ -181,6 +183,58 @@ namespace ProblemSolvingPlatform.DAL.Repos.Tags {
             return tags;
         }
 
-        
+        public async Task<TagModel?> GetTagByIDAsync(int tagID) {
+            TagModel tagModel = new TagModel();
+
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+
+                    await connection.OpenAsync();
+                    using (SqlCommand cmd = new("SP_Tag_GetTagByID", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@TagID", tagID);
+                        using (var reader = await cmd.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                tagModel.TagID = Convert.ToInt32(reader["TagID"].ToString());
+                                tagModel.Name = (string)reader["Name"];
+                            }
+                            else return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+                return null;
+            }
+
+            return tagModel;
+        }
+
+        public async Task<TagModel?> GetTagByNameAsync(string name) {
+            TagModel tagModel = new TagModel();
+
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+
+                    await connection.OpenAsync();
+                    using (SqlCommand cmd = new("SP_Tag_GetTagByName", connection)) {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Name", name);
+                        using (var reader = await cmd.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                tagModel.TagID = Convert.ToInt32(reader["TagID"].ToString());
+                                tagModel.Name = (string)reader["Name"];
+                            }
+                            else return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) {
+                return null;
+            }
+
+            return tagModel;
+        }
     }
 }

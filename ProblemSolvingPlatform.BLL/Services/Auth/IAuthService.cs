@@ -1,4 +1,5 @@
-﻿using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
+﻿using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
@@ -13,7 +14,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Auth;
 public interface IAuthService
 {
     public Task<RegisterResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO);
-    public Task<string> LoginAsync(LoginRequestDTO loginDTO);
+    public Task<string> LoginAsync(LoginRequestDTO loginDTO,Enums.Role role);
 
     public Task<bool> ChangePasswordAsync(int userId , ChangePasswordDTO changePasswordDTO);
 

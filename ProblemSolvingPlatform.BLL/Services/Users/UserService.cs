@@ -107,9 +107,11 @@ public class UserService : IUserService {
         return await _userRepo.DoesUserExistByIDAsync(userID);
     }
 
-    public async Task<bool> UpdateUserActivationAsync(int userId, bool isActive) {
+    public async Task<bool> UpdateUserActivationAsync(int userId, bool isActive,int updatedBy) {
         if (!await _userRepo.DoesUserExistByIDAsync(userId))
             throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
+        else if (userId == updatedBy)
+            throw new CustomValidationException("UserID", [$"The user cannot update his activation"]);
 
         return await _userRepo.UpdateUserActivationAsync(userId, isActive);
     }

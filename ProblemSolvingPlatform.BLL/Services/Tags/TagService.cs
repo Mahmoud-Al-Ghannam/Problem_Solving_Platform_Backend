@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Microsoft.VisualBasic;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Options.Constraint;
@@ -53,6 +54,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Tags {
             if (!await _tagRepo.DoesTagExistByIDAsync(tag.TagID))
                 errors["TagID"].Add($"The tag with id = {tag.TagID} was not found");
 
+            var existingTag = await _tagRepo.GetTagByNameAsync(tag.Name);
+            if (existingTag != null && existingTag.TagID != tag.TagID)
+                errors["Name"].Add($"The tag with name = {tag.Name} is already exists");
+
 
             if (tag.Name.Length < _constraintsOption.Tag.NameLength.Start.Value ||
                tag.Name.Length > _constraintsOption.Tag.NameLength.End.Value)
@@ -88,5 +93,26 @@ namespace ProblemSolvingPlatform.BLL.Services.Tags {
             return tagsDTO;
         }
 
+        public async Task<TagDTO?> GetTagByIDAsync(int tagID) {
+            if (!await _tagRepo.DoesTagExistByIDAsync(tagID))
+                throw new CustomValidationException("TagID", [$"The tag with id = {tagID} was not found"]);
+
+            var tagModel = await _tagRepo.GetTagByIDAsync(tagID);
+            return new TagDTO() {
+                TagID = tagModel.TagID,
+                Name = tagModel.Name
+            };
+        }
+
+        public async Task<TagDTO?> GetTagByNameAsync(string name) {
+            if (!await _tagRepo.DoesTagExistByNameAsync(name))
+                throw new CustomValidationException("Name", [$"The tag with name = {name} was not found"]);
+
+            var tagModel = await _tagRepo.GetTagByNameAsync(name);
+            return new TagDTO() {
+                TagID = tagModel.TagID,
+                Name = tagModel.Name
+            };
+        }
     }
 }

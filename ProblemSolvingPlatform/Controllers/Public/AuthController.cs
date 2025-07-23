@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL;
+using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.Auth;
@@ -29,9 +30,9 @@ public class AuthController : GeneralController
     /// <returns></returns>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDTO loginDTO)
+    public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDTO loginDTO, [FromQuery] Enums.Role role = Enums.Role.User)
     {
-        return Ok(await _authService.LoginAsync(loginDTO));
+        return Ok(await _authService.LoginAsync(loginDTO,role));
     }
 
 
