@@ -229,6 +229,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 ?.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
                     CreatedBy = model.CreatedBy,
+                    DeletedBy = model.DeletedBy,
                     Difficulty = (Difficulty)(int)model.Difficulty,
                     Title = model.Title,
                     GeneralDescription = model.GeneralDescription,

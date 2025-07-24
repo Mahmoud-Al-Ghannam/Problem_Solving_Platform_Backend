@@ -336,6 +336,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                 ShortProblemModel problem = new ShortProblemModel() {
                                     ProblemID = problemID,
                                     CreatedBy =(int) reader["CreatedBy"],
+                                    DeletedBy = (reader["DeletedBy"] == DBNull.Value ? null : (int)reader["DeletedBy"]),
                                     Title = reader["Title"].ToString() ?? "",
                                     GeneralDescription = reader["GeneralDescription"].ToString() ?? "",
                                     Difficulty = (Difficulty)Convert.ToInt32(reader["Difficulty"]),

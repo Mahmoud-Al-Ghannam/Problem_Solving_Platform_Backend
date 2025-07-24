@@ -13,6 +13,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
     public class ShortProblemDTO {
         public int ProblemID { get; set; }
         public int CreatedBy { get; set; }
+        public int? DeletedBy { get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }
         public bool IsSystemProblem { get; set; }

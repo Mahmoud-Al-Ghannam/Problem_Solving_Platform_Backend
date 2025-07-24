@@ -12,6 +12,7 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems
     {
         public int ProblemID { get; set; }
         public int CreatedBy { get; set; }
+        public int? DeletedBy { get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }
 
