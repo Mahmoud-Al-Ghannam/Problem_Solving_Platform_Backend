@@ -9,10 +9,10 @@ using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.Responses;
 using System.Security.Claims;
 
-namespace ProblemSolvingPlatform.Controllers.Public;
+namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
-[Route($"/{Constants.Api.PrefixPublicApi}/auth")]
+[Route($"/{Constants.Api.PrefixApi}/auth")]
 
 public class AuthController : GeneralController
 {
@@ -32,7 +32,7 @@ public class AuthController : GeneralController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDTO loginDTO, [FromQuery] Enums.Role role = Enums.Role.User)
     {
-        return Ok(await _authService.LoginAsync(loginDTO,role));
+        return Ok(await _authService.LoginAsync(loginDTO, role));
     }
 
 

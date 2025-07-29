@@ -5,11 +5,11 @@ using ProblemSolvingPlatform.BLL.DTOs.TestCases;
 using ProblemSolvingPlatform.BLL.Services.TestCases;
 using ProblemSolvingPlatform.Responses;
 
-namespace ProblemSolvingPlatform.Controllers.Public
+namespace ProblemSolvingPlatform.Controllers
 {
 
     [ApiController]
-    [Route($"/{Constants.Api.PrefixPublicApi}/test-cases")]
+    [Route($"/{Constants.Api.PrefixApi}/test-cases")]
     public class TestCasesController : GeneralController
     {
 

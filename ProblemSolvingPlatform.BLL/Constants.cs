@@ -9,8 +9,7 @@ namespace ProblemSolvingPlatform.BLL {
     public class Constants {
 
         public class Api {
-            public const string PrefixPublicApi = "api/v1/public";
-            public const string PrefixDashboardApi = "api/v1/dashboard";
+            public const string PrefixApi = "api/v1";
         }
 
         public class PaginationDefaultValues {

@@ -17,7 +17,7 @@ using System.Reflection.Metadata;
 namespace ProblemSolvingPlatform.Controllers
 {
     [ApiController]
-    [Route($"{Constants.Api.PrefixPublicApi}/testing")]
+    [Route($"{Constants.Api.PrefixApi}/testing")]
     public class TestingController : GeneralController {
         private readonly DbContext _db;
         public TestingController(DbContext dbContext) {

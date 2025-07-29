@@ -14,10 +14,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
-namespace ProblemSolvingPlatform.Controllers.Public;
+namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
-[Route($"/{Constants.Api.PrefixPublicApi}/submissions")]
+[Route($"/{Constants.Api.PrefixApi}/submissions")]
 public class SubmissionsController : GeneralController
 {
     private ISubmissionService _submissionService { get; }

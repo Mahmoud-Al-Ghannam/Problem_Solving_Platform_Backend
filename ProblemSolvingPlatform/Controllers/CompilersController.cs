@@ -4,11 +4,11 @@ using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.Services.Compiler;
 using ProblemSolvingPlatform.BLL.Services.Users;
 
-namespace ProblemSolvingPlatform.Controllers.Public
+namespace ProblemSolvingPlatform.Controllers
 {
 
     [ApiController]
-    [Route($"/{Constants.Api.PrefixPublicApi}/compilers")]
+    [Route($"/{Constants.Api.PrefixApi}/compilers")]
 
     public class CompilersController : GeneralController
     {
