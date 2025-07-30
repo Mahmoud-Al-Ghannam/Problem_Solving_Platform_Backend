@@ -21,7 +21,7 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems {
         public int TimeLimitMilliseconds { get; set; }
 
         public bool IsSystemProblem { get; set; }
-        public List<NewTestCaseModel> TestCases { get; set; }
-        public List<int> TagIDs { get; set; }
+        public List<NewTestCaseModel> TestCases { get; set; } = [];
+        public List<int> TagIDs { get; set; } = [];
     }
 }

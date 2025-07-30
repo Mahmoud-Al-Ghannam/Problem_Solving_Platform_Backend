@@ -263,6 +263,15 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         cmd.Parameters.AddWithValue("@Tutorial", updateProblem.Tutorial);
                         cmd.Parameters.AddWithValue("@Difficulty", (byte)updateProblem.Difficulty);
 
+                        SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
+                        TagIDsParm.TypeName = "dbo.IntegersTableType";
+                        DataTable dtTagIDs = new DataTable();
+                        dtTagIDs.Columns.Add("val", typeof(int));
+                        foreach (int x in updateProblem.TagIDs ?? [])
+                            dtTagIDs.Rows.Add(x);
+                        TagIDsParm.Value = dtTagIDs;
+                        cmd.Parameters.Add(TagIDsParm);
+
                         // output 
                         var IsSuccess = new SqlParameter("@IsSuccess", SqlDbType.Bit) {
                             Direction = ParameterDirection.Output

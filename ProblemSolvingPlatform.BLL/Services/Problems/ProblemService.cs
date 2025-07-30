@@ -192,6 +192,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 Note = updateProblem.Note,
                 Tutorial = updateProblem.Tutorial,
                 Difficulty = (DAL.Models.Enums.Difficulty)(byte)updateProblem.Difficulty,
+                TagIDs = updateProblem.TagIDs,
             };
             return await _problemRepo.UpdateProblemAsync(model);
         }

@@ -15,5 +15,6 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
         public string? Note { get; set; }
         public string? Tutorial { get; set; }
         public Difficulty Difficulty { get; set; }
+        public List<int> TagIDs { get; set; } = [];
     }
 }
