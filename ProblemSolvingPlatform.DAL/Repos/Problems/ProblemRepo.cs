@@ -180,7 +180,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         }
                     }
 
-                    problemModel.SampleTestCases = await _testCaseRepo.GetAllTestCasesAsync(1, 100, problemID, IsSample: true) ?? [];
+                    problemModel.SampleTestCases = await _testCaseRepo.GetAllTestCasesAsync(problemID, IsSample: true) ?? [];
                     problemModel.Tags = await GetProblemTagsAsync(problemID) ?? [];
                 }
             }

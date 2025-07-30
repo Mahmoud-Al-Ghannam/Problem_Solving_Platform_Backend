@@ -126,7 +126,7 @@ public class SubmissionsController : GeneralController
     [HttpGet("own")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllOwnSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
+    public async Task<ActionResult<PageDTO<SubmissionDTO>>> GetAllOwnSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
     {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)

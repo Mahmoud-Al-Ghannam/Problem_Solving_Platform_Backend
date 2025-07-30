@@ -69,7 +69,7 @@ public class SubmissionService : ISubmissionService {
         }
 
 
-        List<TestCaseModel>? testCases = (await _testCaseRepo.GetTestCasesByProblemIdAsync(submitDTO.ProblemId))?.ToList();
+        List<TestCaseModel>? testCases = (await _testCaseRepo.GetAllTestCasesAsync(submitDTO.ProblemId))?.ToList();
         ProblemModel? problem = await _problemRepo.GetProblemByIDAsync(submitDTO.ProblemId);
 
 
