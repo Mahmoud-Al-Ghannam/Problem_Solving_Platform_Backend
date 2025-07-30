@@ -29,7 +29,7 @@ public class SubmissionService : ISubmissionService {
     private ISubmissionRepo _submissionsRepo { get; }
     private IProblemRepo _problemRepo { get; }
 
-    private ConstraintsOption _constraintsOption { get; }   
+    private ConstraintsOption _constraintsOption { get; }
     private IUserRepo _userRepo { get; }
     private ICompilerService _compilerService { get; }
     private ITestCaseRepo _testCaseRepo { get; }
@@ -106,7 +106,7 @@ public class SubmissionService : ISubmissionService {
 
             submissionTestCase.TestCaseID = testCases[i].TestCaseID;
             submissionTestCase.ExecutionTimeMilliseconds = (int)(compileResult.ExecutionTimeMs ?? 0);
-            submissionTestCase.Output = StringHelper.RemoveWhiteSpaces(compileResult.Output??"");
+            submissionTestCase.Output = StringHelper.RemoveWhiteSpaces(compileResult.Output ?? "");
 
             if (!compileResult.CompilationSuccess) {
                 submissionTestCase.Status = DAL.Models.Enums.SubmissionStatus.CompilationError;
@@ -226,7 +226,7 @@ public class SubmissionService : ISubmissionService {
         }
 
         return new DetailedSubmissionDTO() {
-            SubmissionInfo = new SubmissionDTO() { 
+            SubmissionInfo = new SubmissionDTO() {
                 SubmissionID = submission.SubmissionID,
                 UserID = submission.UserID,
                 ProblemID = submission.ProblemID,
@@ -241,7 +241,7 @@ public class SubmissionService : ISubmissionService {
         };
     }
 
-    public async Task<List<SubmissionDTO>?> GetAllSubmissions(int page, int limit,int? requestedBy = null, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
+    public async Task<PageDTO<SubmissionDTO>?> GetAllSubmissions(int page, int limit, int? requestedBy = null, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
         Dictionary<string, List<string>> errors = new();
         errors["Page"] = [];
         errors["Limit"] = [];
@@ -255,31 +255,32 @@ public class SubmissionService : ISubmissionService {
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
-        var submissions = await _submissionsRepo.GetAllSubmissions(page, limit, userId, problemId, (scope == null ? null : (byte)scope.Value));
-        if (submissions == null)
-            return null;
+        var pageModel = await _submissionsRepo.GetAllSubmissions(page, limit, userId, problemId, (scope == null ? null : (byte)scope.Value));
+        if (pageModel == null) return null;
 
         if (requestedBy == null)
-            submissions = submissions.Where(s => s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
+            pageModel.Items = pageModel.Items.Where(s => s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
         else
-            submissions = submissions.Where(s => s.UserID == requestedBy.Value || s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
+            pageModel.Items = pageModel.Items.Where(s => s.UserID == requestedBy.Value || s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
 
 
-        var submissionsLST = new List<SubmissionDTO>();
-        foreach (var submission in submissions) {
-            submissionsLST.Add(new SubmissionDTO() {
-                CompilerName = submission.CompilerName,
-                ExecutionTimeMilliseconds = submission.ExecutionTimeMilliseconds,
-                Status = ((Enums.SubmissionStatus)(submission.Status)).ToString(),
-                SubmissionID = submission.SubmissionID,
-                SubmittedAt = submission.SubmittedAt,
-                UserID = submission.UserID,
-                Code = submission.Code,
-                ProblemID = submission.ProblemID,
-                VisionScope = ((Enums.VisionScope)(submission.VisionScope)).ToString()
-            });
-        }
-        return submissionsLST;
+        return new PageDTO<SubmissionDTO>() {
+            Items = pageModel.Items.Select(item => new SubmissionDTO() {
+                CompilerName = item.CompilerName,
+                ExecutionTimeMilliseconds = item.ExecutionTimeMilliseconds,
+                Status = ((Enums.SubmissionStatus)(item.Status)).ToString(),
+                SubmissionID = item.SubmissionID,
+                SubmittedAt = item.SubmittedAt,
+                UserID = item.UserID,
+                Code = item.Code,
+                ProblemID = item.ProblemID,
+                VisionScope = ((Enums.VisionScope)(item.VisionScope)).ToString()
+            }).ToList(),
+
+            TotalItems = pageModel.TotalItems,
+            TotalPages = pageModel.TotalPages,
+            CurrentPage = pageModel.CurrentPage
+        };
     }
 
     public async Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int? userId) {

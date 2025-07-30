@@ -106,7 +106,7 @@ public class SubmissionsController : GeneralController
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<SubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
+    public async Task<ActionResult<PageDTO<SubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
     {
         var submissions = await _submissionService.GetAllSubmissions(page, limit, AuthUtils.GetUserId(User), userId, problemId, scope);
         if (submissions == null)

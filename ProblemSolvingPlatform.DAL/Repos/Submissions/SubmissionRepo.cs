@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Context;
 using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static ProblemSolvingPlatform.DAL.Models.Enums;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Submissions;
 
@@ -75,7 +77,7 @@ public class SubmissionRepo : ISubmissionRepo {
             if (ok) {
                 foreach (var submissionTestCase in submission.SubmissionTestCases) {
                     submissionTestCase.SubmissionID = SubmissionID.Value;
-                    int? submissionTestCaseID = await _submissionTestRepo.AddNewSubmissionTestCaseAsync(submissionTestCase,connection,transaction);
+                    int? submissionTestCaseID = await _submissionTestRepo.AddNewSubmissionTestCaseAsync(submissionTestCase, connection, transaction);
                     if (submissionTestCaseID == null) {
                         ok = false;
                         break;
@@ -117,11 +119,11 @@ public class SubmissionRepo : ISubmissionRepo {
         }
     }
 
-    public async Task<List<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
-        var results = new List<SubmissionModel>();
+    public async Task<PageModel<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
+        var pageModel = new PageModel<SubmissionModel>();
 
         using (var conn = _db.GetConnection())
-        using (var cmd = new SqlCommand("SP_Submissions_GetAllSubmissions", conn)) {
+        using (var cmd = new SqlCommand("SP_Submission_GetAllSubmissions", conn)) {
             cmd.CommandType = CommandType.StoredProcedure;
 
 
@@ -138,8 +140,8 @@ public class SubmissionRepo : ISubmissionRepo {
             else cmd.Parameters.AddWithValue("@Scope", visionScope.Value);
 
             try {
-                await conn.OpenAsync(); 
-                 
+                await conn.OpenAsync();
+
                 using (var reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
                         var sub = new SubmissionModel {
@@ -153,20 +155,62 @@ public class SubmissionRepo : ISubmissionRepo {
                             VisionScope = (Enums.VisionScope)reader.GetByte(reader.GetOrdinal("VisionScope")),
                             SubmittedAt = reader.GetDateTime(reader.GetOrdinal("SubmittedAt"))
                         };
-                        results.Add(sub);
+                        pageModel.Items.Add(sub);
                     }
                 }
+
+                var temp = await GetTotalPagesAndItemsCountAsync(limit,userId,problemId,visionScope);
+                if (temp == null) return null;
+                pageModel.TotalItems = temp.Value.totalItems;
+                pageModel.TotalPages = temp.Value.totalPages;
+                pageModel.CurrentPage = page;
             }
             catch {
                 return null;
             }
         }
 
-        return results;
+        return pageModel;
+    }
+    
+    public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
+        (int totalPages, int totalItems) result = (0, 0);
 
+        using (var conn = _db.GetConnection())
+        using (var cmd = new SqlCommand("SP_Submissions_TotalPagesAndItemsCount", conn)) {
+            cmd.CommandType = CommandType.StoredProcedure;
+
+
+            cmd.Parameters.AddWithValue("@Limit", limit);
+
+            if (userId == null) cmd.Parameters.AddWithValue("@UserId", DBNull.Value);
+            else cmd.Parameters.AddWithValue("@UserId", userId.Value);
+
+            if (problemId == null) cmd.Parameters.AddWithValue("@ProblemId", DBNull.Value);
+            else cmd.Parameters.AddWithValue("@ProblemId", problemId.Value);
+
+            if (visionScope == null) cmd.Parameters.AddWithValue("@Scope", DBNull.Value);
+            else cmd.Parameters.AddWithValue("@Scope", visionScope.Value);
+
+            try {
+                await conn.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync()) {
+                    if (await reader.ReadAsync()) {
+                        result.totalItems = (int)reader["TotalItems"];
+                        result.totalPages = (int)reader["TotalPages"];
+                    }
+                }
+
+                return result;
+            }
+            catch {}
+        }
+
+        return null;
     }
 
-    public async Task<SubmissionModel?> GetSubmissionByID (int submissionID) {
+    public async Task<SubmissionModel?> GetSubmissionByID(int submissionID) {
         SubmissionModel submissionModel = new SubmissionModel();
 
         try {
@@ -199,7 +243,7 @@ public class SubmissionRepo : ISubmissionRepo {
 
         return submissionModel;
     }
-    
+
     public async Task<bool> DoesSubmissionExistByID(int submissionID) {
         try {
             using (SqlConnection connection = _db.GetConnection()) {
@@ -223,4 +267,6 @@ public class SubmissionRepo : ISubmissionRepo {
             return false;
         }
     }
+
+
 }

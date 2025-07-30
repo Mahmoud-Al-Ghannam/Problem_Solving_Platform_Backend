@@ -118,7 +118,7 @@ namespace ProblemSolvingPlatform.Controllers
         /// <returns></returns>
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null)
+        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null)
         {
             var problems = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, false, tagIDs);
             if (problems == null)

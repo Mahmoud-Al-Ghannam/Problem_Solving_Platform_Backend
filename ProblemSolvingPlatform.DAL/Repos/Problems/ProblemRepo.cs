@@ -360,7 +360,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                     }
                 }
 
-                (int totalPages, int totalItems)? temp = await GetTotalPagesAndItemsCountAsync(limit, title, difficulty, createdBy, isSystemProblem, createdAt, isDeleted, tagIDs);
+                var temp = await GetTotalPagesAndItemsCountAsync(limit, title, difficulty, createdBy, isSystemProblem, createdAt, isDeleted, tagIDs);
                 if (temp == null) return null;
                 pageModel.TotalItems = temp.Value.totalItems;
                 pageModel.TotalPages = temp.Value.totalPages;
