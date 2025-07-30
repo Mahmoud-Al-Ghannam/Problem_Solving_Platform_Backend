@@ -313,8 +313,8 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<IEnumerable<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null) {
-            var problems = new List<ShortProblemModel>();
+        public async Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null) {
+            var pageModel = new PageModel<ShortProblemModel>();
 
             try {
                 using (SqlConnection connection = _db.GetConnection()) {
@@ -354,11 +354,58 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                     AttemptsCount = Convert.ToInt32(reader["AttemptsCount"]),
                                     Tags = await GetProblemTagsAsync(problemID) ?? []
                                 };
-                                problems.Add(problem);
+                                pageModel.Items.Add(problem);
+                            }
+                        }
+                    }
+                }
+
+                (int totalPages, int totalItems)? temp = await GetTotalPagesAndItemsCountAsync(limit, title, difficulty, createdBy, isSystemProblem, createdAt, isDeleted, tagIDs);
+                if (temp == null) return null;
+                pageModel.TotalItems = temp.Value.totalItems;
+                pageModel.TotalPages = temp.Value.totalPages;
+                pageModel.CurrentPage = page;
+
+                return pageModel;
+            }
+            catch (Exception ex) {
+                return null;
+            }
+        }
+
+        public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? isSystemProblem = null, DateTime? createdAt = null, bool? isDeleted = null, IEnumerable<int>? tagIDs = null) {
+            (int totalPages, int totalItems) result = (0,0);
+
+            try {
+                using (SqlConnection connection = _db.GetConnection()) {
+                    await connection.OpenAsync();
+                    using (SqlCommand command = new("SP_Problem_TotalPagesAndItemsCount", connection)) {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@Limit", limit);
+                        command.Parameters.AddWithValue("@Title", string.IsNullOrWhiteSpace(title) ? DBNull.Value : title);
+                        command.Parameters.AddWithValue("@Difficulty", difficulty == null ? DBNull.Value : difficulty);
+                        command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy);
+                        command.Parameters.AddWithValue("@IsSystemProblem", isSystemProblem == null ? DBNull.Value : isSystemProblem.Value);
+                        command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
+                        command.Parameters.AddWithValue("@IsDeleted", isDeleted == null ? DBNull.Value : isDeleted);
+                        SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
+                        TagIDsParm.TypeName = "dbo.IntegersTableType";
+                        DataTable dtTagIDs = new DataTable();
+                        dtTagIDs.Columns.Add("val", typeof(int));
+                        foreach (int x in tagIDs ?? [])
+                            dtTagIDs.Rows.Add(x);
+                        TagIDsParm.Value = dtTagIDs;
+                        command.Parameters.Add(TagIDsParm);
+
+                        using (var reader = await command.ExecuteReaderAsync()) {
+                            if (await reader.ReadAsync()) {
+                                result.totalItems = (int)reader["TotalItems"];
+                                result.totalPages = (int)reader["TotalPages"];
                             }
                         }
 
-                        return problems;
+                        return result;
                     }
                 }
             }

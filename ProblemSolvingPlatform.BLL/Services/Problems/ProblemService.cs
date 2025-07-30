@@ -11,6 +11,7 @@ using ProblemSolvingPlatform.BLL.Services.Compiler;
 using ProblemSolvingPlatform.BLL.Services.Users;
 using ProblemSolvingPlatform.BLL.Validation;
 using ProblemSolvingPlatform.BLL.Validation.Problem;
+using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Users;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
@@ -198,7 +199,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         }
 
 
-        public async Task<IEnumerable<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, string? tagIDs = null) {
+        public async Task<PageDTO<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, string? tagIDs = null) {
             Dictionary<string, List<string>> errors = new();
             errors["Page"] = [];
             errors["Limit"] = [];
@@ -226,8 +227,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-            return (await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt,isDeleted, listTagIDs))
-                ?.Select(model => new ShortProblemDTO() {
+            PageModel<ShortProblemModel>? pageModel = await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, listTagIDs);
+            if (pageModel == null) return null;
+            return new PageDTO<ShortProblemDTO>() {
+                Items = pageModel.Items.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
                     CreatedBy = model.CreatedBy,
                     DeletedBy = model.DeletedBy,
@@ -238,7 +241,13 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                     SolutionsCount = model.SolutionsCount,
                     AttemptsCount = model.AttemptsCount,
                     Tags = model.Tags.Select(t => new TagDTO() { Name = t.Name, TagID = t.TagID }),
-                });
+                }).ToList(),
+
+                TotalItems = pageModel.TotalItems,
+                TotalPages = pageModel.TotalPages,
+                CurrentPage = pageModel.CurrentPage
+            };
+                
         }
 
         public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID) {
@@ -260,7 +269,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 OutputDescription = problemModel.OutputDescription,
                 Note = problemModel.Note,
                 Tutorial = problemModel.Tutorial,
-                Difficulty = (Enums.Difficulty)(int)problemModel.Difficulty,
+                Difficulty = (DTOs.Enums.Difficulty)(int)problemModel.Difficulty,
                 IsSystemProblem = problemModel.IsSystemProblem,
                 SolutionCode = problemModel.SolutionCode,
                 TimeLimitMilliseconds = problemModel.TimeLimitMilliseconds,
