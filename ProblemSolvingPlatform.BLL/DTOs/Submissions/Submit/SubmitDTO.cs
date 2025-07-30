@@ -11,7 +11,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submit;
 
 public class SubmitDTO
 {
-    public int ProblemId { get; set; }
+    public int ProblemID { get; set; }
     public string CompilerName { get; set; }
     public required string Code { get; set; }
 

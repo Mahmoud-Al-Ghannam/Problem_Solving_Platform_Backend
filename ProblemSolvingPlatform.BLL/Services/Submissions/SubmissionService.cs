@@ -52,8 +52,8 @@ public class SubmissionService : ISubmissionService {
         errors["UserID"] = [];
         errors["Code"] = [];
 
-        if (!await _problemRepo.DoesProblemExistByIDAsync(submitDTO.ProblemId))
-            errors["ProblemID"].Add($"The problem with id = {submitDTO.ProblemId} was not found");
+        if (!await _problemRepo.DoesProblemExistByIDAsync(submitDTO.ProblemID))
+            errors["ProblemID"].Add($"The problem with id = {submitDTO.ProblemID} was not found");
 
         if (!await _userRepo.DoesUserExistByIDAsync(userId))
             errors["UserID"].Add($"The user with id = {userId} was not found");
@@ -69,8 +69,8 @@ public class SubmissionService : ISubmissionService {
         }
 
 
-        List<TestCaseModel>? testCases = (await _testCaseRepo.GetAllTestCasesAsync(submitDTO.ProblemId))?.ToList();
-        ProblemModel? problem = await _problemRepo.GetProblemByIDAsync(submitDTO.ProblemId);
+        List<TestCaseModel>? testCases = (await _testCaseRepo.GetAllTestCasesAsync(submitDTO.ProblemID))?.ToList();
+        ProblemModel? problem = await _problemRepo.GetProblemByIDAsync(submitDTO.ProblemID);
 
 
         List<CompileResponseDTO> compileResults = new();
@@ -131,7 +131,7 @@ public class SubmissionService : ISubmissionService {
 
         var submission = new NewSubmissionModel() {
             UserID = userId,
-            ProblemID = submitDTO.ProblemId,
+            ProblemID = submitDTO.ProblemID,
             CompilerName = submitDTO.CompilerName,
             Code = submitDTO.Code,
             VisionScope = (byte)submitDTO.VisionScope,
@@ -147,7 +147,7 @@ public class SubmissionService : ISubmissionService {
         foreach (VisionScope visionScope in Enum.GetValues(typeof(VisionScope))) {
             result.Add(new VisionScopesDTO() {
                 VisionScope = visionScope.ToString(),
-                Id = (int)visionScope
+                ID = (int)visionScope
             }
             );
         }
@@ -170,7 +170,7 @@ public class SubmissionService : ISubmissionService {
                 errors["UserID"].Add($"The submission with id = {submissionId} does not belong to user with id = {userId}");
         }
 
-        if (!GetAllVisionScopes().Any(v => v.Id == visionScopeId))
+        if (!GetAllVisionScopes().Any(v => v.ID == visionScopeId))
             errors["VisionScopeID"].Add($"The vision scopeID with id = {visionScopeId} was not found");
 
         if (!await _userRepo.DoesUserExistByIDAsync(userId))

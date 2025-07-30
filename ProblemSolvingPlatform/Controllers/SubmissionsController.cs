@@ -85,7 +85,7 @@ public class SubmissionsController : GeneralController
             result.Add(new VisionScopesDTO
             {
                 VisionScope = visionScope.ToString(),
-                Id = (int)visionScope
+                ID = (int)visionScope
             }
             );
         }

@@ -32,7 +32,7 @@ public class UserService : IUserService {
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
 
         return new UserDTO() {
-            UserId = user.UserId,
+            UserID = user.UserId,
             Username = user.Username,
             CreatedAt = user.CreatedAt,
             Role = (Role)user.Role,
@@ -54,14 +54,14 @@ public class UserService : IUserService {
         if (user == null) throw new Exception(Constants.ErrorMessages.General);
 
 
-        if (updateUser.profileImage != null) {
+        if (updateUser.ProfileImage != null) {
             var oldPath = user.ImagePath ?? "";
             string oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", oldPath);
             if (File.Exists(oldImagePath))
                 File.Delete(oldImagePath);
         }
         // 2 
-        string newpath = await FileService.SaveImageAndGetURL(updateUser.profileImage);
+        string newpath = await FileService.SaveImageAndGetURL(updateUser.ProfileImage);
         return await _userRepo.UpdateUserInfoByIdAsync(userId, newpath);
     }
 
@@ -89,7 +89,7 @@ public class UserService : IUserService {
 
 
         var usersInfoLST = users.Select(x => new UserDTO() {
-            UserId = x.UserId,
+            UserID = x.UserId,
             Username = x.Username,
             CreatedAt = x.CreatedAt,
             ImagePath = x.ImagePath != null ? $"{baseUrl}/Images/{x.ImagePath}" : null,

@@ -9,7 +9,7 @@ using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
 
     public class UserDTO {
-        public int UserId { get; set; }
+        public int UserID { get; set; }
         public string Username { get; set; }
         public string? ImagePath { get; set; }
         public Role Role { get; set; }

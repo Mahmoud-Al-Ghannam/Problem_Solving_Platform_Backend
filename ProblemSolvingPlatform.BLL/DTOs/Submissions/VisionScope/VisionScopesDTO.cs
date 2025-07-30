@@ -8,6 +8,6 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.VisionScope;
 
 public class VisionScopesDTO
 {
-    public int Id { get; set; }
+    public int ID { get; set; }
     public string VisionScope { get; set; }
 }

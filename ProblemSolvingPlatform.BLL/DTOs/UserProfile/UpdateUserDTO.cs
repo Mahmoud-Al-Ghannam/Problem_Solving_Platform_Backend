@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
 
     public class UpdateUserDTO {
-        public IFormFile? profileImage { get; set; }
+        public IFormFile? ProfileImage { get; set; }
     }
 }
