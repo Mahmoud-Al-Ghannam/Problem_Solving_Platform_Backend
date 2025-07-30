@@ -4,7 +4,7 @@ using ProblemSolvingPlatform.BLL.DTOs;
 using ProblemSolvingPlatform.BLL.DTOs.Problems;
 using ProblemSolvingPlatform.BLL.DTOs.Tags;
 using ProblemSolvingPlatform.BLL.DTOs.TestCases;
-using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.DTOs.Users;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Options.Constraint;
 using ProblemSolvingPlatform.BLL.Services.Compiler;

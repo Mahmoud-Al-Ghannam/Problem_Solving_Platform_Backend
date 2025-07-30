@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
-namespace ProblemSolvingPlatform.BLL.DTOs.UserProfile {
+namespace ProblemSolvingPlatform.BLL.DTOs.Users {
 
     public class UserDTO {
         public int UserID { get; set; }

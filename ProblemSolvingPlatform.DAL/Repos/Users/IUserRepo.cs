@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProblemSolvingPlatform.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Users {
         public Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
         public Task<bool> UpdateUserActivationAsync(int userId,bool isActive);
 
-        public Task<List<Models.Users.UserModel>> GetAllUsersAsync(int page, int limit, string? username = null,bool? isActive = null);
+        public Task<PageModel<Models.Users.UserModel>?> GetAllUsersAsync(int page, int limit, string? username = null,bool? isActive = null);
+        public Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, string? username = null,bool? isActive = null);
     }
 }

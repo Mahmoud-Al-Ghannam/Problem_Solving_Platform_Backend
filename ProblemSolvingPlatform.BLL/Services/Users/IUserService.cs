@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Users;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Users;
 public interface IUserService
 {
     public Task<UserDTO?> GetUserByIdAsync(int userId);
-    public Task<List<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username,bool? isActive);
+    public Task<PageDTO<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username,bool? isActive);
 
     public Task<bool> DoesUserExistByUsernameAsync(string username);
     public Task<bool> DoesUserExistByIDAsync(int userID);

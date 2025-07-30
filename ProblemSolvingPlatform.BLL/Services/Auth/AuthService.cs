@@ -21,7 +21,7 @@ public class AuthService : IAuthService {
         _constraintsOption = constraintsOption;
     }
 
-    public async Task<string> LoginAsync(LoginRequestDTO loginDTO,Enums.Role role) {
+    public async Task<string> LoginAsync(LoginRequestDTO loginDTO,Enums.Role? role) {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["Username"] = [];
         errors["Password"] = [];
@@ -40,7 +40,7 @@ public class AuthService : IAuthService {
         else if (!user.IsActive) {
             errors["$"].Add($"The user with username = {loginDTO.Username} and password = {loginDTO.Password} was not active");
         }
-        else if ((Enums.Role)(byte)user.Role != role) {
+        else if (role != null && (Enums.Role)(byte)user.Role != role) {
             errors["$"].Add($"The username or password is wrong");
         }
 

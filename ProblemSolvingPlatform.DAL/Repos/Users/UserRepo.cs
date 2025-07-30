@@ -1,6 +1,9 @@
 ﻿using ProblemSolvingPlatform.DAL.Context;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using ProblemSolvingPlatform.DAL.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using static ProblemSolvingPlatform.DAL.Models.Enums;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Users;
 
@@ -117,8 +120,8 @@ public class UserRepo : IUserRepo {
         }
     }
 
-    public async Task<List<Models.Users.UserModel>> GetAllUsersAsync(int page, int limit, string? username = null, bool? isActive = null) {
-        var usersLST = new List<Models.Users.UserModel>();
+    public async Task<PageModel<Models.Users.UserModel>?> GetAllUsersAsync(int page, int limit, string? username = null, bool? isActive = null) {
+        var pageModel = new PageModel<Models.Users.UserModel>();
 
         using (SqlConnection connection = _db.GetConnection()) {
             using (SqlCommand cmd = new("SP_User_GetAllUsers", connection)) {
@@ -141,10 +144,17 @@ public class UserRepo : IUserRepo {
                                 CreatedAt = (DateTime)reader["CreatedAt"],
                                 IsActive = (bool)reader["IsActive"]
                             };
-                            usersLST.Add(userInfo);
+                            pageModel.Items.Add(userInfo);
                         }
                     }
-                    return usersLST;
+
+                    var temp = await GetTotalPagesAndItemsCountAsync(limit,username,isActive);
+                    if (temp == null) return null;
+                    pageModel.TotalItems = temp.Value.totalItems;
+                    pageModel.TotalPages = temp.Value.totalPages;
+                    pageModel.CurrentPage = page;
+
+                    return pageModel;
                 }
                 catch (Exception ex) {
                     return null;
@@ -153,6 +163,35 @@ public class UserRepo : IUserRepo {
         }
 
     }
+    
+    public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, string? username = null, bool? isActive = null) {
+        (int totalPages, int totalItems) result = (0, 0);
+
+        using (SqlConnection connection = _db.GetConnection()) {
+            using (SqlCommand cmd = new("SP_User_TotalPagesAndItemsCount", connection)) {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@Limit", limit);
+                cmd.Parameters.AddWithValue("@Username", string.IsNullOrWhiteSpace(username) ? (object)DBNull.Value : username);
+                cmd.Parameters.AddWithValue("@IsActive", isActive == null ? DBNull.Value : isActive.Value);
+
+                try {
+                    await connection.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync()) {
+                        if (await reader.ReadAsync()) {
+                            result.totalItems = (int)reader["TotalItems"];
+                            result.totalPages = (int)reader["TotalPages"];
+                        }
+                    }
+                    return result;
+                }
+                catch (Exception ex) {
+                    return null;
+                }
+            }
+        }
+    }
+    
 
     public async Task<Models.Users.UserModel> GetUserByIdAsync(int userId) {
         using (SqlConnection connection = _db.GetConnection()) {
@@ -291,4 +330,5 @@ public class UserRepo : IUserRepo {
             }
         }
     }
+
 }

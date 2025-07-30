@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client.Extensibility;
 using ProblemSolvingPlatform.BLL;
-using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Users;
 using ProblemSolvingPlatform.BLL.Services.Users;
 using ProblemSolvingPlatform.Responses;
 using System.ComponentModel.DataAnnotations;
@@ -67,7 +68,7 @@ public class UsersController : GeneralController
     /// <returns></returns>
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null)
+    public async Task<ActionResult<PageDTO<UserDTO>>> GetAllUsers([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null)
     {
         var users = await _userService.GetAllUsersAsync(page, limit, username, true);
         if (users == null)
@@ -108,7 +109,7 @@ public class UsersController : GeneralController
     [HttpGet("dashboard")]
     [Authorize(Roles = Constants.Roles.System)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null, [FromQuery] bool? isActive = null)
+    public async Task<ActionResult<PageDTO<UserDTO>>> GetAllUsers([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? username = null, [FromQuery] bool? isActive = null)
     {
         var users = await _userService.GetAllUsersAsync(page, limit, username, isActive);
         if (users == null)

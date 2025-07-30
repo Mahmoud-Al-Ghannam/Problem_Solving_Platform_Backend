@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ProblemSolvingPlatform.BLL.DTOs;
-using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.DTOs.Users;
 using ProblemSolvingPlatform.BLL.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

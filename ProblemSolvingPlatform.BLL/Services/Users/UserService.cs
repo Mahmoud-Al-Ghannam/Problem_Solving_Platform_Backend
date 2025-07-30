@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using ProblemSolvingPlatform.BLL.DTOs.UserProfile;
+using ProblemSolvingPlatform.BLL.DTOs;
+using ProblemSolvingPlatform.BLL.DTOs.Users;
 using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Options.Constraint;
 using ProblemSolvingPlatform.DAL.Repos.Users;
@@ -65,7 +66,7 @@ public class UserService : IUserService {
         return await _userRepo.UpdateUserInfoByIdAsync(userId, newpath);
     }
 
-    public async Task<List<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username = null, bool? isActive = null) {
+    public async Task<PageDTO<UserDTO>?> GetAllUsersAsync(int page, int limit, string? username = null, bool? isActive = null) {
         Dictionary<string, List<string>> errors = new();
         errors["Page"] = [];
         errors["Limit"] = [];
@@ -80,23 +81,26 @@ public class UserService : IUserService {
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
-        var users = await _userRepo.GetAllUsersAsync(page, limit, username, isActive);
-        if (users == null)
-            return null;
+        var pageModel = await _userRepo.GetAllUsersAsync(page, limit, username, isActive);
+        if (pageModel == null) return null;
 
         var request = _httpContextAccessor.HttpContext?.Request;
         var baseUrl = $"{request?.Scheme}://{request?.Host}";
 
+        return new PageDTO<UserDTO>() {
+            Items = pageModel.Items.Select(x => new UserDTO() {
+                UserID = x.UserId,
+                Username = x.Username,
+                CreatedAt = x.CreatedAt,
+                ImagePath = x.ImagePath != null ? $"{baseUrl}/Images/{x.ImagePath}" : null,
+                Role = (Role)x.Role,
+                IsActive = x.IsActive,
+            }).ToList(),
 
-        var usersInfoLST = users.Select(x => new UserDTO() {
-            UserID = x.UserId,
-            Username = x.Username,
-            CreatedAt = x.CreatedAt,
-            ImagePath = x.ImagePath != null ? $"{baseUrl}/Images/{x.ImagePath}" : null,
-            Role = (Role)x.Role,
-            IsActive = x.IsActive,
-        }).ToList();
-        return usersInfoLST;
+            TotalItems = pageModel.TotalItems,
+            TotalPages = pageModel.TotalPages,
+            CurrentPage = pageModel.CurrentPage
+        };
     }
 
     public async Task<bool> DoesUserExistByUsernameAsync(string username) {
