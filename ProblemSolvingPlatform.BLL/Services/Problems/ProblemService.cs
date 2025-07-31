@@ -199,7 +199,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         }
 
 
-        public async Task<PageDTO<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, string? tagIDs = null,int? tryingStatusForUser=null) {
+        public async Task<PageDTO<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, string? tagIDs = null,int? tryingStatusForUser=null,TryingStatusOfProblem? tryingStatus = null) {
             Dictionary<string, List<string>> errors = new();
             errors["Page"] = [];
             errors["Limit"] = [];
@@ -207,7 +207,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (page < _constraintsOption.MinPageNumber)
                 errors["Page"].Add($"The page must to be greater than {_constraintsOption.MinPageNumber}");
 
-            if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value)
+            if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value) 
                 errors["Limit"].Add($"The limit must to be in range [{_constraintsOption.PageSize.Start.Value},{_constraintsOption.PageSize.End.Value}]");
 
             List<int>? listTagIDs = null;
@@ -227,7 +227,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-            PageModel<ShortProblemModel>? pageModel = await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, listTagIDs,tryingStatusForUser);
+            PageModel<ShortProblemModel>? pageModel = await _problemRepo.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, listTagIDs,tryingStatusForUser,(DAL.Models.Enums.TryingStatusOfProblem?)(byte?)tryingStatus);
             if (pageModel == null) return null;
             return new PageDTO<ShortProblemDTO>() {
                 Items = pageModel.Items.Select(model => new ShortProblemDTO() {

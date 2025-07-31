@@ -313,7 +313,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null,int? tryingStatusForUser = null) {
+        public async Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null,int? tryingStatusForUser = null, TryingStatusOfProblem? tryingStatus = null) {
             var pageModel = new PageModel<ShortProblemModel>();
 
             try {
@@ -331,6 +331,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt.Value);
                         command.Parameters.AddWithValue("@IsDeleted", isDeleted == null ? DBNull.Value : isDeleted.Value);
                         command.Parameters.AddWithValue("@TryingStatusForUser", tryingStatusForUser == null ? DBNull.Value : tryingStatusForUser.Value);
+                        command.Parameters.AddWithValue("@TryingStatus", tryingStatus == null ? DBNull.Value : (byte) tryingStatus.Value);
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
                         TagIDsParm.TypeName = "dbo.IntegersTableType";
                         DataTable dtTagIDs = new DataTable();
@@ -362,7 +363,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                     }
                 }
 
-                var temp = await GetTotalPagesAndItemsCountAsync(limit, title, difficulty, createdBy, isSystemProblem, createdAt, isDeleted, tagIDs);
+                var temp = await GetTotalPagesAndItemsCountAsync(limit, title, difficulty, createdBy, isSystemProblem, createdAt, isDeleted, tagIDs,tryingStatusForUser,tryingStatus);
                 if (temp == null) return null;
                 pageModel.TotalItems = temp.Value.totalItems;
                 pageModel.TotalPages = temp.Value.totalPages;
@@ -375,7 +376,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? isSystemProblem = null, DateTime? createdAt = null, bool? isDeleted = null, IEnumerable<int>? tagIDs = null) {
+        public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, string? title = null, byte? difficulty = null, int? createdBy = null, bool? isSystemProblem = null, DateTime? createdAt = null, bool? isDeleted = null, IEnumerable<int>? tagIDs = null,int? tryingStatusForUser = null, TryingStatusOfProblem? tryingStatus = null) {
             (int totalPages, int totalItems) result = (0,0);
 
             try {
@@ -391,6 +392,8 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         command.Parameters.AddWithValue("@IsSystemProblem", isSystemProblem == null ? DBNull.Value : isSystemProblem.Value);
                         command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
                         command.Parameters.AddWithValue("@IsDeleted", isDeleted == null ? DBNull.Value : isDeleted);
+                        command.Parameters.AddWithValue("@TryingStatusForUser", tryingStatusForUser == null ? DBNull.Value : tryingStatusForUser.Value);
+                        command.Parameters.AddWithValue("@TryingStatus", tryingStatus == null ? DBNull.Value : (byte)tryingStatus.Value);
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
                         TagIDsParm.TypeName = "dbo.IntegersTableType";
                         DataTable dtTagIDs = new DataTable();
