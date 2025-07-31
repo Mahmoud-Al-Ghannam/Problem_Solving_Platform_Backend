@@ -18,7 +18,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
         public Task<IEnumerable<TagModel>?> GetProblemTagsAsync(int problemID);
 
         public Task<bool> DoesProblemExistByIDAsync(int problemId);
-        public Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page,int limit,string? title = null,byte? difficulty = null,int? createdBy = null,bool? isSystemProblem = null,DateTime? createdAt = null,bool? isDeleted = null,IEnumerable<int>? tagIDs = null);
+        public Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page,int limit,string? title = null,byte? difficulty = null,int? createdBy = null,bool? isSystemProblem = null,DateTime? createdAt = null,bool? isDeleted = null,IEnumerable<int>? tagIDs = null,int? tryingStatusForUser = null);
         public Task<(int totalPages,int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit,string? title = null,byte? difficulty = null,int? createdBy = null,bool? isSystemProblem = null,DateTime? createdAt = null,bool? isDeleted = null,IEnumerable<int>? tagIDs = null);
     }
 }

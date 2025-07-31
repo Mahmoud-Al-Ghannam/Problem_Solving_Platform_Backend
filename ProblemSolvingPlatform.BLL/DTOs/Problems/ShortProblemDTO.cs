@@ -19,6 +19,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
         public bool IsSystemProblem { get; set; }
 
         public Difficulty Difficulty { get; set; }
+        public TryingStatusOfProblem? TryingStatus { get; set; }
         public IEnumerable<TagDTO> Tags { get; set; }
         public int SolutionsCount { get; set; }
         public int AttemptsCount { get; set; }

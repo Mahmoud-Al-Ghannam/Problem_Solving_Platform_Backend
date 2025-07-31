@@ -17,6 +17,7 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems
         public string GeneralDescription { get; set; }
 
         public bool IsSystemProblem { get; set; }
+        public TryingStatusOfProblem? TryingStatus { get; set; }
         public Difficulty Difficulty { get; set; }
         public IEnumerable<TagModel> Tags { get; set; }
         public int SolutionsCount { get; set; }

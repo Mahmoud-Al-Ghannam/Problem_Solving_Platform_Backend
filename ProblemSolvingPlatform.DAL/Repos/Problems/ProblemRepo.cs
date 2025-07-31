@@ -313,7 +313,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
             }
         }
 
-        public async Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null) {
+        public async Task<PageModel<ShortProblemModel>?> GetAllProblemsAsync(int page, int limit, string? title = null, byte? difficulty = null, int? createdBy = null,bool? isSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, IEnumerable<int>? tagIDs = null,int? tryingStatusForUser = null) {
             var pageModel = new PageModel<ShortProblemModel>();
 
             try {
@@ -325,11 +325,12 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         command.Parameters.AddWithValue("@Page", page);
                         command.Parameters.AddWithValue("@Limit", limit);
                         command.Parameters.AddWithValue("@Title", string.IsNullOrWhiteSpace(title) ? DBNull.Value : title);
-                        command.Parameters.AddWithValue("@Difficulty", difficulty == null ? DBNull.Value : difficulty);
-                        command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy);
+                        command.Parameters.AddWithValue("@Difficulty", difficulty == null ? DBNull.Value : difficulty.Value);
+                        command.Parameters.AddWithValue("@CreatedBy", createdBy == null ? DBNull.Value : createdBy.Value);
                         command.Parameters.AddWithValue("@IsSystemProblem", isSystemProblem == null ? DBNull.Value : isSystemProblem.Value);
-                        command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt);
-                        command.Parameters.AddWithValue("@IsDeleted", isDeleted == null ? DBNull.Value : isDeleted);
+                        command.Parameters.AddWithValue("@CreatedAt", createdAt == null ? DBNull.Value : createdAt.Value);
+                        command.Parameters.AddWithValue("@IsDeleted", isDeleted == null ? DBNull.Value : isDeleted.Value);
+                        command.Parameters.AddWithValue("@TryingStatusForUser", tryingStatusForUser == null ? DBNull.Value : tryingStatusForUser.Value);
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);
                         TagIDsParm.TypeName = "dbo.IntegersTableType";
                         DataTable dtTagIDs = new DataTable();
@@ -352,7 +353,8 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                     IsSystemProblem = Convert.ToBoolean(reader["IsSystemProblem"]),
                                     SolutionsCount = Convert.ToInt32(reader["SolutionsCount"]),
                                     AttemptsCount = Convert.ToInt32(reader["AttemptsCount"]),
-                                    Tags = await GetProblemTagsAsync(problemID) ?? []
+                                    Tags = await GetProblemTagsAsync(problemID) ?? [],
+                                    TryingStatus = (reader["TryingStatus"] == DBNull.Value ? null : (TryingStatusOfProblem)(byte)reader["TryingStatus"]),
                                 };
                                 pageModel.Items.Add(problem);
                             }

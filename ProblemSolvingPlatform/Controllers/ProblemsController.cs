@@ -118,9 +118,9 @@ namespace ProblemSolvingPlatform.Controllers
         /// <returns></returns>
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null)
+        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null, [FromQuery] int? tryingStatusForUser = null)
         {
-            var problems = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, false, tagIDs);
+            var problems = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, false, tagIDs, tryingStatusForUser);
             if (problems == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(problems);
@@ -143,9 +143,9 @@ namespace ProblemSolvingPlatform.Controllers
         [HttpGet("dashboard")]
         [Authorize(Roles = Constants.Roles.System)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] bool? isDeleted = null, [FromQuery] string? tagIDs = null)
+        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] bool? isDeleted = null, [FromQuery] string? tagIDs = null, [FromQuery] int? tryingStatusForUser = null)
         {
-            var pageDTO = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, tagIDs);
+            var pageDTO = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, tagIDs,tryingStatusForUser);
             if (pageDTO == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(pageDTO);
