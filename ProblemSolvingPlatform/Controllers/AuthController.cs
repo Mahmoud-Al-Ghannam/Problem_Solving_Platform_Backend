@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AuthHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.DTOs;
@@ -60,11 +61,24 @@ public class AuthController : GeneralController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
     {
-        var ClaimUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(ClaimUserId, out int userId))
-            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+        int userID = AuthUtils.GetUserId(User)!.Value;
+        var isChanged = await _authService.ChangePasswordAsync(userID, changePasswordDTO);
+        if (!isChanged)
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
+        return NoContent();
+    }
 
-        var isChanged = await _authService.ChangePasswordAsync(userId, changePasswordDTO);
+    /// <summary>
+    /// JWt Bearer Auth With System Role
+    /// </summary>
+    /// <param name="userID"></param>
+    /// <param name="changePasswordDTO"></param>
+    /// <returns></returns>
+    [Authorize(Roles = Constants.Roles.System)]
+    [HttpPut("dashboard/change-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ChangePassword(int userID, ChangePasswordDTO changePasswordDTO) {
+        var isChanged = await _authService.ChangePasswordAsync(userID, changePasswordDTO);
         if (!isChanged)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
         return NoContent();

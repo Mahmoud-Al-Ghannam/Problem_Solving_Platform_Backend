@@ -88,7 +88,7 @@ public class SubmissionsController : GeneralController {
 
 
     /// <summary>
-    /// No Auth
+    /// No Auth , JWT Bearer Auth , JWT Bearer Auth With System Role
     /// </summary>
     /// <param name="page"></param>
     /// <param name="limit"></param>
