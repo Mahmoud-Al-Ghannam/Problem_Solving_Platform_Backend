@@ -18,11 +18,9 @@ namespace ProblemSolvingPlatform.Controllers;
 
 [ApiController]
 [Route($"/{Constants.Api.PrefixApi}/submissions")]
-public class SubmissionsController : GeneralController
-{
+public class SubmissionsController : GeneralController {
     private ISubmissionService _submissionService { get; }
-    public SubmissionsController(ISubmissionService submissionsService)
-    {
+    public SubmissionsController(ISubmissionService submissionsService) {
         _submissionService = submissionsService;
     }
 
@@ -35,8 +33,7 @@ public class SubmissionsController : GeneralController
     [HttpPost("submit")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
-    public async Task<ActionResult<int?>> AddNewSubmission(SubmitDTO submitDTO)
-    {
+    public async Task<ActionResult<int?>> AddNewSubmission(SubmitDTO submitDTO) {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
             return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
@@ -58,8 +55,7 @@ public class SubmissionsController : GeneralController
     [HttpPut("change-vision-scope")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [Authorize]
-    public async Task<IActionResult> ChangeVisionScope([FromQuery][Required] int submissionId, [FromQuery][Required] int visionScopeId)
-    {
+    public async Task<IActionResult> ChangeVisionScope([FromQuery][Required] int submissionId, [FromQuery][Required] int visionScopeId) {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
             return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
@@ -76,14 +72,11 @@ public class SubmissionsController : GeneralController
     /// <returns></returns>
     [HttpGet("vision-scopes")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<VisionScopesDTO> GetAllVisionScopes()
-    {
+    public ActionResult<VisionScopesDTO> GetAllVisionScopes() {
         var result = new List<VisionScopesDTO>();
 
-        foreach (VisionScope visionScope in Enum.GetValues(typeof(VisionScope)))
-        {
-            result.Add(new VisionScopesDTO
-            {
+        foreach (VisionScope visionScope in Enum.GetValues(typeof(VisionScope))) {
+            result.Add(new VisionScopesDTO {
                 VisionScope = visionScope.ToString(),
                 ID = (int)visionScope
             }
@@ -95,7 +88,7 @@ public class SubmissionsController : GeneralController
 
 
     /// <summary>
-    /// JWt Bearer Auth
+    /// No Auth
     /// </summary>
     /// <param name="page"></param>
     /// <param name="limit"></param>
@@ -105,37 +98,27 @@ public class SubmissionsController : GeneralController
     /// <returns></returns>
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [Authorize]
-    public async Task<ActionResult<PageDTO<SubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
-    {
-        var submissions = await _submissionService.GetAllSubmissions(page, limit, AuthUtils.GetUserId(User), userId, problemId, scope);
-        if (submissions == null)
+    public async Task<ActionResult<PageDTO<SubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null) {
+        PageDTO<SubmissionDTO>? pageDTO;
+        if (User.Identity != null && User.Identity.IsAuthenticated) {
+            if (User.IsInRole(Constants.Roles.System))
+                pageDTO = await _submissionService.GetAllSubmissions(page, limit, userId, problemId, scope);
+            else if (userId != null) {
+                if (AuthUtils.GetUserId(User) == userId.Value)
+                    pageDTO = await _submissionService.GetAllSubmissions(page, limit, userId, problemId, scope);
+                else 
+                    pageDTO = await _submissionService.GetAllSubmissions(page, limit, userId, problemId, Enums.VisionScope.all);
+            } else {
+                pageDTO = await _submissionService.GetAllSubmissions(page, limit, userId, problemId, scope);
+                if (pageDTO != null) pageDTO.Items = pageDTO.Items.Where(s => s.UserID == AuthUtils.GetUserId(User) || (s.UserID != AuthUtils.GetUserId(User) && s.VisionScope == VisionScope.all)).ToList(); 
+            }
+        }
+        else {
+            pageDTO = await _submissionService.GetAllSubmissions(page, limit, userId, problemId, Enums.VisionScope.all);
+        }
+        if (pageDTO == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
-        return Ok(submissions);
-    }
-
-
-    /// <summary>
-    /// JWt Bearer Auth
-    /// </summary>
-    /// <param name="page"></param>
-    /// <param name="limit"></param>
-    /// <param name="problemId"></param>
-    /// <param name="scope"></param>
-    /// <returns></returns>
-    [HttpGet("own")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [Authorize]
-    public async Task<ActionResult<PageDTO<SubmissionDTO>>> GetAllOwnSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null)
-    {
-        var userId = AuthUtils.GetUserId(User);
-        if (userId == null)
-            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-
-        var submissions = await _submissionService.GetAllSubmissions(page, limit, AuthUtils.GetUserId(User), userId.Value, problemId, scope);
-        if (submissions == null)
-            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
-        return Ok(submissions);
+        return Ok(pageDTO);
     }
 
 
@@ -147,8 +130,7 @@ public class SubmissionsController : GeneralController
     [Authorize]
     [HttpGet("details/{submissionId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<DetailedSubmissionDTO>> GetSubmissionDetails(int submissionId)
-    {
+    public async Task<ActionResult<DetailedSubmissionDTO>> GetSubmissionDetails(int submissionId) {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
             return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
@@ -168,8 +150,7 @@ public class SubmissionsController : GeneralController
     [Authorize]
     [HttpGet("{submissionId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<SubmissionDTO>> GetSubmissionByID(int submissionId)
-    {
+    public async Task<ActionResult<SubmissionDTO>> GetSubmissionByID(int submissionId) {
         var userId = AuthUtils.GetUserId(User);
         if (userId == null)
             return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);

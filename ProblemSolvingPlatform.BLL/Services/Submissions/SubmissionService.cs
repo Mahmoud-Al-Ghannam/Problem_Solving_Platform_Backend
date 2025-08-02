@@ -235,13 +235,13 @@ public class SubmissionService : ISubmissionService {
                 ExecutionTimeMilliseconds = submission.ExecutionTimeMilliseconds,
                 Code = submission.Code,
                 SubmittedAt = submission.SubmittedAt,
-                VisionScope = submission.VisionScope.ToString(),
+                VisionScope = (Enums.VisionScope)(byte)submission.VisionScope,
             },
             SubmissionsTestCases = submissionTests
         };
     }
 
-    public async Task<PageDTO<SubmissionDTO>?> GetAllSubmissions(int page, int limit, int? requestedBy = null, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
+    public async Task<PageDTO<SubmissionDTO>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
         Dictionary<string, List<string>> errors = new();
         errors["Page"] = [];
         errors["Limit"] = [];
@@ -255,15 +255,10 @@ public class SubmissionService : ISubmissionService {
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
-        var pageModel = await _submissionsRepo.GetAllSubmissions(page, limit, userId, problemId, (scope == null ? null : (byte)scope.Value));
+        var pageModel = await _submissionsRepo.GetAllSubmissions(page, limit, userId, problemId, (scope == null ? null : (DAL.Models.Enums.VisionScope)(byte)scope.Value));
         if (pageModel == null) return null;
 
-        if (requestedBy == null)
-            pageModel.Items = pageModel.Items.Where(s => s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
-        else
-            pageModel.Items = pageModel.Items.Where(s => s.UserID == requestedBy.Value || s.VisionScope == DAL.Models.Enums.VisionScope.all).ToList();
-
-
+        
         return new PageDTO<SubmissionDTO>() {
             Items = pageModel.Items.Select(item => new SubmissionDTO() {
                 CompilerName = item.CompilerName,
@@ -274,7 +269,7 @@ public class SubmissionService : ISubmissionService {
                 UserID = item.UserID,
                 Code = item.Code,
                 ProblemID = item.ProblemID,
-                VisionScope = ((Enums.VisionScope)(item.VisionScope)).ToString()
+                VisionScope = (Enums.VisionScope)(byte)(item.VisionScope)
             }).ToList(),
 
             TotalItems = pageModel.TotalItems,

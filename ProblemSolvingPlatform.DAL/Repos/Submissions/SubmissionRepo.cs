@@ -119,7 +119,7 @@ public class SubmissionRepo : ISubmissionRepo {
         }
     }
 
-    public async Task<PageModel<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
+    public async Task<PageModel<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, VisionScope? visionScope = null) {
         var pageModel = new PageModel<SubmissionModel>();
 
         using (var conn = _db.GetConnection())
@@ -173,7 +173,7 @@ public class SubmissionRepo : ISubmissionRepo {
         return pageModel;
     }
     
-    public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, int? userId = null, int? problemId = null, byte? visionScope = null) {
+    public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, int? userId = null, int? problemId = null, VisionScope? visionScope = null) {
         (int totalPages, int totalItems) result = (0, 0);
 
         using (var conn = _db.GetConnection())

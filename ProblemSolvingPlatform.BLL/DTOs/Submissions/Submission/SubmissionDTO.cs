@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
 namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission;
 
@@ -16,5 +17,5 @@ public class SubmissionDTO
     public int ExecutionTimeMilliseconds { get; set; }
     public string Code { get; set; }
     public DateTime SubmittedAt { get; set; }
-    public string VisionScope { get; set; }
+    public Enums.VisionScope VisionScope { get; set; }
 }
