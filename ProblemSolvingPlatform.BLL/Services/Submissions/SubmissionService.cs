@@ -229,7 +229,9 @@ public class SubmissionService : ISubmissionService {
             SubmissionInfo = new SubmissionDTO() {
                 SubmissionID = submission.SubmissionID,
                 UserID = submission.UserID,
+                Username = submission.Username,
                 ProblemID = submission.ProblemID,
+                ProblemTitle = submission.ProblemTitle,
                 CompilerName = submission.CompilerName,
                 Status = submission.Status.ToString(),
                 ExecutionTimeMilliseconds = submission.ExecutionTimeMilliseconds,
@@ -241,7 +243,7 @@ public class SubmissionService : ISubmissionService {
         };
     }
 
-    public async Task<PageDTO<SubmissionDTO>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
+    public async Task<PageDTO<ShortSubmissionDTO>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, Enums.VisionScope? scope = null) {
         Dictionary<string, List<string>> errors = new();
         errors["Page"] = [];
         errors["Limit"] = [];
@@ -259,16 +261,17 @@ public class SubmissionService : ISubmissionService {
         if (pageModel == null) return null;
 
         
-        return new PageDTO<SubmissionDTO>() {
-            Items = pageModel.Items.Select(item => new SubmissionDTO() {
+        return new PageDTO<ShortSubmissionDTO>() {
+            Items = pageModel.Items.Select(item => new ShortSubmissionDTO() {
                 CompilerName = item.CompilerName,
                 ExecutionTimeMilliseconds = item.ExecutionTimeMilliseconds,
-                Status = ((Enums.SubmissionStatus)(item.Status)).ToString(),
+                Status = (Enums.SubmissionStatus)(byte)(item.Status),
                 SubmissionID = item.SubmissionID,
                 SubmittedAt = item.SubmittedAt,
                 UserID = item.UserID,
-                Code = item.Code,
+                Username = item.Username,
                 ProblemID = item.ProblemID,
+                ProblemTitle = item.ProblemTitle,
                 VisionScope = (Enums.VisionScope)(byte)(item.VisionScope)
             }).ToList(),
 
@@ -279,7 +282,21 @@ public class SubmissionService : ISubmissionService {
     }
 
     public async Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int? userId) {
-        return (await GetDetailedSubmissionByID(submissionId, userId))?.SubmissionInfo;
+        var submissionModel = await _submissionsRepo.GetSubmissionByID(submissionId);
+        if (submissionModel == null) return null;
+        return new SubmissionDTO() {
+            SubmissionID = submissionModel.SubmissionID,
+            UserID = submissionModel.UserID,
+            Username = submissionModel.Username,
+            ProblemID = submissionModel.ProblemID,
+            ProblemTitle = submissionModel.ProblemTitle,
+            CompilerName = submissionModel.CompilerName,
+            Status = submissionModel.Status.ToString(),
+            ExecutionTimeMilliseconds = submissionModel.ExecutionTimeMilliseconds,
+            Code = submissionModel.Code,
+            SubmittedAt = submissionModel.SubmittedAt,
+            VisionScope = (Enums.VisionScope)(byte)submissionModel.VisionScope,
+        };
     }
 }
 

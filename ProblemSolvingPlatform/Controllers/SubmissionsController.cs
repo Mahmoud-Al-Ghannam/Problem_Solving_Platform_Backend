@@ -34,11 +34,8 @@ public class SubmissionsController : GeneralController {
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize]
     public async Task<ActionResult<int?>> AddNewSubmission(SubmitDTO submitDTO) {
-        var userId = AuthUtils.GetUserId(User);
-        if (userId == null)
-            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-
-        int? submissionID = await _submissionService.AddNewSubmission(submitDTO, userId.Value);
+        int userId = AuthUtils.GetUserId(User)!.Value;
+        int? submissionID = await _submissionService.AddNewSubmission(submitDTO, userId);
         if (submissionID == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new { error = Constants.ErrorMessages.General });
 
@@ -56,11 +53,8 @@ public class SubmissionsController : GeneralController {
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [Authorize]
     public async Task<IActionResult> ChangeVisionScope([FromQuery][Required] int submissionId, [FromQuery][Required] int visionScopeId) {
-        var userId = AuthUtils.GetUserId(User);
-        if (userId == null)
-            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-
-        var isUpdated = await _submissionService.ChangeVisionScope(submissionId, visionScopeId, userId.Value);
+        int userId = AuthUtils.GetUserId(User)!.Value;
+        var isUpdated = await _submissionService.ChangeVisionScope(submissionId, visionScopeId, userId);
         if (!isUpdated) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
         return NoContent();
     }
@@ -104,8 +98,8 @@ public class SubmissionsController : GeneralController {
     /// <returns></returns>
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<PageDTO<SubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null) {
-        PageDTO<SubmissionDTO>? pageDTO;
+    public async Task<ActionResult<PageDTO<ShortSubmissionDTO>>> GetAllSubmissions([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] int? userId = null, [FromQuery] int? problemId = null, [FromQuery] VisionScope? scope = null) {
+        PageDTO<ShortSubmissionDTO>? pageDTO;
         if (User.Identity != null && User.Identity.IsAuthenticated) {
             if (User.IsInRole(Constants.Roles.System))
                 pageDTO = await _submissionService.GetAllSubmissions(page, limit, userId, problemId, scope);
@@ -137,9 +131,7 @@ public class SubmissionsController : GeneralController {
     [HttpGet("details/{submissionId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<DetailedSubmissionDTO>> GetSubmissionDetails(int submissionId) {
-        var userId = AuthUtils.GetUserId(User);
-        if (userId == null)
-            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
+        int userId = AuthUtils.GetUserId(User)!.Value; 
 
         var subDetails = await _submissionService.GetDetailedSubmissionByID(submissionId, userId);
         if (subDetails == null)
@@ -157,10 +149,7 @@ public class SubmissionsController : GeneralController {
     [HttpGet("{submissionId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<SubmissionDTO>> GetSubmissionByID(int submissionId) {
-        var userId = AuthUtils.GetUserId(User);
-        if (userId == null)
-            return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-
+        int userId = AuthUtils.GetUserId(User)!.Value;
         var submission = await _submissionService.GetSubmissionByID(submissionId, userId);
         if (submission == null)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));

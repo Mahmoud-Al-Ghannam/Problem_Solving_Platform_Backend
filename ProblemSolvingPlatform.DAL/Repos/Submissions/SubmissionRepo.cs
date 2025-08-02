@@ -119,8 +119,8 @@ public class SubmissionRepo : ISubmissionRepo {
         }
     }
 
-    public async Task<PageModel<SubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, VisionScope? visionScope = null) {
-        var pageModel = new PageModel<SubmissionModel>();
+    public async Task<PageModel<ShortSubmissionModel>?> GetAllSubmissions(int page, int limit, int? userId = null, int? problemId = null, VisionScope? visionScope = null) {
+        var pageModel = new PageModel<ShortSubmissionModel>();
 
         using (var conn = _db.GetConnection())
         using (var cmd = new SqlCommand("SP_Submission_GetAllSubmissions", conn)) {
@@ -144,13 +144,14 @@ public class SubmissionRepo : ISubmissionRepo {
 
                 using (var reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
-                        var sub = new SubmissionModel {
+                        var sub = new ShortSubmissionModel {
                             SubmissionID = reader.GetInt32(reader.GetOrdinal("SubmissionID")),
                             UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
+                            Username = reader.GetString(reader.GetOrdinal("Username")),
                             ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),
+                            ProblemTitle = reader.GetString(reader.GetOrdinal("ProblemTitle")),
                             CompilerName = reader.GetString(reader.GetOrdinal("CompilerName")),
                             Status = (Enums.SubmissionStatus)reader.GetByte(reader.GetOrdinal("Status")),
-                            Code = reader.GetString(reader.GetOrdinal("Code")),
                             ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),
                             VisionScope = (Enums.VisionScope)reader.GetByte(reader.GetOrdinal("VisionScope")),
                             SubmittedAt = reader.GetDateTime(reader.GetOrdinal("SubmittedAt"))
@@ -224,7 +225,9 @@ public class SubmissionRepo : ISubmissionRepo {
                         if (await reader.ReadAsync()) {
                             submissionModel.SubmissionID = Convert.ToInt32(reader["SubmissionID"].ToString());
                             submissionModel.UserID = Convert.ToInt32(reader["UserID"].ToString());
+                            submissionModel.Username = (string) reader["Username"];
                             submissionModel.ProblemID = Convert.ToInt32(reader["ProblemID"].ToString());
+                            submissionModel.ProblemTitle = (string) reader["ProblemTitle"];
                             submissionModel.CompilerName = (string)reader["CompilerName"];
                             submissionModel.Status = (Enums.SubmissionStatus)(byte)reader["Status"];
                             submissionModel.ExecutionTimeMilliseconds = Convert.ToInt32(reader["ExecutionTimeMilliseconds"].ToString());

@@ -11,7 +11,9 @@ public class SubmissionModel
 {
     public int SubmissionID { get; set; }
     public int UserID { get; set; }
+    public string Username { get; set; }
     public int ProblemID { get; set; }
+    public string ProblemTitle { get; set; }
     public string CompilerName { get; set; }
     public Enums.SubmissionStatus Status { get; set; }
     public int ExecutionTimeMilliseconds { get; set; }
