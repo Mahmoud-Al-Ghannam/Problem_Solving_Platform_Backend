@@ -37,13 +37,10 @@ namespace ProblemSolvingPlatform.Controllers
         public async Task<ActionResult<int?>> AddProblem([FromBody] NewProblemDTO newProblemDTO)
         {
             int? id = null;
-            int? userID = AuthUtils.GetUserId(User);
-            if (userID == null)
-                return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-
+            int userID = AuthUtils.GetUserId(User)!.Value;
             bool isSystem = User.IsInRole(Constants.Roles.System);
 
-            id = await _problemService.AddProblemAsync(newProblemDTO, userID.Value, isSystem);
+            id = await _problemService.AddProblemAsync(newProblemDTO, userID, isSystem);
             if (id == null) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(id);
         }
@@ -60,11 +57,8 @@ namespace ProblemSolvingPlatform.Controllers
         public async Task<IActionResult> UpdateProblem([FromBody] UpdateProblemDTO updateProblemDTO)
         {
             bool ok;
-            int? userID = AuthUtils.GetUserId(User);
-            if (userID == null)
-                return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-
-            ok = await _problemService.UpdateProblemAsync(updateProblemDTO, userID.Value);
+            int userID = AuthUtils.GetUserId(User)!.Value;
+            ok = await _problemService.UpdateProblemAsync(updateProblemDTO, userID);
             if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return NoContent();
         }
@@ -81,10 +75,8 @@ namespace ProblemSolvingPlatform.Controllers
         public async Task<IActionResult> DeleteProblem([FromRoute(Name = "id")] int problemID)
         {
             bool ok;
-            int? userID = AuthUtils.GetUserId(User);
-            if (userID == null)
-                return Unauthorized(Constants.ErrorMessages.JwtDoesnotIncludeSomeFields);
-            ok = await _problemService.DeleteProblemByIDAsync(problemID, userID.Value);
+            int userID = AuthUtils.GetUserId(User)!.Value;
+            ok = await _problemService.DeleteProblemByIDAsync(problemID, userID);
             if (!ok) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return NoContent();
         }

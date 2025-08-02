@@ -94,7 +94,13 @@ public class SubmissionsController : GeneralController {
     /// <param name="limit"></param>
     /// <param name="userId"></param>
     /// <param name="problemId"></param>
-    /// <param name="scope"></param>
+    /// <param name="scope">
+    /// When request this api without token , we will replace scope with 'all'.
+    /// 
+    /// When request this api with token for user is not owner of submissions , we will replace scope with 'all' for only submissions that don't belong to user (owner of token).
+    ///
+    /// Otherwise , we don't change scope which you put
+    /// </param>
     /// <returns></returns>
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
