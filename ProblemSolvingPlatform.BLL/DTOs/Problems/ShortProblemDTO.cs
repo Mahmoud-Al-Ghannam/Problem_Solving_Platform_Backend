@@ -12,8 +12,10 @@ using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 namespace ProblemSolvingPlatform.BLL.DTOs.Problems {
     public class ShortProblemDTO {
         public int ProblemID { get; set; }
-        public int CreatedBy { get; set; }
-        public int? DeletedBy { get; set; }
+        public int CreatedByID { get; set; }
+        public string CreatedByUsername { get; set; }
+        public int? DeletedByID { get; set; }
+        public string? DeletedByUsername { get; set; }
         public string Title { get; set; }
         public string GeneralDescription { get; set; }
         public bool IsSystemProblem { get; set; }

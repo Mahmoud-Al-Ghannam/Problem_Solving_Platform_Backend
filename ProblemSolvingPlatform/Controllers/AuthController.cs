@@ -8,6 +8,7 @@ using ProblemSolvingPlatform.BLL.DTOs.Auth.Response;
 using ProblemSolvingPlatform.BLL.Services.Auth;
 using ProblemSolvingPlatform.DAL.DTOs.Auth.Request;
 using ProblemSolvingPlatform.Responses;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace ProblemSolvingPlatform.Controllers;
@@ -77,7 +78,7 @@ public class AuthController : GeneralController
     [Authorize(Roles = Constants.Roles.System)]
     [HttpPut("dashboard/change-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> ChangePassword(int userID, ChangePasswordDTO changePasswordDTO) {
+    public async Task<IActionResult> ChangePassword([Required][FromQuery] int userID, ChangePasswordDTO changePasswordDTO) {
         var isChanged = await _authService.ChangePasswordAsync(userID, changePasswordDTO);
         if (!isChanged)
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));

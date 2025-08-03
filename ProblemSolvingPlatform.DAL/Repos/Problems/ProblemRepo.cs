@@ -160,9 +160,11 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         using (var reader = await cmd.ExecuteReaderAsync()) {
                             if (await reader.ReadAsync()) {
                                 problemModel.ProblemID = Convert.ToInt32(reader["ProblemID"].ToString());
-                                problemModel.CreatedBy = Convert.ToInt32(reader["CreatedBy"].ToString());
+                                problemModel.CreatedByID = Convert.ToInt32(reader["CreatedByID"].ToString());
+                                problemModel.CreatedByUsername = (string)reader["CreatedByUsername"];
                                 problemModel.CreatedAt = (DateTime)reader["CreatedAt"];
-                                problemModel.DeletedBy = reader["DeletedBy"] == DBNull.Value ? null : (int)reader["DeletedBy"];
+                                problemModel.DeletedByID = reader["DeletedByID"] == DBNull.Value ? null : (int)reader["DeletedByID"];
+                                problemModel.DeletedByUsername = reader["DeletedByUsername"] == DBNull.Value ? null : (string)reader["DeletedByUsername"];
                                 problemModel.DeletedAt = reader["DeletedAt"] == DBNull.Value ? null : (DateTime)reader["DeletedAt"];
                                 problemModel.Title = (string)reader["Title"];
                                 problemModel.GeneralDescription = (string)reader["GeneralDescription"];
@@ -346,8 +348,10 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                                 int problemID = Convert.ToInt32(reader["ProblemID"]);
                                 ShortProblemModel problem = new ShortProblemModel() {
                                     ProblemID = problemID,
-                                    CreatedBy =(int) reader["CreatedBy"],
-                                    DeletedBy = (reader["DeletedBy"] == DBNull.Value ? null : (int)reader["DeletedBy"]),
+                                    CreatedByID =(int) reader["CreatedByID"],
+                                    CreatedByUsername = (string) reader["CreatedByUsername"],
+                                    DeletedByID = (reader["DeletedByID"] == DBNull.Value ? null : (int)reader["DeletedByID"]),
+                                    DeletedByUsername = (reader["DeletedByUsername"] == DBNull.Value ? null : (string)reader["DeletedByUsername"]),
                                     Title = reader["Title"].ToString() ?? "",
                                     GeneralDescription = reader["GeneralDescription"].ToString() ?? "",
                                     Difficulty = (Difficulty)Convert.ToInt32(reader["Difficulty"]),

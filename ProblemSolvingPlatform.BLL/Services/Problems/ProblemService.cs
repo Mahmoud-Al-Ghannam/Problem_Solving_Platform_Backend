@@ -146,7 +146,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 if (existingProblem == null) throw new Exception("Some errors occurred");
                 if (existingUser == null) throw new Exception("Some errors occurred");
 
-                if (existingUser.Role == Role.User && existingProblem.CreatedBy != deletedBy)
+                if (existingUser.Role == Role.User && existingProblem.CreatedByID != deletedBy)
                     errors["UserID"].Add($"The problem with id = {problemID} is not belong to user with id = {deletedBy}");
             }
 
@@ -175,7 +175,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 if (existingProblem == null) throw new Exception("Some errors occurred");
                 if (existingUser == null) throw new Exception("Some errors occurred");
 
-                if (existingUser.Role == Role.User && existingProblem.CreatedBy != userID) {
+                if (existingUser.Role == Role.User && existingProblem.CreatedByID != userID) {
                     errors["UserID"].Add($"The problem with id = {updateProblem.ProblemID} is not belong to user with id = {userID}");
                 }
             }
@@ -232,8 +232,10 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             return new PageDTO<ShortProblemDTO>() {
                 Items = pageModel.Items.Select(model => new ShortProblemDTO() {
                     ProblemID = model.ProblemID,
-                    CreatedBy = model.CreatedBy,
-                    DeletedBy = model.DeletedBy,
+                    CreatedByID = model.CreatedByID,
+                    CreatedByUsername = model.CreatedByUsername,
+                    DeletedByID = model.DeletedByID,
+                    DeletedByUsername = model.DeletedByUsername,
                     Difficulty = (Difficulty)(int)model.Difficulty,
                     Title = model.Title,
                     GeneralDescription = model.GeneralDescription,
@@ -260,9 +262,11 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             var problemDTO = new ProblemDTO() {
                 ProblemID = problemModel.ProblemID,
                 CompilerName = problemModel.CompilerName,
-                CreatedBy = problemModel.CreatedBy,
+                CreatedByID = problemModel.CreatedByID,
+                CreatedByUsername = problemModel.CreatedByUsername,
                 CreatedAt = problemModel.CreatedAt,
-                DeletedBy = problemModel.DeletedBy,
+                DeletedByID = problemModel.DeletedByID,
+                DeletedByUsername = problemModel.DeletedByUsername,
                 DeletedAt = problemModel.DeletedAt,
                 Title = problemModel.Title,
                 GeneralDescription = problemModel.GeneralDescription,

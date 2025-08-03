@@ -11,8 +11,10 @@ namespace ProblemSolvingPlatform.DAL.Models.Problems {
     public class ProblemModel {
         public int ProblemID { get; set; }
         public string CompilerName { get; set; }
-        public int CreatedBy { get; set; }
-        public int? DeletedBy { get; set; }
+        public int CreatedByID { get; set; }
+        public string CreatedByUsername { get; set; }
+        public int? DeletedByID { get; set; }
+        public string? DeletedByUsername { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public string Title { get; set; }

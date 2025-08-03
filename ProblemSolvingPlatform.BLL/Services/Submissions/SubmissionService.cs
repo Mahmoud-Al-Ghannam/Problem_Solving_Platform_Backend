@@ -183,7 +183,7 @@ public class SubmissionService : ISubmissionService {
         return await _submissionsRepo.ChangeVisionScope(submissionId, visionScopeId, userId);
     }
 
-    public async Task<DetailedSubmissionDTO?> GetDetailedSubmissionByID(int submissionId, int? requestedBy) {
+    public async Task<DetailedSubmissionDTO?> GetDetailedSubmissionByID(int submissionId, int requestedBy) {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["SubmissionID"] = [];
         errors["UserID"] = [];
@@ -191,17 +191,21 @@ public class SubmissionService : ISubmissionService {
         if (!await _submissionsRepo.DoesSubmissionExistByID(submissionId))
             errors["SubmissionID"].Add($"The submission with id = {submissionId} was not found");
 
-        if (requestedBy.HasValue && !await _userRepo.DoesUserExistByIDAsync(requestedBy.Value))
+        if (!await _userRepo.DoesUserExistByIDAsync(requestedBy))
             errors["UserID"].Add($"The user with id = {requestedBy} was not found");
 
         var submissionDetails = new DetailedSubmissionDTO();
 
         var submission = await _submissionsRepo.GetSubmissionByID(submissionId);
-        if (submission == null) throw new Exception(Constants.ErrorMessages.General);
+        var requestingUser = await _userRepo.GetUserByIdAsync(requestedBy);
+        if (submission == null || requestingUser == null) throw new Exception(Constants.ErrorMessages.General);
 
-        if (((requestedBy.HasValue && submission.UserID == requestedBy.Value)
-               || (submission.VisionScope == DAL.Models.Enums.VisionScope.all)) == false)
+
+        if (submission.UserID != requestedBy && 
+            requestingUser!.Role != DAL.Models.Enums.Role.System && 
+            submission.VisionScope == DAL.Models.Enums.VisionScope.onlyme)
             errors["UserID"].Add($"The user with id = {requestedBy} cannot see the submission with id = {submissionId}");
+
 
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
@@ -281,9 +285,33 @@ public class SubmissionService : ISubmissionService {
         };
     }
 
-    public async Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int? userId) {
+    public async Task<SubmissionDTO?> GetSubmissionByID(int submissionId, int requestedBy) {
+        Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
+        errors["SubmissionID"] = [];
+        errors["UserID"] = [];
+
+        if (!await _submissionsRepo.DoesSubmissionExistByID(submissionId))
+            errors["SubmissionID"].Add($"The submission with id = {submissionId} was not found");
+
+        if (!await _userRepo.DoesUserExistByIDAsync(requestedBy))
+            errors["UserID"].Add($"The user with id = {requestedBy} was not found");
+
+        var submissionDetails = new DetailedSubmissionDTO();
+
         var submissionModel = await _submissionsRepo.GetSubmissionByID(submissionId);
-        if (submissionModel == null) return null;
+        var requestingUser = await _userRepo.GetUserByIdAsync(requestedBy);
+        if (submissionModel == null || requestingUser == null) throw new Exception(Constants.ErrorMessages.General);
+
+
+        if (submissionModel.UserID != requestedBy &&
+            requestingUser!.Role != DAL.Models.Enums.Role.System &&
+            submissionModel.VisionScope == DAL.Models.Enums.VisionScope.onlyme)
+            errors["UserID"].Add($"The user with id = {requestedBy} cannot see the submission with id = {submissionId}");
+
+        errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+        if (errors.Count > 0) throw new CustomValidationException(errors);
+
+
         return new SubmissionDTO() {
             SubmissionID = submissionModel.SubmissionID,
             UserID = submissionModel.UserID,
