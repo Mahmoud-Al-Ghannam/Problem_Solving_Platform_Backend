@@ -105,7 +105,7 @@ namespace ProblemSolvingPlatform.Controllers
         /// <param name="title"></param>
         /// <param name="difficulty"></param>
         /// <param name="createdBy"></param>
-        /// <param name="IsSystemProblem"></param>
+        /// <param name="isSystemProblem"></param>
         /// <param name="createdAt"></param>
         /// <param name="tagIDs"></param>
         /// <param name="tryingStatusForUser"></param>
@@ -113,9 +113,9 @@ namespace ProblemSolvingPlatform.Controllers
         /// <returns></returns>
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null, [FromQuery] int? tryingStatusForUser = null, [FromQuery] TryingStatusOfProblem? tryingStatus = null)
+        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? isSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] string? tagIDs = null, [FromQuery] int? tryingStatusForUser = null, [FromQuery] TryingStatusOfProblem? tryingStatus = null)
         {
-            var problems = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, false, tagIDs, tryingStatusForUser, tryingStatus);
+            var problems = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, isSystemProblem, createdAt, false, tagIDs, tryingStatusForUser, tryingStatus);
             if (problems == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(problems);
@@ -130,7 +130,7 @@ namespace ProblemSolvingPlatform.Controllers
         /// <param name="title"></param>
         /// <param name="difficulty"></param>
         /// <param name="createdBy"></param>
-        /// <param name="IsSystemProblem"></param>
+        /// <param name="isSystemProblem"></param>
         /// <param name="createdAt"></param>
         /// <param name="isDeleted"></param>
         /// <param name="tagIDs"></param>
@@ -140,9 +140,9 @@ namespace ProblemSolvingPlatform.Controllers
         [HttpGet("dashboard")]
         [Authorize(Roles = Constants.Roles.System)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? IsSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] bool? isDeleted = null, [FromQuery] string? tagIDs = null, [FromQuery] int? tryingStatusForUser = null, [FromQuery] TryingStatusOfProblem? tryingStatus = null)
+        public async Task<ActionResult<PageDTO<ShortProblemDTO>?>> GetAllProblems([FromQuery] int page = Constants.PaginationDefaultValues.Page, [FromQuery] int limit = Constants.PaginationDefaultValues.Limit, [FromQuery] string? title = null, [FromQuery] byte? difficulty = null, [FromQuery] int? createdBy = null, [FromQuery] bool? isSystemProblem = null, [FromQuery] DateTime? createdAt = null, [FromQuery] bool? isDeleted = null, [FromQuery] string? tagIDs = null, [FromQuery] int? tryingStatusForUser = null, [FromQuery] TryingStatusOfProblem? tryingStatus = null)
         {
-            var pageDTO = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, tagIDs,tryingStatusForUser,tryingStatus);
+            var pageDTO = await _problemService.GetAllProblemsAsync(page, limit, title, difficulty, createdBy, isSystemProblem, createdAt, isDeleted, tagIDs,tryingStatusForUser,tryingStatus);
             if (pageDTO == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(pageDTO);

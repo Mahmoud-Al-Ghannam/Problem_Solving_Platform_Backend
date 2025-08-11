@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ProblemSolvingPlatform.DAL.Models {
     public class Enums {
         public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
-        public enum TryingStatusOfProblem { NotTry = 0, Try = 1, Solved = 2 }
+        public enum TryingStatusOfProblem { NotTry = 0, Tried = 1, Solved = 2 }
 
         public enum VisionScope { onlyme = 0, all = 1 }
 

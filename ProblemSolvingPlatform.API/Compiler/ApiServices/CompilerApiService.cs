@@ -47,7 +47,7 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                 var response = await PostAsync(url, content);
                 string responseJson = await response.Content.ReadAsStringAsync();
                 dynamic responseObject = JsonConvert.DeserializeObject(responseJson) ?? "";
-                compileResponse.Output = ((IEnumerable<dynamic>)responseObject.stdout).Select(obj => (string?)obj.text).Where(obj => obj != null).FirstOrDefault("");
+                compileResponse.Output = string.Join("\n",((IEnumerable<dynamic>)responseObject.stdout).Select(obj => (string?)obj.text).Where(obj => obj != null));
                 compileResponse.CompilationErrors = ((IEnumerable<dynamic>)responseObject.buildResult.stderr).Select(obj => (string?)obj.text).Where(obj => obj != null).ToList()!;
                 compileResponse.ExecutionErrors = ((IEnumerable<dynamic>)responseObject.stderr).Select(obj => (string?)obj.text).Where(obj => obj != null).ToList()!;
                 compileResponse.ExecutionTimeMs = responseObject.execTime;
