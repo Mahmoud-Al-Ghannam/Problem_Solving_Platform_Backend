@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using ProblemSolvingPlatform.DAL.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using static ProblemSolvingPlatform.DAL.Models.Enums;
+using ProblemSolvingPlatform.DAL.Models.Users;
 
 namespace ProblemSolvingPlatform.DAL.Repos.Users;
 
@@ -226,6 +227,39 @@ public class UserRepo : IUserRepo {
         }
     }
 
+    public async Task<UserModel> GetUserByUsernameAsync(string username) {
+        using (SqlConnection connection = _db.GetConnection()) {
+            using (SqlCommand command = new("SP_User_GetUserByUsername", connection)) {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Username", username);
+
+                try {
+                    await connection.OpenAsync();
+                    var reader = await command.ExecuteReaderAsync();
+                    if (await reader.ReadAsync()) {
+                        Models.Users.UserModel userInfo = new() {
+                            UserId = Convert.ToInt32(reader["UserID"].ToString()),
+                            Username = (string)reader["Username"],
+                            ImagePath = (reader["ImagePath"] == DBNull.Value ? null : (string)reader["ImagePath"]),
+                            Role = (DAL.Models.Enums.Role)(byte)reader["Role"],
+                            CreatedAt = (DateTime)reader["CreatedAt"],
+                            IsActive = (bool)reader["IsActive"]
+                        };
+
+                        return userInfo;
+                    }
+                    return null;
+                }
+                catch (Exception ex) {
+                    return null;
+                }
+                finally {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+    }
+
     public async Task<Models.Users.UserModel> GetUserByUsernameAndPasswordAsync(string Username, string Password) {
         using (SqlConnection connection = _db.GetConnection()) {
 
@@ -331,4 +365,5 @@ public class UserRepo : IUserRepo {
         }
     }
 
+    
 }

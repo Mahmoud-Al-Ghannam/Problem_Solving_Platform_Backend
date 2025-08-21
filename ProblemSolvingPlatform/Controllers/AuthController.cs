@@ -29,6 +29,7 @@ public class AuthController : GeneralController
     /// No Auth
     /// </summary>
     /// <param name="loginDTO"></param>
+    /// <param name="role"></param>
     /// <returns></returns>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]

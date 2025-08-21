@@ -273,6 +273,8 @@ namespace ProblemSolvingPlatform
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //app.UseSwagger();
+            //app.UseSwaggerUI();
             app.UseSwagger(c => {
                 c.RouteTemplate = "swagger/{documentName}/swagger.json";
             });

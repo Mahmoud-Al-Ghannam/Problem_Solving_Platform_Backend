@@ -42,6 +42,26 @@ public class UserService : IUserService {
         };
     }
 
+    public async Task<UserDTO?> GetUserByUsernameAsync(string username) {
+        if (!await _userRepo.DoesUserExistByUsernameAsync(username))
+            throw new CustomValidationException("Useranme", [$"The user with username = {username} was not fount"]);
+
+        var user = await _userRepo.GetUserByUsernameAsync(username);
+        if (user == null) throw new Exception(Constants.ErrorMessages.General);
+
+        var request = _httpContextAccessor.HttpContext?.Request;
+        var baseUrl = $"{request?.Scheme}://{request?.Host}";
+
+        return new UserDTO() {
+            UserID = user.UserId,
+            Username = user.Username,
+            CreatedAt = user.CreatedAt,
+            Role = (Role)user.Role,
+            ImagePath = user.ImagePath != null ? $"{baseUrl}/Images/{user.ImagePath}" : null,
+            IsActive = user.IsActive
+        };
+    }
+
     public async Task<bool> UpdateUserInfoByIdAsync(int userId, UpdateUserDTO updateUser) {
         if (!await _userRepo.DoesUserExistByIDAsync(userId))
             throw new CustomValidationException("UserID", [$"The user with id = {userId} was not fount"]);
@@ -126,4 +146,6 @@ public class UserService : IUserService {
 
         return await _userRepo.IsUserActiveByIDAsync(userID);
     }
+
+    
 }

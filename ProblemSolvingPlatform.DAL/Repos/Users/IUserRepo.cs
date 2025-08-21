@@ -13,6 +13,7 @@ namespace ProblemSolvingPlatform.DAL.Repos.Users {
 
         public Task<Models.Users.UserModel> GetUserByUsernameAndPasswordAsync(string Username, string Password);
         public Task<Models.Users.UserModel> GetUserByIdAsync(int userId);
+        public Task<Models.Users.UserModel> GetUserByUsernameAsync(string username);
 
         public Task<bool> DoesUserExistByUsernameAsync(string Username);
         public Task<bool> DoesUserExistByIDAsync(int UserID);

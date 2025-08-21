@@ -28,9 +28,9 @@ public class UsersController : GeneralController
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [HttpGet("{userId}")]
+    [HttpGet("id/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<UserDTO>> GetUserInfo(int userId)
+    public async Task<ActionResult<UserDTO>> GetUserInfoByID(int userId)
     {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null)
@@ -38,6 +38,20 @@ public class UsersController : GeneralController
         return Ok(user);
     }
 
+
+    /// <summary>
+    /// No Auth
+    /// </summary>
+    /// <param name="useranme"></param>
+    /// <returns></returns>
+    [HttpGet("username/{useranme}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<UserDTO>> GetUserInfoByUsername(string useranme) {
+        var user = await _userService.GetUserByUsernameAsync(useranme);
+        if (user == null)
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
+        return Ok(user);
+    }
 
     /// <summary>
     /// JWt Bearer Auth
