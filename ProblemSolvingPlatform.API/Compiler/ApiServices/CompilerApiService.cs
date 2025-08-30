@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProblemSolvingPlatform.API.Base;
+using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.API.Compiler.Utils;
 using ProblemSolvingPlatform.API.DTOs;
 using System;
@@ -47,7 +48,7 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
                 var response = await PostAsync(url, content);
                 string responseJson = await response.Content.ReadAsStringAsync();
                 dynamic responseObject = JsonConvert.DeserializeObject(responseJson) ?? "";
-                compileResponse.Output = string.Join("\n",((IEnumerable<dynamic>)responseObject.stdout).Select(obj => (string?)obj.text).Where(obj => obj != null));
+                compileResponse.Output = string.Join("\n", ((IEnumerable<dynamic>)responseObject.stdout).Select(obj => (string?)obj.text).Where(obj => obj != null));
                 compileResponse.CompilationErrors = ((IEnumerable<dynamic>)responseObject.buildResult.stderr).Select(obj => (string?)obj.text).Where(obj => obj != null).ToList()!;
                 compileResponse.ExecutionErrors = ((IEnumerable<dynamic>)responseObject.stderr).Select(obj => (string?)obj.text).Where(obj => obj != null).ToList()!;
                 compileResponse.ExecutionTimeMs = responseObject.execTime;
@@ -67,5 +68,25 @@ namespace ProblemSolvingPlatform.API.Compiler.Services {
             return CompilerUtils.GetAllCompilers();
         }
 
+        public async Task<string> SimpleCompileAsync(SimpleCompileRequestDTO request) {
+            string url = Endpoints.compile(request.Compiler);
+
+            object content = new {
+                source = request.Source,
+                options = new {
+                    compilerOptions = new {
+                        executorRequest = true
+                    },
+                    executeParameters = new {
+                        stdin = request.Input
+                    }
+                }
+            };
+
+            var response = await PostAsync(url, content, "application/text");
+            string responseJson = await response.Content.ReadAsStringAsync();
+            
+            return responseJson;
+        }
     }
 }

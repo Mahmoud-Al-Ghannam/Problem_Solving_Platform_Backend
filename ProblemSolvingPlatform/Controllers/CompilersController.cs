@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProblemSolvingPlatform.API.Compiler.DTOs;
 using ProblemSolvingPlatform.API.DTOs;
 using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.Services.Compiler;
@@ -30,6 +31,17 @@ namespace ProblemSolvingPlatform.Controllers
         public async Task<ActionResult<IEnumerable<CompileResponseDTO>>> CompileAsync(CompileRequestDTO request)
         {
             return Ok(await _compilerService.CompileAsync(request));
+        }
+
+        /// <summary>
+        /// No Auth
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("simple-compile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> SimpleCompileAsync(SimpleCompileRequestDTO request) {
+            return Ok(await _compilerService.SimpleCompileAsync(request));
         }
 
 

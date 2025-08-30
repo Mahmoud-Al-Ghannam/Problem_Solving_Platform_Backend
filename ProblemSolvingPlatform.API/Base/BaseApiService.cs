@@ -31,8 +31,8 @@ namespace ProblemSolvingPlatform.API.Base {
             return await ApiResponseHandler.ParseResponse<T>(response);
         }
 
-        public async Task<HttpResponseMessage> PostAsync (string url, object content) {
-            var response = await _apiRequestHandler.PostAsync(url, content);
+        public async Task<HttpResponseMessage> PostAsync (string url, object content,string acceptContentType = "application/json") {
+            var response = await _apiRequestHandler.PostAsync(url, content,acceptContentType);
             await ApiResponseHandler.HandleResponse(response);
             return response;
         }

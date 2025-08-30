@@ -139,16 +139,23 @@ namespace ProblemSolvingPlatform.BLL.Helpers {
             if (value == null) return null;
             Type type = value.GetType();
 
-            if (type == typeof(string))
-                return (value as string).Trim();
-            else if (type.IsPrimitive)
-                return TrimStringsOfPrimitive(value, visited);
-            else if (type.IsArray)
-                return TrimStringsOfArray(value, visited);
-            else if (type.GetInterfaces().Any(t => t == typeof(ICollection)))
-                return TrimStringsOfCollection(value, visited);
-            else
-                return TrimStringsOfClass(value, visited);
+
+            try {
+                if (type == typeof(string))
+                    return (value as string).Trim();
+                else if (type.IsPrimitive)
+                    return TrimStringsOfPrimitive(value, visited);
+                else if (type.IsArray)
+                    return TrimStringsOfArray(value, visited);
+                else if (type.GetInterfaces().Any(t => t == typeof(ICollection)))
+                    return TrimStringsOfCollection(value, visited);
+                else
+                    return TrimStringsOfClass(value, visited);
+            }
+            catch (Exception ex) {
+                return value;
+            }
+            
         }
 
 

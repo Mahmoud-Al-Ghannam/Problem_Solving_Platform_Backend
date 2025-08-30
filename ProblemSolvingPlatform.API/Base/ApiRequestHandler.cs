@@ -19,9 +19,9 @@ namespace ProblemSolvingPlatform.API.Base {
             return await _httpClient.SendAsync(httpRequest);
         }
 
-        public async Task<HttpResponseMessage> PostAsync(string url, object content) {
+        public async Task<HttpResponseMessage> PostAsync(string url, object content,string acceptContentType = "application/json") {
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, url);
-            httpRequest.Headers.Add("Accept", "application/json");
+            httpRequest.Headers.Add("Accept", acceptContentType);
             var jsonContent = JsonConvert.SerializeObject(content);
             httpRequest.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             return await _httpClient.SendAsync(httpRequest);
