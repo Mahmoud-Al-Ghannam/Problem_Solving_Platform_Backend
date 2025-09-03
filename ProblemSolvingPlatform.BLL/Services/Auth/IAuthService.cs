@@ -14,7 +14,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Auth;
 public interface IAuthService
 {
     public Task<RegisterResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO);
-    public Task<string> LoginAsync(LoginRequestDTO loginDTO,Enums.Role? role);
+    public Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginDTO,Enums.Role? role);
 
     public Task<bool> ChangePasswordAsync(int userId , ChangePasswordDTO changePasswordDTO);
 

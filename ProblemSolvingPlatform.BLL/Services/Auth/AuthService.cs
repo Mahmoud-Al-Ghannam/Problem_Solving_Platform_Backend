@@ -21,7 +21,7 @@ public class AuthService : IAuthService {
         _constraintsOption = constraintsOption;
     }
 
-    public async Task<string> LoginAsync(LoginRequestDTO loginDTO,Enums.Role? role) {
+    public async Task<LoginResponseDTO> LoginAsync(LoginRequestDTO loginDTO,Enums.Role? role) {
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
         errors["Username"] = [];
         errors["Password"] = [];
@@ -48,7 +48,13 @@ public class AuthService : IAuthService {
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
 
-        return _tokenService.GenerateToken(user.UserId, (Enums.Role)user.Role);
+        var token = _tokenService.GenerateToken(user.UserId, (Enums.Role)user.Role);
+        return new LoginResponseDTO()
+        {
+            Token = token,
+            UserId = user.UserId,
+            UserName = user.Username
+        };
     }
 
     public async Task<RegisterResponseDTO> RegisterAsync(RegisterRequestDTO registerDTO) {
