@@ -27,6 +27,8 @@ using ProblemSolvingPlatform.BLL.Validation.Problem;
 using ProblemSolvingPlatform.BLL.Options;
 using ProblemSolvingPlatform.ActionFilters;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using ProblemSolvingPlatform.BLL.Services.Statistics;
+using ProblemSolvingPlatform.DAL.Repos.Statistics;
 
 namespace ProblemSolvingPlatform
 {
@@ -209,11 +211,14 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<ISubmissionRepo, SubmissionRepo>();
             builder.Services.AddScoped<ISubmissionTestRepo, SubmissionTestRepo>();
+            builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+            builder.Services.AddScoped<IStatisticsRepo, StatisticsRepo>();
             builder.Services.AddScoped<ProblemValidation>();
 
             builder.Services.AddTransient<ExceptionMiddleware>();
             builder.Services.AddTransient<VerifyUserActivationMiddleware>();
 
+     
             ConstraintsOption constraintsOption = GetConstraintsFromConfiguration(builder.Configuration);
             builder.Services.AddSingleton(constraintsOption);
 

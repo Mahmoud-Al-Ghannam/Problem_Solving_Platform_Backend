@@ -33,7 +33,7 @@ public class AuthController : GeneralController
     /// <returns></returns>
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDTO loginDTO, [FromQuery] Enums.Role? role = null)
+    public async Task<ActionResult<LoginResponseDTO>> LoginAsync([FromBody] LoginRequestDTO loginDTO, [FromQuery] Enums.Role? role = null)
     {
         return Ok(await _authService.LoginAsync(loginDTO, role));
     }

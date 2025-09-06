@@ -13,9 +13,11 @@ namespace ProblemSolvingPlatform.DAL.Models {
 
         public enum Role { System = 0, User = 1 }
         public enum SubmissionStatus {
-            Pending = 0, Accepted = 1, WrongAnswer = 2,
+            Accepted = 1, WrongAnswer = 2,
             CompilationError = 3,
-            RunTimeError = 4, TimeLimitExceeded = 5, MemoryLimitExceeded = 6
+            RunTimeError = 4, TimeLimitExceeded = 5
         }
+
+        // pending, memoryLimitExceeded 
     }
 }
