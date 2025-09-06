@@ -35,7 +35,7 @@ public class SubmissionRepo : ISubmissionRepo {
                                                                                 .Select(stc => stc.Status)
                                                                                 .FirstOrDefault(Enums.SubmissionStatus.Accepted);
 
-        int submissionExecutionTimeMS = submission.SubmissionTestCases.Max(stc => stc.ExecutionTimeMilliseconds);
+        int submissionExecutionTimeMS = submission.SubmissionTestCases.Count == 0 ? 0 : submission.SubmissionTestCases.Max(stc => stc.ExecutionTimeMilliseconds);
         try {
             await connection.OpenAsync();
             transaction = connection.BeginTransaction();
@@ -160,7 +160,7 @@ public class SubmissionRepo : ISubmissionRepo {
                     }
                 }
 
-                var temp = await GetTotalPagesAndItemsCountAsync(limit,userId,problemId,visionScope);
+                var temp = await GetTotalPagesAndItemsCountAsync(limit, userId, problemId, visionScope);
                 if (temp == null) return null;
                 pageModel.TotalItems = temp.Value.totalItems;
                 pageModel.TotalPages = temp.Value.totalPages;
@@ -173,7 +173,7 @@ public class SubmissionRepo : ISubmissionRepo {
 
         return pageModel;
     }
-    
+
     public async Task<(int totalPages, int totalItems)?> GetTotalPagesAndItemsCountAsync(int limit, int? userId = null, int? problemId = null, VisionScope? visionScope = null) {
         (int totalPages, int totalItems) result = (0, 0);
 
@@ -205,7 +205,7 @@ public class SubmissionRepo : ISubmissionRepo {
 
                 return result;
             }
-            catch {}
+            catch { }
         }
 
         return null;
@@ -225,9 +225,9 @@ public class SubmissionRepo : ISubmissionRepo {
                         if (await reader.ReadAsync()) {
                             submissionModel.SubmissionID = Convert.ToInt32(reader["SubmissionID"].ToString());
                             submissionModel.UserID = Convert.ToInt32(reader["UserID"].ToString());
-                            submissionModel.Username = (string) reader["Username"];
+                            submissionModel.Username = (string)reader["Username"];
                             submissionModel.ProblemID = Convert.ToInt32(reader["ProblemID"].ToString());
-                            submissionModel.ProblemTitle = (string) reader["ProblemTitle"];
+                            submissionModel.ProblemTitle = (string)reader["ProblemTitle"];
                             submissionModel.CompilerName = (string)reader["CompilerName"];
                             submissionModel.Status = (Enums.SubmissionStatus)(byte)reader["Status"];
                             submissionModel.ExecutionTimeMilliseconds = Convert.ToInt32(reader["ExecutionTimeMilliseconds"].ToString());
