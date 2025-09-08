@@ -35,9 +35,9 @@ public class StatisticsService : IStatisticsService
         foreach(Difficulty difficulty in Enum.GetValues(typeof(Difficulty)))
         {
             var key = difficulty.ToString();
-            if(!result.NumberOfProblemsByDifficutly.ContainsKey(key))
+            if(!result.NumberOfProblemsByDifficulty.ContainsKey(key))
             {
-                result.NumberOfProblemsByDifficutly[key] = 0;
+                result.NumberOfProblemsByDifficulty[key] = 0;
             }
         }
 

@@ -82,11 +82,11 @@ public class StatisticsRepo : IStatisticsRepo
         }
 
         // Problems by Difficulty
-        result.NumberOfProblemsByDifficutly = new Dictionary<string, int>();
+        result.NumberOfProblemsByDifficulty = new Dictionary<string, int>();
         if (reader.NextResult())
         {
             while (reader.Read())
-                result.NumberOfProblemsByDifficutly.Add(((Difficulty)reader.GetByte(0)).ToString(), reader.GetInt32(1));
+                result.NumberOfProblemsByDifficulty.Add(((Difficulty)reader.GetByte(0)).ToString(), reader.GetInt32(1));
         }
 
         return result;

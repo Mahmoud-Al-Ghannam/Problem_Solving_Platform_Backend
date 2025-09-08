@@ -16,5 +16,5 @@ public class GeneralStatistics
     public Dictionary<string, int> NumberOfProblemsByTag { get; set; }
     public Dictionary<string, int> NumberOfSubmissionsByCompiler { get; set; }
     public Dictionary<string, int> NumberOfSubmissionsByStatus { get; set; }
-    public Dictionary<string, int> NumberOfProblemsByDifficutly { get; set; }
+    public Dictionary<string, int> NumberOfProblemsByDifficulty { get; set; }
 }
