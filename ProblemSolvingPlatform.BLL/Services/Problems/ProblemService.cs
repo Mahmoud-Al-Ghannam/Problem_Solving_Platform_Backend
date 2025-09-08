@@ -15,6 +15,7 @@ using ProblemSolvingPlatform.DAL.Models;
 using ProblemSolvingPlatform.DAL.Models.Problems;
 using ProblemSolvingPlatform.DAL.Models.Users;
 using ProblemSolvingPlatform.DAL.Repos.Problems;
+using ProblemSolvingPlatform.DAL.Repos.Tags;
 using ProblemSolvingPlatform.DAL.Repos.Users;
 using System;
 using System.Collections.Generic;
@@ -23,25 +24,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ProblemSolvingPlatform.BLL.Services.Problems {
     public class ProblemService : IProblemService {
 
         private readonly IProblemRepo _problemRepo;
+        private readonly ITagRepo _tagRepo;
         private readonly IUserService _userService;
         private readonly ICompilerService _compilerService;
         private readonly ProblemValidation _problemValidation;
         private readonly ConstraintsOption _constraintsOption;
 
-        public ProblemService(IProblemRepo problemRepo, ICompilerService compilerService, ProblemValidation problemValidation, IUserService userService, ConstraintsOption constraintsOptions) {
+        public ProblemService(IProblemRepo problemRepo, ICompilerService compilerService, ProblemValidation problemValidation, IUserService userService, ConstraintsOption constraintsOptions, ITagRepo tagRepo) {
             _problemRepo = problemRepo;
             _compilerService = compilerService;
             _problemValidation = problemValidation;
             _userService = userService;
             _constraintsOption = constraintsOptions;
+            _tagRepo = tagRepo;
         }
 
-        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy,bool isSystemProblem) {
+        public async Task<int?> AddProblemAsync(NewProblemDTO newProblem, int createdBy, bool isSystemProblem) {
             Dictionary<string, List<string>> errors = _problemValidation.ValidateNewProblem(newProblem);
             if (errors == null) errors = new();
 
@@ -172,13 +176,28 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             else {
                 ProblemModel? existingProblem = await _problemRepo.GetProblemByIDAsync(updateProblem.ProblemID);
                 UserDTO? existingUser = await _userService.GetUserByIdAsync(userID);
+
+                
                 if (existingProblem == null) throw new Exception("Some errors occurred");
                 if (existingUser == null) throw new Exception("Some errors occurred");
+                if (existingProblem.DeletedAt.HasValue)
+                    errors["ProblemID"].Add($"The problem with id = {updateProblem.ProblemID} was deleted");
 
                 if (existingUser.Role == Role.User && existingProblem.CreatedByID != userID) {
                     errors["UserID"].Add($"The problem with id = {updateProblem.ProblemID} is not belong to user with id = {userID}");
                 }
+
+                var tags = await _tagRepo.GetAllTagsAsync();
+                if (tags == null) throw new Exception("Some errors occurred");
+                for (int i=0;i<updateProblem.TagIDs.Count;i++) {
+                    var tagID = updateProblem.TagIDs[i];
+                    if (!tags.Any(t => t.TagID == tagID)) {
+                        errors[$"TagIDs[{i}]"] = [$"The tag with id = {tagID} was not found"];
+                    }
+                }
             }
+
+
 
             errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
             if (errors.Count > 0) throw new CustomValidationException(errors);
@@ -199,7 +218,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
         }
 
 
-        public async Task<PageDTO<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, Difficulty? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null,bool? isDeleted = null, string? tagIDs = null,int? tryingStatusForUser=null,TryingStatusOfProblem? tryingStatus = null) {
+        public async Task<PageDTO<ShortProblemDTO>?> GetAllProblemsAsync(int page, int limit, string? title = null, Difficulty? difficulty = null, int? createdBy = null, bool? IsSystemProblem = null, DateTime? createdAt = null, bool? isDeleted = null, string? tagIDs = null, int? tryingStatusForUser = null, TryingStatusOfProblem? tryingStatus = null) {
             Dictionary<string, List<string>> errors = new();
             errors["Page"] = [];
             errors["Limit"] = [];
@@ -207,7 +226,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (page < _constraintsOption.MinPageNumber)
                 errors["Page"].Add($"The page must to be greater than {_constraintsOption.MinPageNumber}");
 
-            if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value) 
+            if (limit < _constraintsOption.PageSize.Start.Value || limit > _constraintsOption.PageSize.End.Value)
                 errors["Limit"].Add($"The limit must to be in range [{_constraintsOption.PageSize.Start.Value},{_constraintsOption.PageSize.End.Value}]");
 
             List<int>? listTagIDs = null;
@@ -227,7 +246,7 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
 
-            PageModel<ShortProblemModel>? pageModel = await _problemRepo.GetAllProblemsAsync(page, limit, title, (byte?) difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, listTagIDs,tryingStatusForUser,(DAL.Models.Enums.TryingStatusOfProblem?)(byte?)tryingStatus);
+            PageModel<ShortProblemModel>? pageModel = await _problemRepo.GetAllProblemsAsync(page, limit, title, (byte?)difficulty, createdBy, IsSystemProblem, createdAt, isDeleted, listTagIDs, tryingStatusForUser, (DAL.Models.Enums.TryingStatusOfProblem?)(byte?)tryingStatus);
             if (pageModel == null) return null;
             return new PageDTO<ShortProblemDTO>() {
                 Items = pageModel.Items.Select(model => new ShortProblemDTO() {
@@ -243,57 +262,72 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                     SolutionsCount = model.SolutionsCount,
                     AttemptsCount = model.AttemptsCount,
                     Tags = model.Tags.Select(t => new TagDTO() { Name = t.Name, TagID = t.TagID }),
-                    TryingStatus = (TryingStatusOfProblem?) (byte?) model.TryingStatus
+                    TryingStatus = (TryingStatusOfProblem?)(byte?)model.TryingStatus
                 }).ToList(),
 
                 TotalItems = pageModel.TotalItems,
                 TotalPages = pageModel.TotalPages,
                 CurrentPage = pageModel.CurrentPage
             };
-                
+
         }
 
-        public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID) {
-            if (!await _problemRepo.DoesProblemExistByIDAsync(problemID)) throw new CustomValidationException("ProblemID", [$"The problem with id = {problemID} was not found"]);
+        public async Task<ProblemDTO?> GetProblemByIDAsync(int problemID, bool isSystemRequest) {
+            Dictionary<string, List<string>> errors = new();
+            errors["ProblemID"] = [];
 
-            var problemModel = await _problemRepo.GetProblemByIDAsync(problemID);
-            if (problemModel == null) return null;
+            ProblemModel? problemModel = null;
+            ProblemDTO? problemDTO = null;
 
-            var problemDTO = new ProblemDTO() {
-                ProblemID = problemModel.ProblemID,
-                CompilerName = problemModel.CompilerName,
-                CreatedByID = problemModel.CreatedByID,
-                CreatedByUsername = problemModel.CreatedByUsername,
-                CreatedAt = problemModel.CreatedAt,
-                DeletedByID = problemModel.DeletedByID,
-                DeletedByUsername = problemModel.DeletedByUsername,
-                DeletedAt = problemModel.DeletedAt,
-                Title = problemModel.Title,
-                GeneralDescription = problemModel.GeneralDescription,
-                InputDescription = problemModel.InputDescription,
-                OutputDescription = problemModel.OutputDescription,
-                Note = problemModel.Note,
-                Tutorial = problemModel.Tutorial,
-                Difficulty = (DTOs.Enums.Difficulty)(int)problemModel.Difficulty,
-                IsSystemProblem = problemModel.IsSystemProblem,
-                SolutionCode = problemModel.SolutionCode,
-                TimeLimitMilliseconds = problemModel.TimeLimitMilliseconds,
+            if (!await _problemRepo.DoesProblemExistByIDAsync(problemID)) 
+                errors["ProblemID"].Add($"The problem with id = {problemID} was not found");
+            else {
+                problemModel = await _problemRepo.GetProblemByIDAsync(problemID);
+                if (problemModel == null) return null;
+                
+                if (!isSystemRequest && problemModel.DeletedAt.HasValue)
+                    errors["ProblemID"].Add($"The problem with id = {problemModel.ProblemID} was deleted");
 
-                SampleTestCases = problemModel.SampleTestCases.Select(obj => new TestCaseDTO() {
-                    TestCaseID = obj.TestCaseID,
-                    ProblemID = obj.ProblemID,
-                    Input = obj.Input,
-                    Output = obj.Output,
-                    IsPublic = obj.IsPublic,
-                    IsSample = obj.IsSample
-                }).ToList(),
+                problemDTO = new ProblemDTO() {
+                    ProblemID = problemModel.ProblemID,
+                    CompilerName = problemModel.CompilerName,
+                    CreatedByID = problemModel.CreatedByID,
+                    CreatedByUsername = problemModel.CreatedByUsername,
+                    CreatedAt = problemModel.CreatedAt,
+                    DeletedByID = problemModel.DeletedByID,
+                    DeletedByUsername = problemModel.DeletedByUsername,
+                    DeletedAt = problemModel.DeletedAt,
+                    Title = problemModel.Title,
+                    GeneralDescription = problemModel.GeneralDescription,
+                    InputDescription = problemModel.InputDescription,
+                    OutputDescription = problemModel.OutputDescription,
+                    Note = problemModel.Note,
+                    Tutorial = problemModel.Tutorial,
+                    Difficulty = (DTOs.Enums.Difficulty)(int)problemModel.Difficulty,
+                    IsSystemProblem = problemModel.IsSystemProblem,
+                    SolutionCode = problemModel.SolutionCode,
+                    TimeLimitMilliseconds = problemModel.TimeLimitMilliseconds,
 
-                Tags = problemModel.Tags.Select(obj => new TagDTO() {
-                    TagID = obj.TagID,
-                    Name = obj.Name
-                }).ToList()
-            };
+                    SampleTestCases = problemModel.SampleTestCases.Select(obj => new TestCaseDTO() {
+                        TestCaseID = obj.TestCaseID,
+                        ProblemID = obj.ProblemID,
+                        Input = obj.Input,
+                        Output = obj.Output,
+                        IsPublic = obj.IsPublic,
+                        IsSample = obj.IsSample
+                    }).ToList(),
 
+                    Tags = problemModel.Tags.Select(obj => new TagDTO() {
+                        TagID = obj.TagID,
+                        Name = obj.Name
+                    }).ToList()
+                };
+            }
+
+
+            
+            errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
+            if (errors.Count > 0) throw new CustomValidationException(errors);
 
             return problemDTO;
         }

@@ -8,6 +8,7 @@ using ProblemSolvingPlatform.BLL.Exceptions;
 using ProblemSolvingPlatform.BLL.Services.Problems;
 using ProblemSolvingPlatform.Responses;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Eventing.Reader;
 using static ProblemSolvingPlatform.BLL.DTOs.Enums;
 
 namespace ProblemSolvingPlatform.Controllers
@@ -91,7 +92,12 @@ namespace ProblemSolvingPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ProblemDTO?>> GetProblemByID([FromRoute(Name = "id")] int problemID)
         {
-            var problemDTO = await _problemService.GetProblemByIDAsync(problemID);
+            ProblemDTO? problemDTO;
+            if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole(Constants.Roles.System)) 
+                problemDTO = await _problemService.GetProblemByIDAsync(problemID, true);
+            else
+                problemDTO = await _problemService.GetProblemByIDAsync(problemID, false);
+
             if (problemDTO == null) return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(problemDTO);
         }

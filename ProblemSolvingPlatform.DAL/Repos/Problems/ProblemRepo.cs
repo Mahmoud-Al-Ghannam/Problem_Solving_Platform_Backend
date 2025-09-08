@@ -261,8 +261,8 @@ namespace ProblemSolvingPlatform.DAL.Repos.Problems {
                         cmd.Parameters.AddWithValue("@GeneralDescription", updateProblem.GeneralDescription);
                         cmd.Parameters.AddWithValue("@InputDescription", updateProblem.InputDescription);
                         cmd.Parameters.AddWithValue("@OutputDescription", updateProblem.OutputDescription);
-                        cmd.Parameters.AddWithValue("@Note", updateProblem.Note);
-                        cmd.Parameters.AddWithValue("@Tutorial", updateProblem.Tutorial);
+                        cmd.Parameters.AddWithValue("@Note", (updateProblem.Note == null ? DBNull.Value : updateProblem.Note));
+                        cmd.Parameters.AddWithValue("@Tutorial", (updateProblem.Tutorial == null ? DBNull.Value : updateProblem.Tutorial));
                         cmd.Parameters.AddWithValue("@Difficulty", (byte)updateProblem.Difficulty);
 
                         SqlParameter TagIDsParm = new SqlParameter("@TagIDs", SqlDbType.Structured);

@@ -8,7 +8,7 @@ namespace ProblemSolvingPlatform.Controllers;
 
 
 [ApiController]
-[Route($"/{Constants.Api.PrefixApi}/[controller]")]
+[Route($"/{Constants.Api.PrefixApi}/statistics")]
 public class StatisticsController : ControllerBase
 {
         private readonly IStatisticsService _statisticsService;

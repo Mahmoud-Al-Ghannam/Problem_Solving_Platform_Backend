@@ -92,11 +92,13 @@ public class SubmissionService : ISubmissionService {
         }
 
 
+        if (testCases == null || problem == null) throw new Exception(Constants.ErrorMessages.General);
+
+        if (problem.DeletedAt.HasValue)
+            errors["ProblemID"].Add($"The problem with id = {problem.ProblemID} was deleted");
+
         errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
         if (errors.Count > 0) throw new CustomValidationException(errors);
-
-
-        if (testCases == null || problem == null) throw new Exception(Constants.ErrorMessages.General);
 
         List<NewSubmissionTestCaseModel> submissionTestCases = new List<NewSubmissionTestCaseModel>();
 

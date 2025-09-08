@@ -33,6 +33,9 @@ public class AuthService : IAuthService {
         if (string.IsNullOrEmpty(loginDTO.Password))
             errors["Password"].Add("The password is required");
 
+        if (loginDTO.Username.Any(c => !char.IsLetterOrDigit(c) && c != '_'))
+            errors["Username"].Add("The username should only consists of letters, digits and '_'");
+
         var user = await _userRepo.GetUserByUsernameAndPasswordAsync(loginDTO.Username, loginDTO.Password);
         if (user == null) {
             errors["$"].Add("The username or password is wrong");
@@ -68,6 +71,9 @@ public class AuthService : IAuthService {
             if (registerDTO.Username.Length > _constraintsOption.User.UsernameLength.End.Value || registerDTO.Username.Length < _constraintsOption.User.UsernameLength.Start.Value)
                 errors["Username"].Add($"The length of username must to be in range [{_constraintsOption.User.UsernameLength.Start.Value},{_constraintsOption.User.UsernameLength.End.Value}]");
         }
+
+        if (registerDTO.Username.Any(c => !char.IsLetterOrDigit(c) && c != '_'))
+            errors["Username"].Add("The username should only consists of letters, digits and '_'");
 
         if (string.IsNullOrEmpty(registerDTO.Password))
             errors["Password"].Add("The password is required");
