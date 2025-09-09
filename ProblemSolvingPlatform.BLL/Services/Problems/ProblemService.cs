@@ -104,6 +104,15 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 }
             }
 
+            var tags = await _tagRepo.GetAllTagsAsync();
+            if (tags == null) throw new Exception("Some errors occurred");
+            for (int i = 0; i < newProblem.TagIDs.Count; i++) {
+                var tagID = newProblem.TagIDs[i];
+                if (!tags.Any(t => t.TagID == tagID)) {
+                    errors[$"TagIDs[{i}]"] = [$"The tag with id = {tagID} was not found"];
+                }
+            }
+
             errors = errors.Where(kp => kp.Value.Count > 0).ToDictionary();
             if (errors.Count > 0) throw new CustomValidationException(errors);
 
