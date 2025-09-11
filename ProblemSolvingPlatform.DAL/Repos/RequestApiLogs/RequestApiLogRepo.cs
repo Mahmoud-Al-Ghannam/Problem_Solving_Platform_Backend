@@ -26,10 +26,10 @@ namespace ProblemSolvingPlatform.DAL.Repos.RequestApiLogs {
                     cmd.Parameters.AddWithValue("@UserID", newLog.UserID.HasValue ? newLog.UserID.Value : DBNull.Value);
                     cmd.Parameters.AddWithValue("@Endpoint", newLog.Endpoint);
                     cmd.Parameters.AddWithValue("@RequestType", newLog.RequestType);
-                    cmd.Parameters.AddWithValue("@RequestBody", newLog.RequestBody == null ? newLog.RequestBody : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@RequestBody", newLog.RequestBody == null ? DBNull.Value : newLog.RequestBody);
                     cmd.Parameters.AddWithValue("@RequestHeaders", newLog.RequestHeaders);
                     cmd.Parameters.AddWithValue("@ResponseHeaders", newLog.ResponseHeaders);
-                    cmd.Parameters.AddWithValue("@ResponseBody", newLog.ResponseBody == null ? newLog.ResponseBody : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@ResponseBody", newLog.ResponseBody == null ?  DBNull.Value : newLog.ResponseBody);
                     cmd.Parameters.AddWithValue("@StatusCode", newLog.StatusCode);
                     cmd.Parameters.AddWithValue("@ProcessingTimeMS", newLog.ProcessingTimeMS);
 

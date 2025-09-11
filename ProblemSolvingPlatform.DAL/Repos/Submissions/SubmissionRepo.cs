@@ -150,6 +150,7 @@ public class SubmissionRepo : ISubmissionRepo {
                             Username = reader.GetString(reader.GetOrdinal("Username")),
                             ProblemID = reader.GetInt32(reader.GetOrdinal("ProblemID")),
                             ProblemTitle = reader.GetString(reader.GetOrdinal("ProblemTitle")),
+                            IsProblemDeleted = reader.GetBoolean(reader.GetOrdinal("IsProblemDeleted")),
                             CompilerName = reader.GetString(reader.GetOrdinal("CompilerName")),
                             Status = (Enums.SubmissionStatus)reader.GetByte(reader.GetOrdinal("Status")),
                             ExecutionTimeMilliseconds = reader.GetInt32(reader.GetOrdinal("ExecutionTimeMilliseconds")),

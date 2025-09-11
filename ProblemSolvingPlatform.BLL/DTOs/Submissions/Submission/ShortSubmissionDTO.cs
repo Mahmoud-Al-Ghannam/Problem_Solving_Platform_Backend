@@ -11,6 +11,7 @@ namespace ProblemSolvingPlatform.BLL.DTOs.Submissions.Submission {
         public string Username { get; set; }
         public int ProblemID { get; set; }
         public string ProblemTitle { get; set; }
+        public bool IsProblemDeleted { get; set; }
         public string CompilerName { get; set; }
         public Enums.SubmissionStatus Status { get; set; }
         public int ExecutionTimeMilliseconds { get; set; }

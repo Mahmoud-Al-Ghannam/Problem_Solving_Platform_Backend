@@ -278,6 +278,7 @@ public class SubmissionService : ISubmissionService {
                 Username = item.Username,
                 ProblemID = item.ProblemID,
                 ProblemTitle = item.ProblemTitle,
+                IsProblemDeleted = item.IsProblemDeleted,
                 VisionScope = (Enums.VisionScope)(byte)(item.VisionScope)
             }).ToList(),
 
