@@ -29,6 +29,8 @@ using ProblemSolvingPlatform.ActionFilters;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using ProblemSolvingPlatform.BLL.Services.Statistics;
 using ProblemSolvingPlatform.DAL.Repos.Statistics;
+using ProblemSolvingPlatform.BLL.Services.RequestApiLogs;
+using ProblemSolvingPlatform.DAL.Repos.RequestApiLogs;
 
 namespace ProblemSolvingPlatform
 {
@@ -214,8 +216,12 @@ namespace ProblemSolvingPlatform
             builder.Services.AddScoped<IStatisticsService, StatisticsService>();
             builder.Services.AddScoped<IStatisticsRepo, StatisticsRepo>();
             builder.Services.AddScoped<ProblemValidation>();
+            builder.Services.AddScoped<IRequestApiLogService, RequestApiLogService>();
+            builder.Services.AddScoped<IRequestApiLogRepo, RequestApiLogRepo>();
+
 
             builder.Services.AddTransient<ExceptionMiddleware>();
+            builder.Services.AddTransient<RequestApiLogMiddleware>();
             builder.Services.AddTransient<VerifyUserActivationMiddleware>();
 
      
@@ -289,6 +295,7 @@ namespace ProblemSolvingPlatform
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Public APIs");
             });
 
+            app.UseMiddleware<RequestApiLogMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseMiddleware<VerifyUserActivationMiddleware>();
 
