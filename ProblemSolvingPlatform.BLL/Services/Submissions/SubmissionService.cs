@@ -69,7 +69,7 @@ public class SubmissionService : ISubmissionService {
         }
 
 
-        List<TestCaseModel>? testCases = (await _testCaseRepo.GetAllTestCasesAsync(submitDTO.ProblemID))?.ToList();
+        List<TestCaseModel>? testCases = (await _testCaseRepo.GetAllTestCasesAsync(submitDTO.ProblemID))?.OrderBy(a => a.IsSample).ThenBy(a => a.TestCaseID).ToList();
         ProblemModel? problem = await _problemRepo.GetProblemByIDAsync(submitDTO.ProblemID);
 
 
@@ -215,6 +215,26 @@ public class SubmissionService : ISubmissionService {
 
         var submissionsTestCases = await _submissionTestRepo.GetAllDetailedSubmissionTestCasesAsync(submissionId);
 
+
+        // filter the submissionTestCases depending on the user?
+        if (submissionsTestCases != null)
+        {
+            var user = await _userRepo.GetUserByIdAsync(requestedBy);
+            if (user == null) throw new CustomValidationException("user not found");
+
+            var problemCreatorId = (await _problemRepo.GetProblemByIDAsync(submission.ProblemID))?.CreatedByID;
+            var publicProblemTestCasesIds = (await _testCaseRepo.GetAllTestCasesAsync(submission.ProblemID, null, true))?.Select(a => a.TestCaseID).ToList();
+            if (publicProblemTestCasesIds == null) throw new CustomValidationException("testCase doesn't exist for this submission");
+
+            if (user.Role != DAL.Models.Enums.Role.System && problemCreatorId.HasValue && problemCreatorId.Value != requestedBy)
+            {
+                // filter 
+                submissionsTestCases = submissionsTestCases.Where(a => publicProblemTestCasesIds.Contains(a.TestCaseID)).ToList();
+            }
+        }
+
+        
+
         List<DetailedSubmissionTestCaseDTO> submissionTests = new();
         if (submissionsTestCases != null) {
             foreach (var test in submissionsTestCases) {
@@ -230,7 +250,7 @@ public class SubmissionService : ISubmissionService {
                 });
             }
         }
-
+        submissionTests = submissionTests.OrderBy(a => a.SubmissionTestCaseID).ToList(); 
         return new DetailedSubmissionDTO() {
             SubmissionInfo = new SubmissionDTO() {
                 SubmissionID = submission.SubmissionID,

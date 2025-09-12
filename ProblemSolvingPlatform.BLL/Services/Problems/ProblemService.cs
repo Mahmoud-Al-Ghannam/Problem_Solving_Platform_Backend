@@ -297,6 +297,8 @@ namespace ProblemSolvingPlatform.BLL.Services.Problems {
                 if (!isSystemRequest && problemModel.DeletedAt.HasValue)
                     errors["ProblemID"].Add($"The problem with id = {problemModel.ProblemID} was deleted");
 
+
+                problemModel.SampleTestCases = problemModel.SampleTestCases.OrderBy(a => a.IsSample);
                 problemDTO = new ProblemDTO() {
                     ProblemID = problemModel.ProblemID,
                     CompilerName = problemModel.CompilerName,

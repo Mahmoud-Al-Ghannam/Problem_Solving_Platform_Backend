@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AuthHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProblemSolvingPlatform.BLL;
 using ProblemSolvingPlatform.BLL.DTOs.TestCases;
@@ -32,7 +33,8 @@ namespace ProblemSolvingPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TestCaseDTO>?>> GetAllTestCases([FromQuery] int? ProblemID = null, [FromQuery] bool? IsSample = null, [FromQuery] bool? IsPublic = null)
         {
-            var testcases = await _testCaseService.GetAllTestCasesAsync(ProblemID, IsSample, IsPublic);
+            int userId = AuthUtils.GetUserId(User)!.Value;
+            var testcases = await _testCaseService.GetAllTestCasesAsync(userId, ProblemID, IsSample, IsPublic);
             if (testcases == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseBody(Constants.ErrorMessages.General));
             return Ok(testcases);
