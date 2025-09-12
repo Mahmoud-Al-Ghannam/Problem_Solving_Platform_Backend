@@ -206,9 +206,17 @@ public class StatisticsRepo : IStatisticsRepo
             result.TotalSolved = reader.GetInt32(reader.GetOrdinal("TotalSolved"));
             result.TotalAttempts = reader.GetInt32(reader.GetOrdinal("TotalAttempts"));
             result.AcceptanceRate = reader.GetDouble(reader.GetOrdinal("AcceptanceRate"));
-            result.EasySolved = reader.GetInt32(reader.GetOrdinal("EasySolved"));
-            result.MediumSolved = reader.GetInt32(reader.GetOrdinal("MediumSolved"));
-            result.HardSolved = reader.GetInt32(reader.GetOrdinal("HardSolved"));
+            result.EasySolved = reader.IsDBNull(reader.GetOrdinal("EasySolved"))
+                ? 0
+                : reader.GetInt32(reader.GetOrdinal("EasySolved"));
+
+            result.MediumSolved = reader.IsDBNull(reader.GetOrdinal("MediumSolved"))
+                ? 0
+                : reader.GetInt32(reader.GetOrdinal("MediumSolved"));
+
+            result.HardSolved = reader.IsDBNull(reader.GetOrdinal("HardSolved"))
+                ? 0
+                : reader.GetInt32(reader.GetOrdinal("HardSolved"));
             result.NumberOfCreatedProblem = reader.GetInt32(reader.GetOrdinal("NumberOfCreatedProblem"));
         }
 
