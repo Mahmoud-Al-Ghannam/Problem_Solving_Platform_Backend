@@ -16,10 +16,15 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 ## 🛠 Technology Stack
 
 · Backend: ASP.NET Core 8.0+
+
 · Authentication: JWT (JSON Web Tokens)
+
 · Database: SQL Server
+
 · Code Execution: Integration with external code execution service
+
 · Package Management: NuGet
+
 
 ## 📦 Installation & Setup
 
