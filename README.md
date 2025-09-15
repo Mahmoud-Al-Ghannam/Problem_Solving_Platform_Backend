@@ -5,13 +5,21 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 ## ✨ Key Features
 
 · User Profile Management: Users can update their information and track their progress
+
 · Problem Management: Create, edit, and delete coding problems with tags and difficulty levels
+
 · Solution System: Submit solutions to problems and view detailed results
+
 · Test Case System: Each problem contains test cases to evaluate solutions
+
 · Statistics Dashboard: View detailed statistics about users, solutions, and problems
+
 · Role-Based Authentication: Multiple roles (System & User) using JWT
+
 · Multi-Language Support: Integration with external code execution system (C++, Python, Java, etc.)
+
 · Efficient Data Handling: Pagination implementation for large datasets
+
 
 ## 🛠 Technology Stack
 
@@ -31,26 +39,34 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 # Prerequisites
 
 · .NET 8.0 SDK or later
+
 · SQL Server
+
 · Code editor like Visual Studio or VS Code
+
 
 # Setup Steps
 
 1. Clone the repository:
+
    . git clone https://github.com/your-username/your-repo-name.git
    cd your-repo-name
    
-2. Install required packages:
+3. Install required packages:
+
    . dotnet restore
    
-3. Database setup:
+4. Database setup:
+
    · Update connection string in appsettings.json
+   
    . Execute GeneratingScript_ProblemSolvingPlatformDB.sql file on SQL Server Management Studio to initialize database
    
 5. Run the application:
+
    . dotnet run
    
-6. Access the application:
+7. Access the application:
   
    https://localhost:7000 (or your configured port)
    
@@ -76,9 +92,10 @@ Authentication and Token Management
 1. Login:
   
    POST /api/auth/login
+
    Body: { "username": "user", "password": "pass" }
    
-2. Use Token in subsequent requests:
+3. Use Token in subsequent requests:
   
    Authorization: Bearer {your_token}
    
@@ -91,11 +108,13 @@ Authentication and Token Management
 · Add new problem (Admin only):
  
   POST /api/problems
+  
   Body: { "title": "Problem Title", "description": "...", "difficulty": "Medium", "tags": ["Array", "Sorting"] }
   
 · Submit solution:
  
   POST /api/solutions
+  
   Body: { "problemId": 1, "code": "public class Solution {...}", "language": "Java" }
   
 · Get user statistics:
@@ -133,12 +152,17 @@ Authentication and Token Management
 └── Helpers/
     ├── JwtMiddleware.cs
     └── PaginationHelper.cs
+
 ## 🤝 Contributing
 
 1. Fork the project
+
 2. Create your feature branch (git checkout -b feature/AmazingFeature)
+
 3. Commit your changes (git commit -m 'Add some AmazingFeature')
+
 4. Push to the branch (git push origin feature/AmazingFeature)
+
 5. Open a Pull Request
 
 ## 📄 License
