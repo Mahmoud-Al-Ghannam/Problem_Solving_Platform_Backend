@@ -91,82 +91,61 @@ Authentication and Token Management
 
 **1. Login:**
   
-   POST /api/auth/login
+   POST /api/v1/auth/login
 
    Body: { "username": "user", "password": "pass" }
    
+
 **2. Use Token in subsequent requests:**
   
    Authorization: Bearer {your_token}
    
+
 # API Examples
 
 · **Get problems list:**
  
-  GET /api/problems?page=1&pageSize=10
+  GET /api/v1/problems?page=1&limit=10
   
-· **Add new problem (Admin only):**
+· **Add new problem:**
  
-  POST /api/problems
+  POST /api/v1/problems
   
-  Body: { "title": "Problem Title", "description": "...", "difficulty": "Medium", "tags": ["Array", "Sorting"] }
+  Body: {
+  "compilerName": "string",
+  "title": "string",
+  "generalDescription": "string",
+  "inputDescription": "string",
+  "outputDescription": "string",
+  "note": "string",
+  "tutorial": "string",
+  "difficulty": "Easy",
+  "solutionCode": "string",
+  "timeLimitMilliseconds": 0,
+  "testCases": [
+    {
+      "input": "string",
+      "isPublic": true,
+      "isSample": true
+    }
+  ],
+  "tagIDs": [
+    0
+  ]
+}
   
 · **Submit solution:**
  
-  POST /api/solutions
+  POST /api/v1/submissions/submit
   
-  Body: { "problemId": 1, "code": "public class Solution {...}", "language": "Java" }
+  Body: {
+  "problemID": 0,
+  "compilerName": "string",
+  "code": "string",
+  "visionScope": "onlyme"
+}
   
 · **Get user statistics:**
  
-  GET /api/users/{userId}/statistics
+  GET /api/v1/statistics/users/{userId}
   
-## 📁 Project Structure
-
-/
-├── Controllers/
-│   ├── AuthController.cs
-│   ├── ProblemsController.cs
-│   ├── SolutionsController.cs
-│   ├── UsersController.cs
-│   └── StatisticsController.cs
-├── Models/
-│   ├── User.cs
-│   ├── Problem.cs
-│   ├── Solution.cs
-│   ├── Tag.cs
-│   ├── TestCase.cs
-│   └── ...
-├── Services/
-│   ├── AuthService.cs
-│   ├── ProblemService.cs
-│   ├── CompilerService.cs
-│   └── ...
-├── Data/
-│   ├── ApplicationDbContext.cs
-│   └── Migrations/
-├── DTOs/
-│   ├── LoginDto.cs
-│   ├── ProblemDto.cs
-│   └── ...
-└── Helpers/
-    ├── JwtMiddleware.cs
-    └── PaginationHelper.cs
-
-## 🤝 Contributing
-
-1. Fork the project
-
-2. Create your feature branch (git checkout -b feature/AmazingFeature)
-
-3. Commit your changes (git commit -m 'Add some AmazingFeature')
-
-4. Push to the branch (git push origin feature/AmazingFeature)
-
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📞 Contact
