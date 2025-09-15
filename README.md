@@ -13,7 +13,7 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 · Multi-Language Support: Integration with external code execution system (C++, Python, Java, etc.)
 · Efficient Data Handling: Pagination implementation for large datasets
 
-##🛠 Technology Stack
+## 🛠 Technology Stack
 
 · Backend: ASP.NET Core 8.0+
 · Authentication: JWT (JSON Web Tokens)
@@ -21,15 +21,15 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 · Code Execution: Integration with external code execution service
 · Package Management: NuGet
 
-##📦 Installation & Setup
+## 📦 Installation & Setup
 
-#Prerequisites
+# Prerequisites
 
 · .NET 8.0 SDK or later
 · SQL Server
 · Code editor like Visual Studio or VS Code
 
-#Setup Steps
+# Setup Steps
 
 1. Clone the repository:
    . git clone https://github.com/your-username/your-repo-name.git
@@ -49,7 +49,7 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
   
    https://localhost:7000 (or your configured port)
    
-#⚙️ Configuration
+# ⚙️ Configuration
 
 appsettings.json Configuration
 
@@ -64,7 +64,7 @@ appsettings.json Configuration
   },
 }
 
-##🚀 API Usage
+## 🚀 API Usage
 
 Authentication and Token Management
 
@@ -77,7 +77,7 @@ Authentication and Token Management
   
    Authorization: Bearer {your_token}
    
-#API Examples
+# API Examples
 
 · Get problems list:
  
@@ -97,7 +97,7 @@ Authentication and Token Management
  
   GET /api/users/{userId}/statistics
   
-##📁 Project Structure
+## 📁 Project Structure
 
 /
 ├── Controllers/
@@ -128,7 +128,7 @@ Authentication and Token Management
 └── Helpers/
     ├── JwtMiddleware.cs
     └── PaginationHelper.cs
-##🤝 Contributing
+## 🤝 Contributing
 
 1. Fork the project
 2. Create your feature branch (git checkout -b feature/AmazingFeature)
@@ -136,8 +136,8 @@ Authentication and Token Management
 4. Push to the branch (git push origin feature/AmazingFeature)
 5. Open a Pull Request
 
-##📄 License
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-##📞 Contact
+## 📞 Contact
