@@ -4,34 +4,34 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 
 ## ✨ Key Features
 
-· User Profile Management: Users can update their information and track their progress
+· **User Profile Management:** Users can update their information and track their progress
 
-· Problem Management: Create, edit, and delete coding problems with tags and difficulty levels
+· **Problem Management:** Create, edit, and delete coding problems with tags and difficulty levels
 
-· Solution System: Submit solutions to problems and view detailed results
+· **Solution System:** Submit solutions to problems and view detailed results
 
-· Test Case System: Each problem contains test cases to evaluate solutions
+· **Test Case System:** Each problem contains test cases to evaluate solutions
 
-· Statistics Dashboard: View detailed statistics about users, solutions, and problems
+· **Statistics Dashboard:** View detailed statistics about users, solutions, and problems
 
-· Role-Based Authentication: Multiple roles (System & User) using JWT
+· **Role-Based Authentication:** Multiple roles (System & User) using JWT
 
-· Multi-Language Support: Integration with external code execution system (C++, Python, Java, etc.)
+· **Multi-Language Support:** Integration with external code execution system (C++, Python, Java, etc.)
 
-· Efficient Data Handling: Pagination implementation for large datasets
+· **Efficient Data Handling:** Pagination implementation for large datasets
 
 
 ## 🛠 Technology Stack
 
-· Backend: ASP.NET Core 8.0+
+· **Backend:** ASP.NET Core 8.0+
 
-· Authentication: JWT (JSON Web Tokens)
+· **Authentication:** JWT (JSON Web Tokens)
 
-· Database: SQL Server
+· **Database:** SQL Server
 
-· Code Execution: Integration with external code execution service
+· **Code Execution:** Integration with external code execution service
 
-· Package Management: NuGet
+· **Package Management:** NuGet
 
 
 ## 📦 Installation & Setup
@@ -47,26 +47,26 @@ A comprehensive backend system built with ASP.NET Core for managing programming 
 
 # Setup Steps
 
-1. Clone the repository:
+**1. Clone the repository:**
 
    . git clone https://github.com/your-username/your-repo-name.git
    cd your-repo-name
    
-3. Install required packages:
+**2. Install required packages:**
 
    . dotnet restore
    
-4. Database setup:
+**3. Database setup:**
 
    · Update connection string in appsettings.json
    
    . Execute GeneratingScript_ProblemSolvingPlatformDB.sql file on SQL Server Management Studio to initialize database
    
-5. Run the application:
+**4. Run the application:**
 
    . dotnet run
    
-7. Access the application:
+**5. Access the application:**
   
    https://localhost:7000 (or your configured port)
    
@@ -89,35 +89,35 @@ appsettings.json Configuration
 
 Authentication and Token Management
 
-1. Login:
+**1. Login:**
   
    POST /api/auth/login
 
    Body: { "username": "user", "password": "pass" }
    
-3. Use Token in subsequent requests:
+**2. Use Token in subsequent requests:**
   
    Authorization: Bearer {your_token}
    
 # API Examples
 
-· Get problems list:
+· **Get problems list:**
  
   GET /api/problems?page=1&pageSize=10
   
-· Add new problem (Admin only):
+· **Add new problem (Admin only):**
  
   POST /api/problems
   
   Body: { "title": "Problem Title", "description": "...", "difficulty": "Medium", "tags": ["Array", "Sorting"] }
   
-· Submit solution:
+· **Submit solution:**
  
   POST /api/solutions
   
   Body: { "problemId": 1, "code": "public class Solution {...}", "language": "Java" }
   
-· Get user statistics:
+· **Get user statistics:**
  
   GET /api/users/{userId}/statistics
   
